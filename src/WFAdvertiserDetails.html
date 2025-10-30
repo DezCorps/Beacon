@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Beacon - Details</title>
 
   <!-- Tailwind (CDN) -->
@@ -12,7 +11,6 @@
   <!-- Toast assets (single source of truth) -->
   <link rel="stylesheet" href="./assets/toast.css">
   <script src="./assets/toast.js" defer></script>
-
 
   <!-- REMOVE OR COMMENT OUT THIS LINE: -->
   <script src="./assets/notifications.js"></script>
@@ -164,8 +162,7 @@
 
   <ul class="space-y-1 mt-4">
     <li>
-<li>
-  <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+      <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
         <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
         <span data-link-label>Details</span>
       </a>
@@ -210,8 +207,7 @@
           <div class="p-4 border-b border-gray-200">
             <div class="flex items-start gap-4 mb-3">
               <div class="flex-1">
-                <h1 id="advertiserHeader" class="md:text-2xl font-semibold text-gray-900">Loading…</h1>
-
+                <h1 data-bind="adv.name" class="md:text-2xl font-semibold text-gray-900">Loading…</h1>
                 <div class="flex justify-between items-center">
                   <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
                   <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
@@ -221,251 +217,122 @@
 
             <hr class="border-gray-300 mp-4 p-2">
 
-            <!-- Single-column campaign details card -->
-            <section class="space-y-6">
-              <div class="flex items-center justify-between">
-              <h1 class="text-2xl font-semibold text-gray-900 mx-2">AD GROUP DETAILS</h1>
-              <div class="flex items-center gap-2">
-                <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                <svg viewBox="0 0 24 24" height="16" width="16">
-                  <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
-                </svg>
-                Edit
-                </button>
-                <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
-                <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
-              </div>
-              </div>
-
-<!-- Ad Group Name -->
-<div>
-  <label for="adGroupNameInput" class="block text-sm font-medium text-gray-700">Ad Group Name</label>
-  <span id="displayAdGroupName" class="block mt-1 text-gray-800">N/A</span>
-  <input id="adGroupNameInput" data-bind="adGroupName" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<!-- Campaign -->
-<div>
-  <label for="campaignName" class="block text-sm font-medium text-gray-700">Campaign</label>
-  <span id="displayCampaignName" class="block mt-1 text-gray-800">N/A</span>
-  <input id="campaignName" data-bind="campaign" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<!-- Budget Allocation -->
-<div>
-  <label for="budgetAllocation" class="block text-sm font-medium text-gray-700">Budget Allocation</label>
-  <span id="displayBudgetAllocation" class="block mt-1 text-gray-800">N/A</span>
-  <input id="budgetAllocation" data-bind="budget" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<!-- Bid Strategy -->
-<div>
-  <label for="bidStrategy" class="block text-sm font-medium text-gray-700">Bid Strategy</label>
-  <span id="displayBidStrategy" class="block mt-1 text-gray-800">N/A</span>
-  <input id="bidStrategy" data-bind="bidStrategy" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<hr class="border-gray-300" />
-
-<h2 class="text-lg font-semibold text-gray-900">Creative & Targeting</h2>
-
-<!-- Creative Format -->
-<div>
-  <label for="creativeFormat" class="block text-sm font-medium text-gray-700">Creative Format</label>
-  <span id="displayCreativeFormat" class="block mt-1 text-gray-800">N/A</span>
-  <input id="creativeFormat" data-bind="creativeFormat" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<!-- Targeting Refinements -->
-<div>
-  <label for="targetingRefinements" class="block text-sm font-medium text-gray-700">Targeting Refinements</label>
-  <span id="displayTargetingRefinements" class="block mt-1 text-gray-800">N/A</span>
-  <input id="targetingRefinements" data-bind="targetingRefinements" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<!-- Placement Settings -->
-<div>
-  <label for="placementSettings" class="block text-sm font-medium text-gray-700">Placement Settings</label>
-  <span id="displayPlacementSettings" class="block mt-1 text-gray-800">N/A</span>
-  <input id="placementSettings" data-bind="placementSettings" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-            </section>
-
-                      <script>
-                        (function() {
-                        const pairs = [
-                          { span: 'displayAdGroupName', input: 'adGroupNameInput' },
-                          { span: 'displayCampaignName', input: 'campaignName' },
-                          { span: 'displayBudgetAllocation', input: 'budgetAllocation' },
-                          { span: 'displayBidStrategy', input: 'bidStrategy' },
-                          { span: 'displayCreativeFormat', input: 'creativeFormat' },
-                          { span: 'displayTargetingRefinements', input: 'targetingRefinements' },
-                          { span: 'displayPlacementSettings', input: 'placementSettings' }
-                        ];
-
-                        const btnEdit   = document.getElementById('editGeneralBtn');
-                        const btnSave   = document.getElementById('saveGeneralBtn');
-                        const btnCancel = document.getElementById('cancelGeneralBtn');
-
-                        let snapshot = null;
-                        let inlineEditing = false;
-
-                        function showInputs() {
-                          pairs.forEach(p => {
-                          const span = document.getElementById(p.span);
-                          const input = document.getElementById(p.input);
-                          if (!span || !input) return;
-                          input.classList.remove('hidden');
-                          span.classList.add('hidden');
-                          input.value = span.textContent.trim();
-                          });
-                        }
-                        function showSpans() {
-                          pairs.forEach(p => {
-                          const span = document.getElementById(p.span);
-                          const input = document.getElementById(p.input);
-                          if (!span || !input) return;
-                          span.textContent = input.value.trim() || '—';
-                          input.classList.add('hidden');
-                          span.classList.remove('hidden');
-                          });
-                        }
-
-                        function currentValues() {
-                          const obj = {};
-                          pairs.forEach(p => {
-                          const input = document.getElementById(p.input);
-                          if (input) obj[p.input] = input.value.trim();
-                          });
-                          return obj;
-                        }
-                        function shallowEqual(a,b){
-                          const ka = Object.keys(a), kb = Object.keys(b);
-                          if (ka.length !== kb.length) return false;
-                          for (const k of ka) if (a[k] !== b[k]) return false;
-                          return true;
-                        }
-
-                        btnEdit?.addEventListener('click', () => {
-                          // Start inline editing for these campaign fields
-                          inlineEditing = true;
-                          snapshot = currentValues();
-                          showInputs();
-                        });
-
-                        btnCancel?.addEventListener('click', () => {
-                          if (!inlineEditing) return;
-                          // Revert
-                          pairs.forEach(p => {
-                          const input = document.getElementById(p.input);
-                          if (input && snapshot && snapshot[p.input] != null) {
-                            input.value = snapshot[p.input];
-                          }
-                          });
-                          showSpans();
-                          inlineEditing = false;
-                          snapshot = null;
-                        });
-
-btnSave?.addEventListener('click', () => {
-  if (!inlineEditing) return;
-  const now = currentValues();
-  
-  // Check if no changes
-  if (snapshot && shallowEqual(snapshot, now)) {
-    showSpans();
-    inlineEditing = false;
-    snapshot = null;
-    return;
-  }
-
-  // Get URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const adGroupId = urlParams.get('id') || urlParams.get('adGroupId');
-  let campaignId = urlParams.get('campaignId');
-  
-  if (!adGroupId) {
-    alert('Ad Group ID not found in URL');
-    return;
-  }
-  
-  // Load ad group from storage to get campaignId if not in URL
-  try {
-    const adgroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-    const adGroupIndex = adgroups.findIndex(ag => ag.id === adGroupId);
-    
-    if (adGroupIndex === -1) {
-      console.error('Ad group not found with ID:', adGroupId);
-      alert('Error: Ad group not found');
-      return;
-    }
-    
-    const adGroup = adgroups[adGroupIndex];
-    
-    // If campaignId not in URL, try to get it from the ad group's campaign field
-    if (!campaignId && adGroup.campaign) {
-      campaignId = adGroup.campaign;
-      console.log('📋 Using campaignId from ad group data:', campaignId);
-    }
-    
-    // === AUDIT TRACKING ===
-    if (campaignId && snapshot && window.audit) {
-      try {
-        window.audit.recordEdit({
-          campaignId: campaignId,
-          entityType: 'adgroup',
-          entityId: adGroupId,
-          before: snapshot,
-          after: now
-        });
-        console.log('✏️ Audit logged for Ad Group edit:', adGroupId, 'Campaign:', campaignId);
-      } catch (e) {
-        console.warn('Failed to record audit edit:', e);
-      }
-    } else {
-      console.warn('⚠️ Audit NOT logged - missing campaignId or audit system');
-      console.log('campaignId:', campaignId, 'snapshot:', !!snapshot, 'window.audit:', !!window.audit);
-    }
-
-    // === UPDATE AD GROUP DATA ===
-    if (now.adGroupNameInput !== undefined) adGroup.name = now.adGroupNameInput;
-    if (now.campaignName !== undefined) adGroup.campaign = now.campaignName;
-    if (now.budgetAllocation !== undefined) adGroup.budget = now.budgetAllocation;
-    if (now.bidStrategy !== undefined) adGroup.bidStrategy = now.bidStrategy;
-    if (now.creativeFormat !== undefined) adGroup.creativeFormat = now.creativeFormat;
-    if (now.targetingRefinements !== undefined) adGroup.targetingRefinements = now.targetingRefinements;
-    if (now.placementSettings !== undefined) adGroup.placementSettings = now.placementSettings;
-    
-    // Ensure campaignId is stored on the ad group object
-    if (campaignId && !adGroup.campaignId) {
-      adGroup.campaignId = campaignId;
-    }
-
-    // Save back to localStorage
-    localStorage.setItem('adgroups_data_v1', JSON.stringify(adgroups));
-    console.log('✔️ Ad group saved successfully');
-    
-  } catch (error) {
-    console.error('Error saving ad group:', error);
-    alert('Error saving ad group. Check console for details.');
-    return;
-  }
-  
-  // Commit to spans
-  showSpans();
-  inlineEditing = false;
-  snapshot = null;
-});                                              })();
-                      </script>
-                      
-
-                    </section>
-                  </div>
+            <!-- Two-column cards -->
+            <div class="grid md:grid-cols-2 gap-6">
+              <!-- General -->
+              <section class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <h1 class="text-2xl font-semibold text-gray-900 mx-2">ADVERTISER DETAILS</h1>
+                  <div class="flex items-center gap-2">
+                    <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                      <svg viewBox="0 0 24 24" height="16" width="16">
+                        <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
+                      </svg>
+                      Edit
+                    </button>
+                    <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
+                    <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
                   </div>
                 </div>
-                </main>
-              </div>
-              </div>
+
+                <div id="generalCard" class="p-4 border border-gray-200 rounded-md">
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
+                    <label for="companyName" class="text-sm font-semibold text-gray-600">Company Name:</label>
+                    <div class="md:col-span-2">
+                      <input id="companyName" type="text" data-bind="adv.name" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                    </div>
+
+                    <label for="accountDisplay" class="text-sm font-semibold text-gray-600">Account #:</label>
+                    <div class="md:col-span-2 flex items-center gap-2">
+                      <span id="accountDisplay" data-bind="adv.account" class="hidden text-sm text-gray-900 rounded px-0 py-1">—</span>
+                      <button id="accountLookupBtn" class="text-sm text-blue-600 hover:text-blue-800 underline">Select Account</button>
+                    </div>
+
+                    <!-- FIXED: Use 'state' consistently -->
+                    <label for="advertiserState" class="text-sm font-semibold text-gray-600">State:</label>
+                    <div class="md:col-span-2">
+                      <select id="advertiserState" data-bind="adv.state" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                      </select>
+                    </div>
+
+                    <label for="advertiserWebsite" class="text-sm font-semibold text-gray-600">Website:</label>
+                    <div class="md:col-span-2">
+                      <input id="advertiserWebsite" type="text" data-bind="adv.website" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Team -->
+              <section class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <h1 class="text-2xl font-semibold text-gray-900 mx-2">TEAM</h1>
+                  <div class="relative">
+                    <button id="teamStateChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 bg-gray-50 border border-gray-300 hover:bg-gray-100 transition" data-filter="state" aria-haspopup="menu" aria-expanded="false">
+                      <span id="teamStateChipLabel">Active</span>
+                      <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/></svg>
+                    </button>
+                    <div id="teamStateMenu" class="hidden absolute right-0 mt-2 min-w-40 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto" role="menu" tabindex="-1">
+                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="All" role="menuitem">All</button>
+                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Active" role="menuitem">Active</button>
+                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Inactive" role="menuitem">Inactive</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-4 border border-gray-200 rounded-md">
+                  <table class="w-full text-sm table-fixed">
+                    <colgroup>
+                      <col style="width:44%">
+                      <col style="width:36%">
+                      <col style="width:20%">
+                    </colgroup>
+                    <thead>
+                      <tr class="border-b border-gray-300">
+                        <th class="text-left py-2 text-gray-600 font-semibold">Name</th>
+                        <th class="text-left py-2 text-gray-600 font-semibold">Role</th>
+                        <th class="text-left py-2 text-gray-600 font-semibold">State</th>
+                      </tr>
+                    </thead>
+                    <tbody id="teamTableBody">
+                      <tr class="border-b border-gray-100" data-state="active">
+                        <td class="py-2 text-gray-900">Matt Hunter</td>
+                        <td class="py-2 text-gray-500">Account Manager</td>
+                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
+                      </tr>
+                      <tr class="border-b border-gray-100" data-state="active">
+                        <td class="py-2 text-gray-900">David DeHerrera</td>
+                        <td class="py-2 text-gray-500">Campaign Specialist</td>
+                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
+                      </tr>
+                      <tr class="border-b border-gray-100" data-state="inactive">
+                        <td class="py-2 text-gray-900">Hailey Golden</td>
+                        <td class="py-2 text-gray-500">Campaign Manager</td>
+                        <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
+                      </tr>
+                      <tr class="border-b border-gray-100" data-state="active">
+                        <td class="py-2 text-gray-900">Sam Ahn</td>
+                        <td class="py-2 text-gray-500">Sales Representative</td>
+                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
+                      </tr>
+                      <tr data-state="inactive">
+                        <td class="py-2 text-gray-900">Trevor White</td>
+                        <td class="py-2 text-gray-500">Partnership Sales</td>
+                        <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
   <!-- Waffle menu toggle -->
   <script>
     const menuButton = document.getElementById('menuButton');
@@ -545,9 +412,6 @@ btnSave?.addEventListener('click', () => {
           }
           
           bindAll('adv.name', adv.name, 'No advertiser found');
-          const advHeader = document.getElementById('advertiserHeader');
-if (advHeader) advHeader.textContent = adv.name || 'No advertiser found';
-
           bindAll('adv.id', adv.id, '');
           bindAll('adv.account', adv.account, 'N/A');
           bindAll('adv.state', adv.state, 'N/A');     // ✓ use state field
@@ -646,17 +510,7 @@ if (advHeader) advHeader.textContent = adv.name || 'No advertiser found';
       const SELECTED_ID_KEY  = 'adv_selected_id';
       const SELECTED_DATA_KEY= 'adv_selected_data';
 
-const editableSelectors = [
-  '#adGroupNameInput',
-  '#campaignName',
-  '#budgetAllocation',
-  '#bidStrategy',
-  '#creativeFormat',
-  '#targetingRefinements',
-  '#placementSettings'
-];
-
-
+      const editableSelectors = ['#companyName', '#advertiserState', '#advertiserWebsite'];
 
       const btnEdit   = document.getElementById('editGeneralBtn');
       const btnSave   = document.getElementById('saveGeneralBtn');
@@ -767,7 +621,7 @@ const editableSelectors = [
           }
 
           // Map inputs → adv fields
-         // advertisers[idx].name    = vals.companyName?.trim() || '';
+          advertisers[idx].name    = vals.companyName?.trim() || '';
           advertisers[idx].state   = vals.advertiserState?.trim() || '';   // ✓ use state field
           advertisers[idx].website = vals.advertiserWebsite?.trim() || '';
 
@@ -1057,109 +911,7 @@ const editableSelectors = [
       }
     });
   });
-
-
-
-  document.addEventListener('DOMContentLoaded', () => {
-    document.body.style.zoom = '100%';
-  });
-
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const current = window.location.pathname.split('/').pop();
-    document.querySelectorAll('#sidebar a[data-nav-link]').forEach(link => {
-      if (link.getAttribute('href') === current) {
-        link.classList.add('text-blue-700', 'bg-blue-50', 'font-medium');
-      } else {
-        link.classList.remove('text-blue-700', 'bg-blue-50', 'font-medium');
-      }
-    });
-  });
-
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const campaignsLink = document.querySelector('#sidebar a[href="./AdvertiserCampaigns.html"]');
-    if (campaignsLink) {
-      campaignsLink.classList.add('text-blue-700', 'bg-blue-50', 'font-medium');
-    }
-  });
-
-document.addEventListener('DOMContentLoaded', () => {
-  const current = window.location.pathname.split('/').pop();
-  document.querySelectorAll('#sidebar a[data-nav-link]').forEach(link => {
-    if (link.getAttribute('href') === current) {
-      link.classList.add('text-blue-700', 'bg-blue-50', 'font-medium');
-    } else {
-      link.classList.remove('text-blue-700', 'bg-blue-50', 'font-medium');
-    }
-  });
-});
-
-
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const adGroupName = params.get('name');
-    if (adGroupName) {
-      document.getElementById('adGroupName').textContent = decodeURIComponent(adGroupName);
-    }
-  });
-
-document.addEventListener('DOMContentLoaded', function () {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
-
-  if (!id) return;
-
-  const adgroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-  const adGroup = adgroups.find(ag => ag.id === id);
-
-  if (!adGroup) {
-    console.warn('Ad group not found');
-    return;
-  }
-
-  const fields = [
-    { dataBindKey: 'adGroupName', adGroupProperty: 'name' },
-    { dataBindKey: 'campaign', adGroupProperty: 'campaign' },
-    { dataBindKey: 'budget', adGroupProperty: 'budget' },
-    { dataBindKey: 'bidStrategy', adGroupProperty: 'bidStrategy' },
-    { dataBindKey: 'creativeFormat', adGroupProperty: 'creativeFormat' },
-    { dataBindKey: 'targetingRefinements', adGroupProperty: 'targetingRefinements' },
-    { dataBindKey: 'placementSettings', adGroupProperty: 'placementSettings' }
-  ];
-
-  // Helper function to safely set text content
-  function safeSet(elementId, value) {
-    const element = document.getElementById(elementId);
-    if (element) {
-      element.textContent = value || 'N/A';
-    }
-  }
-
-  fields.forEach(field => {
-    const el = document.querySelector(`[data-bind="${field.dataBindKey}"]`);
-    if (el) el.value = adGroup[field.adGroupProperty] || '';
-  });
-  
-  // Also populate the display spans for the new edit functionality
-  safeSet('displayAdGroupName', adGroup.name);
-  safeSet('displayCampaignName', adGroup.campaign);
-  safeSet('displayBudgetAllocation', adGroup.budget);
-  safeSet('displayBidStrategy', adGroup.bidStrategy);
-  safeSet('displayCreativeFormat', adGroup.creativeFormat);
-  safeSet('displayTargetingRefinements', adGroup.targetingRefinements);
-  safeSet('displayPlacementSettings', adGroup.placementSettings);
-});
-
-
-
-
-
-  
   </script>
   <script src="./assets/sidebar.js" defer></script>
-  <script src="./assets/audit.js" defer></script>
-
 </body>
 </html>
