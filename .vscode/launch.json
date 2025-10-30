@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}"
+    },
+    {
+      "name": "PowerShell Script",
+      "type": "PowerShell",
+      "request": "launch",
+      "script": "${file}"
+    },
+    {
+      "name": ".NET App",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/Debug/net8.0/Beacon.dll"
+    }
+  ]
+}

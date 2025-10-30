@@ -1,0 +1,468 @@
+Beacon Project
+
+This application will allow employees to Create/Edit/Remove Advertisers, Campaigns, Ad Groups, and Connectors. The connectors will be a connection configuration to connect with third party vendors like a DSP or Ad Server.
+
+Hierarchy is from top to bottom: Advertiser -> Campaign -> Ad Group
+1.	A user will create an Advertiser, from the side panel. (If it does not exist)
+2.	Then the user can either create the Campaign or Ad Group next, from the panel.  If the Ad Group was first, there will be an option to create the campaign from the Ad Group fly-in panel.
+3.	If the user creates the campaign first, from the panel, then there will be an option at the bottom of the campaign form, to create and assign an ad group to that campaign.  If clicked to add the ad group, the campaign will auto-save.
+4.	Connectors will be shown and selected from the Campaign level.
+
+
+Application built with:
+⦁	HTML
+⦁	JavaScript
+⦁	CSS
+
+File Hiearchy:
+Pages
+⦁	Advertisers (Landing Page - Shows all of the Advertisers in a Table)
+⦁	Advertiser Details (Shows the details of the Advertiser record)
+⦁	Campaigns (Shows the campaigns related to the Advertiser record)
+⦁	Ad Groups (Shows the Ad Groups assigned to the related Campaign that is related to the Advertiser Record)
+⦁	Sales Orders (Shows the Sales Orders related to the Advertiser Record)
+⦁	Connectors (Shows the third-party connections for the Advertiser Record)
+⦁	Panel (This will be a fly-in panel from the right side, that will be shown for Create/Edit and Export features)
+Assets:
+⦁	images
+⦁	js
+⦁	css
+
+1.	Use separate HTML files for each Page.
+2.	Use separate JS files for each JS Feature.
+3.	Use Global CSS files, and a separate CSS file for each page.
+
+
+Site Description:
+Header Summary
+ 	Branding: Beacon logo left; page context link “Advertisers” (in details page it links back to list).
+ 	Primary actions cluster right-aligned.
+ 	Notifications:
+ 		Bell button with unread red dot indicator (span #notificationDot).
+ 		Dropdown panel (absolute) containing a header, “Mark all read” control, scrollable list of notification items (each with read/unread state via data-read), and footer link “View all notifications.”
+ 		Sample notification entries use colored dots (blue/green/gray) to reflect type or read status.
+ 	Waffle (grid) menu:
+ 		Icon button (#menuButton) opens a dropdown menu (#menuDropdown) with navigation links (Advertisers, Profile, Admin, Sign Out).
+ 		Click‑outside logic closes the menu.
+ 	Accessibility / UX:
+ 		aria-label titles on icon buttons.
+ 		Hover color transitions for visual feedback.
+ 		Separation bar (|) used as visual divider.
+ 		Responsive-friendly (flex layout).
+Sidebar Summary
+ 	Structure: Left vertical navigation (<nav id="sidebar">) with fixed width (w-64) and scrollable overflow (overflow-y-auto).
+ 	Collapsible behavior:
+ 		Toggle button (#sidebarToggle) switches between expanded and collapsed states (adds .collapsed to #sidebar).
+ 		When collapsed: width shrinks to 64px, text labels (data-link-label) hidden, icons centered; icon pair (collapse/expand SVGs) swaps visibility.
+ 	Header block:
+ 		Avatar image (advertiser.png) plus heading “Advertiser” (data-sidebar-header) inside a bordered section.
+ 	Navigation links (unordered list):
+ 		Each entry: icon (SVG image) + label span; active page styled with blue text and blue-50 background (Details link).
+ 		Links provided: Details (active), Campaigns, Ad Groups, Sales Orders, Connections (P2)
+ 		Consistent padding and hover state (hover:bg-blue-50) for inactive links.
+ 	Iconography: Individual SVG/png assets per feature for quick visual identification.
+ 	Accessibility / Semantics:
+ 		data-nav-link attributes for potential scripting.
+ 		Toggle button has aria-label and aria-expanded to reflect collapse state.
+ 	Visual Cohesion: Border separators, subtle shadows handled at container level; relies on Bootstrap utility classes for spacing, color, and typography.
+Feature Responsibilities
+ 	Header handles global utilities: notifications lifecycle, cross‑section navigation, account/session actions.
+ 	Sidebar provides context-specific navigation within the advertiser domain (detail sub-areas).
+ 	Collapse control optimizes horizontal space for main content while retaining icon-only quick navigation.
+ 	Active state styling communicates current sub-section; consistent icon + label pairing aids recognition.
+
+
+
+
+
+Page Descriptions:
+
+Advertisers: (Ability to Create/Remove/Export Advertisers)
+
+Page Summary
+
+Purpose: Advertiser listing dashboard with filtering, search, pagination, creation workflow, and basic notifications.
+Tech: Plain HTML + Bootstrap CSS (CDN), vanilla JS, localStorage persistence.
+Layout: Header (logo, title, notifications, waffle menu) + main table card (toolbar, table, pagination) + modals (create advertiser, account lookup) + toast / loading assets.
+Data: DEFAULT_ADVERTISERS array seeded to localStorage; CRM accounts sample array for lookup.
+Core Object: Single global app object initialized on DOMContentLoaded handling state, rendering, events, validation, navigation.
+Key Functional Features
+
+Filters: State (Active/Inactive/All) and Owner (All/My Advertisers/specific owner).
+Search: Expanding input; disables filters while active; searches ID, Account #, or Name.
+Table: Sort buttons visually present (logic not yet implemented), paginated client-side.
+Creation Flow: Modal collects account number (or “no CRM” path), optional platforms (gated by toggle), dedupe checks (account & name), drafts stored to localStorage then redirect.
+Account Lookup: Secondary modal with live filtering; selecting fills account + name and locks fields.
+Notifications: Dropdown with mark-all-read; unread dot hides when all read.
+Persistence: localStorage keys for data and filters; selected advertiser stored for navigation.
+Accessibility/Hints: aria labels on controls, hidden error messages, minimal tooltip system (custom CSS).
+JavaScript Architecture
+
+Pattern: Single stateful app object with:
+State: advertisers, filters, pagination, searchQuery, selectedAccount.
+Methods: init, load/saveAdvertisers, cacheElements, initEventListeners, applyFiltersAndRender, renderTable, renderPagination, filtering helpers, modal controls, validation, duplicate detection.
+Event Delegation: Table row clicks and notification list handling via parent listeners.
+Defensive Checks: Guard for missing DOM nodes; try/catch around storage and initialization.
+Styling / UI Conventions
+
+Bootstrap utility-first classes; custom inline styles for a few brand colors (#004E8B) and minor overrides.
+Components:
+Header: Flex with grouped interactive icons.
+Toolbar: Button group + filters + search + vertical separators (borders).
+Table: Striped via divide utilities; compact row spacing (py-2).
+Modals: Centered fixed overlay with rounded, shadowed panels.
+Buttons: Consistent hover:bg-gray-50 or hover:bg-gray-200; primary actions use bg-blue-600.
+Form Fields: Standard border-gray-300 + focus ring (Bootstrap focus classes).
+Error Messages: Hidden by default; toggled via classList.
+State & Naming
+
+Data Keys: id, name, account, status, campaign, adGroup, owner.
+Storage Keys: adv_list_data, adv_list_state, adv_list_owner, adv_selected_id, adv_selected_data, adv_draft.
+Boolean Flags: searchExpanded, _draft marker on unsaved advertiser.
+Validation Rules
+
+Account + Name required unless “No CRM Account” checked.
+Duplicate checks: exact match on account; case-insensitive match on name.
+Platforms required only if platform toggle enabled.
+Create button enabled only when all active rules pass.
+Extensibility Notes
+
+Sorting UI present; add sort logic by attaching to .sort-btn buttons.
+Consider extracting repeated DOM queries to cached refs (already partially done).
+Potential enhancement: central event bus or splitting modules if page grows.
+Style Guide (Derived)
+
+Use Bootstrap utilities; avoid custom CSS unless necessary (tooltips, search animation).
+Keep component state inside a single app object; avoid global loose variables.
+Always null-check elements before attaching listeners.
+Use localStorage for lightweight persistence; wrap in try/catch.
+Prefer semantic, lowerCamelCase for JS properties; UPPER_SNAKE for config constants.
+Show/hide via utility classes (hidden) not inline display changes.
+Keep modals self-contained; open/close functions manage body scroll locking.
+Add accessibility: aria-labels for icon-only buttons, role/label on alerts.
+
+
+
+
+
+Advertiser Details:(Ability to Edit/Remove Advertisers)
+
+Page Summary
+
+Purpose: Advertiser detail view with editable core fields, team roster filtering, and account lookup.
+Layout: Header (logo, nav, notifications, waffle menu), left sidebar navigation, main detail card split into Details (editable) and Team (filterable) sections.
+Data Binding: Uses data-bind attributes (adv.name, adv.account, adv.id, adv.state, adv.website) populated from localStorage (adv_selected_data / adv_list_data).
+Edit Workflow: Edit/Save/Cancel buttons toggle read-only vs editable styles for Company Name, State (select), Website; Account # updated only through lookup modal.
+Persistence: On save, updates localStorage (adv_list_data and adv_selected_data) and rebinds fields.
+Dirty State Guard: Tracks snapshot vs current values; warns on navigation/unload; optional save/discard confirm.
+Account Lookup Modal: Filterable table of sample CRM accounts; selecting sets Account #, updates storage, rebinds view, shows toast.
+Team Section: Static table with state chips filter (All/Active/Inactive) controlling row visibility.
+Accessibility: aria-labels on buttons, mutation observer updates for account display, keyboard escape handlers for modal and menu.
+Scripts: Inline modules for menu toggle, binding, team filter, account display, edit mode, lookup modal, plus external toast.js, notifications.js, sidebar.js.
+Style Guide
+
+Framework: Bootstrap utility classes; minimal custom CSS for read-only styling and transitions.
+Color: Brand header #004E8B; rely on Bootstrap grays/blues for states and accents.
+Read-Only Mode: Inputs/selects get aria-readonly="true", stripped borders, transparent background, pointer-events none on selects.
+State Management: Single IIFE blocks encapsulate logic; constants for storage keys; graceful fallback if storage empty.
+Naming: LowerCamelCase for JS vars/functions; UPPER_SNAKE for storage key constants; data-bind keys prefixed with adv.
+Show/Hide: Use hidden class (Bootstrap) or classList toggles; avoid inline style except dynamic pointer-events/appearance tweaks.
+Modals: Fixed overlay, scroll disabled on body while open, close via outside click or Escape.
+Filtering: Attribute-driven (data-state) with lowercase comparison.
+Persistence: Wrap JSON parse/stringify in try/catch; migrate status → state if needed.
+UX Patterns: Edit mode snapshot, dirty tracking, toasts for feedback, confirmation on navigation with unsaved changes.
+JavaScript Practices: Guard null elements, modular functions (bindAll, setMode, saveAll), MutationObserver for dynamic account display.
+
+
+Campaigns Page: (Ability to Create/Edit/Remove Campaigns and Campaign Groups)
+
+Page Summary
+
+Purpose: Manage and browse advertiser’s campaign groups and campaigns (tree list) with filtering, search, pagination, and in-place group name editing.
+Stack: Static HTML, Bootstrap (CDN), vanilla JS, localStorage persistence, small custom CSS for search control.
+Layout: Header (logo, backlink to Advertisers, notifications, waffle menu) + left sidebar (advertiser context nav; active = Campaigns) + main card showing advertiser header, CAMPAIGNS title, toolbar, tree table, footer (record count & pagination), modal for editing group name.
+Data Model: groups[] each { id, name, expanded, campaigns[] }; campaign { id, name, state, dsp, adGroups }. Seeded via DEFAULT_GROUPS then stored under key campaign_tree_groups.
+Interaction:
+Tree: Group rows toggled via +/- button (data-action="toggle-group") re-render entire view.
+Edit Group: Opens modal; save updates name, persists, toast hook (showToast) placeholder.
+Filters: State (All/Active/Inactive) and DSP (All + specific values) stored in localStorage (campaign_state_filter, campaign_dsp_filter).
+Search: Expanding pill; when active disables (dims) filter chips; searches group name and campaign id/name/dsp.
+Pagination: Client-side over combined group + campaign row list; hides if single page.
+Modal UX: Overlay click, Esc handler (input key events), Save enabled only on non-empty changed value.
+Notifications + menu dropdown patterns reused from other pages.
+Accessibility: aria-labels on key buttons, semantic button usage, focus management for modal (basic). Some improvements possible (role="table"/aria-expanded on group toggles absent).
+JavaScript Architecture
+
+Single app object with state (groups, filters, pagination, search, editingGroupId).
+Methods: init, load/saveGroups, cacheElements, initEventListeners, loadFilters, applyFiltersAndRender, getVisibleRows, getCounts, renderTable, renderPagination, open/closeEditGroupModal, saveEditGroupName, updateEditGroupSaveState, updateSearchState, closeAllDropdowns.
+Event delegation on tbody for group toggle and edit.
+Defensive localStorage try/catch.
+Styling Patterns
+
+Bootstrap utilities for layout, spacing, typography, colors; minimal custom CSS for search animation and body font.
+Brand header styled via .app-header (likely themed in theme.css); sidebar uses standard white panel with border.
+Table uses custom theme classes (tbl, tbl-head, border-default) plus Bootstrap for uppercase headers and hover rows.
+Active sidebar link: text-blue-700 bg-blue-50 font-medium; inactive links: hover:bg-blue-50.
+Chips (filter buttons) appear as subtle gray hover; dropdown menus: absolute, bordered, rounded, shadow.
+Search control transitions width (50px → 300px) using .expanded class; clear button visibility toggled.
+Naming & Conventions
+
+CONSTANT-like object CONFIG with STORAGE_KEYS and PAGINATION.
+LowerCamelCase for internal fields (currentPage, searchQuery).
+Data attributes: data-action for row-level actions; data-sort-key present (sorting not yet implemented).
+Storage keys namespaced (campaign_*).
+Functions self-contained inside app; external minimal global leakage (app var).
+UX Guidelines Extracted
+
+Keep core filters visible and disabled (opacity-50 + pointer-events-none) during active search to prevent conflicting states.
+Always persist user filter choices and expansion states across reloads.
+Provide inline edit via modal rather than in-row to reduce accidental edits.
+Show concise record count (showing vs total after filter).
+Group rows visually distinct (bold label, separate cell for toggle).
+Use plus / minus text symbols for expansion fallback (accessible even without icons).
+Style Guide (Derived)
+
+Use Bootstrap utilities first; add custom CSS only for compound animations (search) or shared theme (external theme.css).
+Maintain consistent spacing: buttons h-10 px-3; table cells px-6 py-1 (compact density).
+Components (filters, search, pagination) isolate state by adding/removing .hidden / .expanded / visibility classes—avoid inline style mutations except width transition wrapper.
+Keep persistent UI state in localStorage with scoped keys; wrap JSON operations in try/catch.
+Use data-* attributes for action targeting instead of separate listeners per element.
+Modal pattern: hidden + flex toggling; focus primary input shortly after open (setTimeout).
+Add future enhancements: aria-expanded on group toggle, keyboard arrow support, sort implementation using existing data-sort-key, debounce on search input.
+Improvement Opportunities (Optional)
+
+Implement sorting via stable sort on the flattened campaign rows while keeping group ordering.
+Add lazy “virtual” render if groups grow large.
+Replace +/- button content with SVG chevron and aria-expanded for clarity.
+Extract search + filter toolbar into reusable component if repeated across pages.
+
+
+Ad Groups Page: (Ability to Create/Edit/Remove Ad Groups)
+
+Page Summary
+
+Purpose: Ad Groups list for a selected advertiser with filtering (Classification, DSP, Campaign), search, pagination, and future create action.
+Layout: Header (logo, backlink to Advertisers, notifications dropdown, waffle menu) + left sidebar (advertiser context navigation with Ad Groups active) + main card (advertiser header info, page title, toolbar, table, footer).
+Data Source: LocalStorage (key adgroups_data_v1). Seeded from DEFAULT_ADGROUPS if absent. Advertiser identity pulled from adv_selected_data (name, account, id).
+State: adgroups array, filters {classification,dsp,campaign}, currentPage, rowsPerPage (15), searchQuery, searchExpanded.
+Filters: Three chip-style dropdowns; values persisted individually to localStorage (adgroup_class_filter, adgroup_dsp_filter, adgroup_campaign_filter).
+Search: Expanding pill control; when active disables (dims and blocks) filter group; searches across id, name, dsp, classification, campaign.
+Pagination: Client-side; dynamic buttons (prev, numbered pages window, next); hidden when all rows fit.
+Table: Fixed layout, sortable button scaffolding (sort-btn with data-sort-key) but no sorting logic yet; 5 columns (ID, Name link, DSP, Classification, Campaign).
+Create Button: Placeholder triggering toast (implementation pending).
+UX Patterns: Dropdown closing on outside click; clear button for search; responsive density via Bootstrap; hover states on rows and controls.
+Persistence: All user filter choices and dataset stored in localStorage with guarded JSON parse.
+Accessibility: aria-labels on icon buttons; needs enhancement for dropdown roles and keyboard navigation.
+Notifications & Menu: Reuses shared pattern (bell with unread dot, waffle menu with links).
+Style Guide (Derived)
+
+Framework: Bootstrap utility-first; custom inline CSS only for search animation and font stack.
+Color & Theming: Uses shared theme variables (via theme.css) plus Bootstrap grays and blues; active nav: text-blue-700 bg-blue-50 font-medium.
+Components:
+Sidebar: Collapsible pattern consistent across advertiser pages; active link styled distinctly.
+Toolbar: Horizontal flex with segmented groups (actions | filters | search) separated by vertical dividers (border-l).
+Filter Chips: Button + caret SVG; dropdown menu is absolute, bordered, rounded, shadowed; list items hover:bg-gray-100.
+Search: Collapsed width 50px → expanded 300px (.expanded class); clear button appears with .visible class.
+Table: Uses tbl / tbl-head theme classes plus Bootstrap for padding, uppercase headers, hover row highlight.
+Pagination: Minimal buttons, current page highlighted (bg-gray-200 font-medium), disabled arrows opacity-50.
+Toast/Notifications: External shared assets (toast.css/js, notifications.js).
+Naming Conventions:
+CONFIG constant with STORAGE_KEYS & PAGINATION.
+Lower camelCase for object properties/methods (getFilteredAdGroups, applyFiltersAndRender).
+Data attributes: data-filter on chip buttons; data-bind for advertiser header fields.
+LocalStorage keys clearly namespaced (adgroup_*).
+State & Logic:
+Single app object encapsulates all behavior; methods perform load→cache→bind→render sequence in init.
+Dropdowns mutually exclusive; helper closeAllDropdowns centralizes collapse logic.
+Search state toggles filter interactivity via opacity-50 + pointer-events-none.
+Interaction Guidelines:
+Always persist filters immediately on selection (saveFilter).
+Reset pagination (currentPage=1) after any filter/search change.
+Gracefully handle empty results with dedicated “No ad groups found” row.
+Avoid inline style mutations except for display/hide decisions not covered by utility classes (search width transition).
+Accessibility Recommendations (next steps):
+Add aria-expanded to filter chips & search toggle.
+Add role="menu"/"menuitem" to dropdown lists or convert to listbox with proper aria-activedescendant.
+Provide keyboard support (Esc to close, arrow key navigation in menus).
+Add scope="col" already present; consider aria-sort when implementing sorting.
+Code Quality Practices:
+Wrap storage operations in try/catch.
+Centralize element references in cacheElements; avoid repeated DOM queries in loops.
+Keep render functions pure (renderTable only builds rows based on provided data).
+Extensibility Notes:
+Sorting can hook onto sort-btn data-sort-key.
+Create Ad Group workflow placeholder ready for modal addition.
+Could extract shared toolbar/search component for reuse across Campaigns / Ad Groups.
+
+
+
+Sales Orders Page: (Read-Only)
+
+
+Page Summary (Advertiser Sales Orders)
+Purpose: Browse an advertiser’s Sales Orders in a tree (Order → (Packages flattened to items) Items) with search, pagination, and a sales summary (First Sale, Last Sale, Total Sales, Active).
+Layout: Header (logo, link back to Advertisers, notifications dropdown, waffle menu) + left sidebar (advertiser nav; Sales Orders active) + main card containing advertiser header, Sales Summary, toolbar (filters placeholder + search), tree table, footer (record count + pagination).
+Data Model: orders[] each { id, orderDate, salesRep, runStart, runEnd, orderTotal, amountDue, expanded, packages:[ { id, channel, placement, runStart, runEnd, units, salesPrice, discount, netTotal, expanded, items:[...] } ] }. Stored in localStorage key sales_orders_tree (seeded from DEFAULT_ORDERS).
+Interaction:
+Expand/Collapse Orders via button (data-action="toggle" data-type="order"); packages already flattened to a unified detail section (no per‑package toggle in rendered version except package expanded flags unused after flatten).
+Search: Expanding control; filtersGroup dimmed/disabled during active search (filters currently only placeholder icons).
+Pagination: Client-side; windowed page buttons with prev/next; hidden if single page.
+Record Count: Shows “showing of total”.
+Sales Summary: Calculated dynamically from loaded orders (date range, totals, active amount based on today within runStart–runEnd).
+Notifications and menu share common pattern with other pages.
+Accessibility: aria-labels on icon buttons; needs aria-expanded on toggles, table semantics enhancements.
+Style Guide (Derived)
+Framework: Bootstrap utilities; custom CSS only for search control and minor layout (tree + search).
+Typography & Font: System stack ('apple-system','Segoe UI','Roboto','Inter').
+Color & Theme: Uses theme variables (var(--divider), var(--border-strong), var(--tbl-head-bg)) plus Bootstrap grays/blues.
+Components:
+Sidebar: Collapsible pattern (handled by shared sidebar.js); active link styled (text-blue-700 bg-blue-50 font-medium).
+Search: Collapsed width 50px → 300px (class .expanded); clear button toggles .visible; opacity transition for input.
+Tree Table:
+Order row: toggle button (+ / −), order-level summary columns.
+DetailHeader row: nested inline table head (Channel → Net Total).
+DetailItem rows: nested table body rows; consistent narrow px-3 py-1 padding; monetary columns formatted via fmtCurrency.
+Sales Summary: Definition list (dl) in a bordered card with fixed grid template for aligned labels/values.
+Pagination: Simple button set; active page has bg-gray-200 font-medium; disabled arrows use opacity-50.
+Naming Conventions:
+Constants: SO_CONFIG (STORAGE_KEYS, PAGINATION).
+State vars: orders, currentPage, rowsPerPage, searchQuery.
+Methods: loadOrders, saveOrders, cacheElements, initEventListeners, updateSearchState, getVisibleRows, getPaginatedData, applyRender, renderTable, renderPagination, renderSalesSummary.
+Helpers outside app: fmtDate, fmtCurrency.
+Data attributes: data-action="toggle", data-type="order", data-order-id.
+State & Persistence: LocalStorage JSON; deep copy seeding via JSON.parse/stringify; try/catch guards.
+Show/Hide & UI States: classList.toggle('hidden') for menus; opacity-50 + pointer-events-none to disable filters during search.
+Formatting:
+Currency via toLocaleString with USD style.
+Dates via custom fmtDate (MM/DD/YYYY).
+Em dash '—' for empty fields.
+Interaction Rules:
+Search resets pagination (currentPage=1).
+Collapse state stored in each order.expanded; re-render full table on toggle.
+Sales Summary recalculated every render for accuracy post data changes.
+Accessibility Recommendations:
+Add aria-expanded on toggle buttons.
+Add scope="col" to nested headers, and role="rowgroup" semantics for grouped detail sections.
+Provide keyboard support (Enter/Space on toggle).
+Extension Points:
+Implement per-package expansion (currently flattened).
+Add filters (state, rep, date range) where filtersGroup placeholder exists.
+Sorting via header buttons (add data-sort-key + state).
+Export to CSV of visible rows.
+Virtualization if dataset grows large.
+
+
+
+Connectors Page: (Ability to Create/Edit/Remove Connectors)
+
+
+Page Summary (WFAdvertiserConnections.html)
+
+Purpose: Manage an advertiser’s platform connections (list of platforms with type and record ID) with filtering (Platform, Platform Type), search, pagination, and per‑row Edit/Delete actions plus platform‑specific configuration modal.
+Layout: Header (logo, Advertisers backlink, notifications dropdown, waffle menu), left sidebar (advertiser contextual nav; Connections active), main content card (advertiser header: name/account/id → page title “CONNECTIONS” → toolbar → table → footer).
+Data: LocalStorage (key adgroup_list_data) seeded from DEFAULT_ADGROUPS array (platform, platformType, recordId). Filters persisted under adgroup_platform_filter and adgroup_platform_type_filter.
+Interactions:
+Filters: Two chip buttons open dropdown menus; selection persists and triggers re-render.
+Search: Expanding pill input; when active disables filters group (opacity-50 + pointer-events-none); matches across platform, platformType, recordId.
+Table: Actions column with Edit (opens modal via openPlatformDetailsModal) and Delete (placeholder confirmDelete hook).
+Pagination: Client-side; dynamic page window with prev/next; hidden if <= one page.
+Modal: Single platform configuration modal supporting GCM, Trade Desk, DV360 (different form sections) + fallback “unknown” section. Saves structured platformSettings into adv_selected_data and adv_list_data.
+Sidebar: Collapsible (icon swap, hides labels when collapsed) via shared sidebar.js.
+Notifications + waffle menu reuse shared pattern; click-outside closes dropdowns.
+Accessibility: aria-labels on icon buttons and dialog role on modal; missing aria-expanded on filters/search and keyboard navigation for dropdowns.
+Style Guide (Derived)
+
+Framework: Bootstrap utility-first; minimal custom CSS for search animation and font stack.
+Color/Theming: Brand header (app-header) + Bootstrap grays/blues; table uses custom theme vars (tbl, border-default).
+Components:
+Toolbar: Segmented (Create | Filters | Search) separated by vertical borders.
+Filter Chips: text-gray-700, hover:bg-gray-50, dropdown menus absolute, bordered, rounded, shadow, narrow list buttons (py-1).
+Search Control: .search-wrapper width 50px → 300px (.expanded); clear button toggles .visible; input fades in (opacity transition).
+Table: Fixed layout, action buttons icon-only with hover:bg-gray-100; zebra/hover via tbl-row classes.
+Pagination: Compact buttons, active page bg-gray-200 font-medium, disabled arrows opacity-50.
+Modal: Max width 7xl, sectioned platform forms (grid templates), hidden sections toggled; backdrop bg-black/50.
+Naming/State:
+CONFIG.STORAGE_KEYS namespaced (DATA, PLATFORM_FILTER, PLATFORM_TYPE_FILTER); rowsPerPage constant.
+App object encapsulates state: adgroups, filters, searchQuery, currentPage, elements, searchExpanded.
+Data attributes: data-action (edit/delete), data-filter on chips.
+Persistence & Logic:
+Load → validate → seed defaults; always serialize canonical structure.
+Filters + search reset pagination (currentPage=1).
+Central applyFiltersAndRender pipeline: filter → paginate → render table → record count → pagination.
+UX Conventions:
+Disable filters during active search (visual + pointer lock).
+Single reusable modal; decision logic (resolvePlatformKey) maps platform name to form section.
+Close all dropdowns on document click; collapse search if empty when losing focus via closeAllDropdowns.
+Accessibility Recommendations:
+Add aria-expanded and aria-controls to filter & search toggles.
+Add focus trapping in modal and initial focus set after open.
+Provide keyboard navigation (Esc to close dropdowns, Arrow/Enter selection).
+Validation & Saving:
+Platform form fields saved wholesale; numeric fields parsed to Number; defaults applied on empty.
+Success feedback via showSuccessToast (if defined).
+Extensibility:
+Implement confirmDelete and platform creation workflow.
+Add sorting (data-sort-key) and column hide/show preferences.
+Support additional platforms by extending resolvePlatformKey and adding form section.
+
+
+Panel Fly-In: (Used for each of the Create/Edit/Export features from the other pages: Advertisers, Campaigns, Ad Group, Connector, Export Change Form)
+
+Panel Feature Summary
+
+Purpose: Reusable fly-in workspace for create/edit/export flows (Advertiser, Campaign, Group, Ad Group, Connector, Export Campaign).
+Structure:
+Overlay: div#panel-overlay (adds class panel__overlay--open to show).
+Panel container: div#panel with header (title + close button), scrollable content area, footer (Cancel + Save).
+Invocation: openPanel(panelType, editId?) sets currentPanel/currentEditId, updates title/content via switch and inserts form HTML (get*Form helpers).
+Closing: closePanel() removes open classes, resets state; clicking overlay or header close button triggers close via onclick.
+Content Generation: String template functions (getAdvertiserForm, getCampaignForm, etc.) return HTML blocks with grouped form sections.
+Actions: Save button (#panel-save-btn) inspects currentPanel:
+export-campaign: validates selection (format + platform) before alert + close.
+All others: placeholder save (alert then close).
+State Flags: currentPanel (type), currentEditId (record id), implicit panel open state (presence of class panel--open).
+Forms: Use standardized form-section/form-row/form-group structure; consistent labels + inputs/selects; required logic not yet enforced.
+Panel Styling & Behavior
+
+Placement: Fixed right; default translated 100%; panel--open slides in (transform transition).
+Width: 60% (max 800px) desktop; 90% on <=768px.
+Overlay: Semi-transparent black; fade-in via opacity + visibility classes.
+Header/Footer: Bordered; spacing/padding via CSS variables; footer right-aligned actions.
+Typography: Title uses panel__title (font-size xl, semibold).
+Buttons: Reuse global .btn styles (primary for Save, secondary for Cancel).
+Scroll: Only content area scrolls; header/footer fixed inside panel.
+Transitions: transform (panel), opacity/visibility (overlay) with shared duration/easing tokens.
+Interaction Guidelines
+
+Always set title and fully replace content before showing (avoid flicker).
+Keep forms segmented with form-section headings for scan-ability.
+Cancel should not persist changes; Save must validate before closing.
+After Save, optionally re-render relevant table (not yet implemented).
+Prevent multiple panels: ensure openPanel closes or reuses existing state (current design reuses single instance).
+Accessibility Recommendations
+
+Add role="dialog" aria-modal="true" to .panel.
+Link title via aria-labelledby to #panel-title.
+On open: move focus to first focusable element (e.g. first input).
+On close: return focus to originating trigger (store last active element).
+Trap focus inside panel while open (keydown Tab handling).
+Add Escape key listener to close.
+Form Consistency Style Guide
+
+Labels: .form-label above control; sentence case.
+Inputs/Selects: .form-control with consistent padding, border, focus ring.
+Grid: .form-row auto-fit minmax(250px,1fr); single column on mobile.
+Read-only fields (if added): Use readonly attribute and optional styling token.
+Extensibility Patterns
+
+Add new panel types by:
+Create getXForm() returning HTML string.
+Add case in openPanel switch.
+Handle save branch in panel-save-btn listener.
+For validation: Inject data attributes (data-required) and run a validatePanel() before enabling Save.
+Best Practices
+
+Keep business logic (data persistence) separated from HTML string builders.
+Debounce expensive DOM ops; currently panel content replaced once per open (fine).
+Avoid inline alert() for production; replace with toast or inline validation messages.
+Use semantic inputs (type="date","email","number") for built-in validation and mobile keyboards.
