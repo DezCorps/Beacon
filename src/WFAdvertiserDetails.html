@@ -14,12 +14,26 @@
 
   <!-- REMOVE OR COMMENT OUT THIS LINE: -->
   <script src="./assets/notifications.js"></script>
+  <link rel="stylesheet" href="./assets/theme.css">
   <link rel="stylesheet" href="./assets/loading.css">
   <script src="./assets/loading.js" defer></script>
+  <link rel="stylesheet" href="./assets/changeorder.css">
+  <script src="./assets/changeorder.js" defer></script>
 
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
     .table-fixed { table-layout: fixed; } td, th { white-space: nowrap; }
+
+    /* Fixed table row height to prevent resizing during edit mode */
+    .adgroup-details-table tbody tr {
+      height: 2rem; /* Fixed height for consistent table dimensions */
+    }
+    
+    .adgroup-details-table tbody td {
+      vertical-align: middle;
+      padding-top: 0.25rem !important;
+      padding-bottom: 0.25rem !important;
+    }
 
     /* Read-only inputs look like text */
     input[aria-readonly="true"] {
@@ -43,6 +57,105 @@
       pointer-events: none;
     }
     select[aria-readonly="true"]:focus { border: none !important; outline: none !important; box-shadow: none !important; }
+    
+    /* Seamless input styling to match spans - minimal size */
+    .adgroup-details-input {
+      background: white !important;
+      border: 1px solid #d1d5db !important;
+      outline: none !important;
+      box-shadow: none !important;
+      padding: 0.125rem 0.5rem !important;
+      margin: 0 !important;
+      height: auto !important;
+      line-height: 1.25rem;
+      font-size: 0.875rem;
+      color: #374151;
+      width: 100% !important;
+      box-sizing: border-box;
+      border-radius: 0.25rem;
+    }
+    
+    /* Enhanced focus state for better UX */
+    .adgroup-details-input:focus {
+      border: 1px solid #3b82f6 !important;
+      box-shadow: 0 0 0 1px #3b82f6 !important;
+    }
+    
+    /* Select specific styling for edit mode */
+    select.adgroup-details-input {
+      appearance: auto;
+      cursor: pointer;
+    }
+
+    /* Ellipsis dropdown styles */
+    .ellipsis-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .ellipsis-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      background-color: white;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+    .ellipsis-btn:hover {
+      background-color: #f3f4f6;
+    }
+    .ellipsis-menu {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      margin-top: 4px;
+      min-width: 120px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.375rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      z-index: 50;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+    }
+    .ellipsis-menu.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .ellipsis-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 14px;
+      text-align: left;
+      border: none;
+      background: none;
+      cursor: pointer;
+      transition: background-color 0.1s ease;
+    }
+    .ellipsis-menu-item:first-child {
+      border-radius: 0.375rem 0.375rem 0 0;
+    }
+    .ellipsis-menu-item:last-child {
+      border-radius: 0 0 0.375rem 0.375rem;
+    }
+    .ellipsis-menu-item:hover {
+      background-color: #f3f4f6;
+    }
+    .ellipsis-menu-item.delete-item {
+      color: #dc2626;
+    }
+    .ellipsis-menu-item.delete-item:hover {
+      background-color: #fef2f2;
+    }
   </style>
 </head>
 
@@ -52,7 +165,7 @@
     <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
       <div class="flex items-center justify-between px-4 py-2">
         <div class="flex items-center gap-3">
-          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+          <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
         </div>
 
         <nav class="flex items-center gap-3 ml-auto">
@@ -132,14 +245,25 @@
             </button>
             <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-              <a href="#" id="menuAdmin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
             </div>
           </div>
         </nav>
       </div>
     </header>
+
+    <!-- Breadcrumb Bar -->
+    <div class="bg-white border-b border-gray-200 px-6 py-2">
+      <nav class="flex items-center text-sm text-gray-600">
+        <a href="./index.html" class="hover:text-blue-600 transition-colors">Advertisers</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <span class="font-semibold text-gray-900" id="breadcrumbAdvertiser">—</span>
+      </nav>
+    </div>
 
     <!-- Body -->
     <div class="flex flex-1 overflow-hidden">
@@ -163,20 +287,8 @@
   <ul class="space-y-1 mt-4">
     <li>
       <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
-        <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
-        <span data-link-label>Details</span>
-      </a>
-    </li>
-    <li>
-      <a href="./AdvertiserSalesOrder.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
-        <span data-link-label>Sales Orders</span>
-      </a>
-    </li>
-    <li>
-      <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
-        <span data-link-label>Connections (P2)</span>
+        <img src="./assets/svgs/Details.svg" alt="Overview" class="w-6 h-6 mr-2" />
+        <span data-link-label>Overview</span>
       </a>
     </li>
     <li>
@@ -187,15 +299,20 @@
     </li>
     <li>
       <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="">
+        <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
         <span data-link-label>Ad Groups</span>
       </a>
     </li>
-    <!-- CAD (added) -->
     <li>
-      <a href="./CAD.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/Blueprint.svg" class="w-6 h-6 mr-2" alt="CAD">
-        <span data-link-label>CAD</span>
+      <a href="./ChangeOrderList.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/ChangeOrder.svg" alt="Change Orders" class="w-6 h-6 mr-2" />
+        <span data-link-label>Change Orders</span>
+      </a>
+    </li>
+    <li>
+      <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+        <span data-link-label>Connections</span>
       </a>
     </li>
   </ul>
@@ -205,129 +322,388 @@
       <main class="flex-1 overflow-y-auto p-6">
         <div class="bg-white rounded-lg shadow-sm">
           <div class="p-4 border-b border-gray-200">
-            <div class="flex items-start gap-4 mb-3">
-              <div class="flex-1">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <!-- Left Column: Advertiser Name & Account # -->
+              <div>
                 <h1 data-bind="adv.name" class="md:text-2xl font-semibold text-gray-900">Loading…</h1>
-                <div class="flex justify-between items-center">
-                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
-                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+              </div>
+              <!-- Right Column: IDs -->
+              <div class="text-right">
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <a id="deliveryIdLink" href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.deliveryId">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <a id="reportingIdLink" href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.reportingId">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">ID:</span>
+                  <span data-bind="adv.id" class="text-sm text-gray-500 w-28 text-left">—</span>
                 </div>
               </div>
             </div>
 
             <hr class="border-gray-300 mp-4 p-2">
 
-            <!-- Two-column cards -->
-            <div class="grid md:grid-cols-2 gap-6">
-              <!-- General -->
-              <section class="space-y-2">
-                <div class="flex items-center justify-between">
-                  <h1 class="text-2xl font-semibold text-gray-900 mx-2">ADVERTISER DETAILS</h1>
-                  <div class="flex items-center gap-2">
-                    <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                      <svg viewBox="0 0 24 24" height="16" width="16">
-                        <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
-                      </svg>
-                      Edit
-                    </button>
-                    <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
-                    <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
-                  </div>
+            <!-- Advertiser Details Section -->
+            <section>
+              <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-semibold text-gray-900 mx-2">ADVERTISER OVERVIEW</h1>
+                <div class="flex items-center gap-2">
+              <!-- New Change Order Button -->
+              <button id="newChangeOrderBtn" onclick="openCOPickerModal()" class="text-sm px-3 py-1 bg-green-600 text-white border border-green-600 rounded-md hover:bg-green-700 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                New Change Order
+              </button>
+              <!-- Ellipsis Dropdown Menu -->
+              <div class="ellipsis-dropdown">
+                <button id="ellipsisBtn" class="ellipsis-btn" title="More options" aria-haspopup="true" aria-expanded="false">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="5" cy="12" r="2"/>
+                    <circle cx="12" cy="12" r="2"/>
+                    <circle cx="19" cy="12" r="2"/>
+                  </svg>
+                </button>
+                <div id="ellipsisMenu" class="ellipsis-menu">
+                  <button id="editGeneralBtn" class="ellipsis-menu-item">
+                    <svg viewBox="0 0 24 24" height="16" width="16">
+                      <path fill="currentColor" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
+                    </svg>
+                    Edit
+                  </button>
+                  <button id="deleteAdvertiserBtn" class="ellipsis-menu-item delete-item">
+                    <svg viewBox="0 0 24 24" height="16" width="16">
+                      <path fill="currentColor" d="M19 6h-3.5l-1-1h-5l-1 1H5v2h14V6zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9H6v10zM8 11h8v8H8v-8z"/>
+                    </svg>
+                    Delete
+                  </button>
                 </div>
-
-                <div id="generalCard" class="p-4 border border-gray-200 rounded-md">
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
-                    <label for="companyName" class="text-sm font-semibold text-gray-600">Company Name:</label>
-                    <div class="md:col-span-2">
-                      <input id="companyName" type="text" data-bind="adv.name" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                    </div>
-
-                    <label for="accountDisplay" class="text-sm font-semibold text-gray-600">Account #:</label>
-                    <div class="md:col-span-2 flex items-center gap-2">
-                      <span id="accountDisplay" data-bind="adv.account" class="hidden text-sm text-gray-900 rounded px-0 py-1">—</span>
-                      <button id="accountLookupBtn" class="text-sm text-blue-600 hover:text-blue-800 underline">Select Account</button>
-                    </div>
-
-                    <!-- FIXED: Use 'state' consistently -->
-                    <label for="advertiserState" class="text-sm font-semibold text-gray-600">State:</label>
-                    <div class="md:col-span-2">
-                      <select id="advertiserState" data-bind="adv.state" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                      </select>
-                    </div>
-
-                    <label for="advertiserWebsite" class="text-sm font-semibold text-gray-600">Website:</label>
-                    <div class="md:col-span-2">
-                      <input id="advertiserWebsite" type="text" data-bind="adv.website" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <!-- Team -->
-              <section class="space-y-2">
-                <div class="flex items-center justify-between">
-                  <h1 class="text-2xl font-semibold text-gray-900 mx-2">TEAM</h1>
-                  <div class="relative">
-                    <button id="teamStateChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 bg-gray-50 border border-gray-300 hover:bg-gray-100 transition" data-filter="state" aria-haspopup="menu" aria-expanded="false">
-                      <span id="teamStateChipLabel">Active</span>
-                      <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/></svg>
-                    </button>
-                    <div id="teamStateMenu" class="hidden absolute right-0 mt-2 min-w-40 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto" role="menu" tabindex="-1">
-                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="All" role="menuitem">All</button>
-                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Active" role="menuitem">Active</button>
-                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Inactive" role="menuitem">Inactive</button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="p-4 border border-gray-200 rounded-md">
-                  <table class="w-full text-sm table-fixed">
-                    <colgroup>
-                      <col style="width:44%">
-                      <col style="width:36%">
-                      <col style="width:20%">
-                    </colgroup>
-                    <thead>
-                      <tr class="border-b border-gray-300">
-                        <th class="text-left py-2 text-gray-600 font-semibold">Name</th>
-                        <th class="text-left py-2 text-gray-600 font-semibold">Role</th>
-                        <th class="text-left py-2 text-gray-600 font-semibold">State</th>
-                      </tr>
-                    </thead>
-                    <tbody id="teamTableBody">
-                      <tr class="border-b border-gray-100" data-state="active">
-                        <td class="py-2 text-gray-900">Matt Hunter</td>
-                        <td class="py-2 text-gray-500">Account Manager</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
-                      </tr>
-                      <tr class="border-b border-gray-100" data-state="active">
-                        <td class="py-2 text-gray-900">David DeHerrera</td>
-                        <td class="py-2 text-gray-500">Campaign Specialist</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
-                      </tr>
-                      <tr class="border-b border-gray-100" data-state="inactive">
-                        <td class="py-2 text-gray-900">Hailey Golden</td>
-                        <td class="py-2 text-gray-500">Campaign Manager</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
-                      </tr>
-                      <tr class="border-b border-gray-100" data-state="active">
-                        <td class="py-2 text-gray-900">Sam Ahn</td>
-                        <td class="py-2 text-gray-500">Sales Representative</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
-                      </tr>
-                      <tr data-state="inactive">
-                        <td class="py-2 text-gray-900">Trevor White</td>
-                        <td class="py-2 text-gray-500">Partnership Sales</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </section>
+              </div>
+              <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
+              <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
             </div>
+              </div>
+            </section>
+
+            <!-- Two-column layout -->
+            <div class="grid grid-cols-2 gap-6">
+              
+              <!-- LEFT COLUMN -->
+              <div class="space-y-6">
+                
+                <!-- Beacon Fields -->
+                <section class="space-y-2">
+                  <div class="overflow-x-auto border border-default rounded-md">
+                    <table class="w-full tbl tbl-row-hover table-fixed adgroup-details-table">
+                      <colgroup>
+                        <col class="w-1/3">
+                        <col class="w-2/3">
+                      </colgroup>
+                      <thead class="tbl-head">
+                        <tr>
+                          <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
+                            BEACON FIELDS
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y border-default">
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">ID</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdvertiserId" data-bind="adv.id" class="text-gray-800 break-words">—</span>
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Account #</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="accountDisplay" data-bind="adv.account" class="hidden text-gray-800 break-words">—</span>
+                            <button id="accountLookupBtn" class="text-sm text-blue-600 hover:text-blue-800 underline">Select Account</button>
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Name</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdvertiserName" data-bind="adv.name" class="text-gray-800 break-words">—</span>
+                            <input id="inputAdvertiserName" type="text" data-bind="adv.name" class="hidden adgroup-details-input" aria-label="Advertiser Name" title="Advertiser Name">
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">State</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayState" data-bind="adv.state" class="text-gray-800 break-words">—</span>
+                            <select id="inputState" data-bind="adv.state" class="hidden adgroup-details-input" aria-label="Advertiser State" title="Advertiser State">
+                              <option value="Active">Active</option>
+                              <option value="Inactive">Inactive</option>
+                            </select>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <!-- Team Table -->
+                <section class="space-y-2">
+                  <div class="overflow-x-auto border border-default rounded-md">
+                    <table class="w-full tbl tbl-row-hover table-fixed">
+                      <colgroup>
+                        <col style="width:44%">
+                        <col style="width:36%">
+                        <col style="width:20%">
+                      </colgroup>
+                      <thead class="tbl-head">
+                        <tr>
+                          <th colspan="3" class="px-6 py-2 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
+                            <div class="flex items-center justify-between">
+                              <span>TEAM</span>
+                              <div class="relative">
+                                <button id="teamStateChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 transition" data-filter="state" aria-haspopup="menu" aria-expanded="false">
+                                  <span id="teamStateChipLabel">Active</span>
+                                  <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/></svg>
+                                </button>
+                                <div id="teamStateMenu" class="hidden absolute right-0 mt-2 min-w-40 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto" role="menu" tabindex="-1">
+                                  <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="All" role="menuitem">All</button>
+                                  <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Active" role="menuitem">Active</button>
+                                  <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Inactive" role="menuitem">Inactive</button>
+                                </div>
+                              </div>
+                            </div>
+                          </th>
+                        </tr>
+                        <tr class="bg-gray-50">
+                          <th class="px-3 py-2 text-left text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">Name</th>
+                          <th class="px-3 py-2 text-left text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">Role</th>
+                          <th class="px-3 py-2 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">State</th>
+                        </tr>
+                      </thead>
+                      <tbody id="teamTableBody" class="bg-white divide-y divide-gray-200">
+                        <tr class="border-b border-default" data-state="active">
+                          <td class="px-3 py-1 text-sm border-r border-default">Matt Hunter</td>
+                          <td class="px-3 py-1 text-sm text-gray-700 border-r border-default">Account Manager</td>
+                          <td class="px-3 py-1 text-sm"><span class="px-2 py-1 text-xs">Active</span></td>
+                        </tr>
+                        <tr class="border-b border-default" data-state="active">
+                          <td class="px-3 py-1 text-sm border-r border-default">David DeHerrera</td>
+                          <td class="px-3 py-1 text-sm text-gray-700 border-r border-default">Campaign Specialist</td>
+                          <td class="px-3 py-1 text-sm"><span class="px-2 py-1 text-xs">Active</span></td>
+                        </tr>
+                        <tr class="border-b border-default" data-state="inactive">
+                          <td class="px-3 py-1 text-sm border-r border-default">Hailey Golden</td>
+                          <td class="px-3 py-1 text-sm text-gray-700 border-r border-default">Campaign Manager</td>
+                          <td class="px-3 py-1 text-sm"><span class="px-2 py-1 text-xs">Inactive</span></td>
+                        </tr>
+                        <tr class="border-b border-default" data-state="active">
+                          <td class="px-3 py-1 text-sm border-r border-default">Sam Ahn</td>
+                          <td class="px-3 py-1 text-sm text-gray-700 border-r border-default">Sales Representative</td>
+                          <td class="px-3 py-1 text-sm"><span class="px-2 py-1 text-xs">Active</span></td>
+                        </tr>
+                        <tr class="border-b border-default" data-state="inactive">
+                          <td class="px-3 py-1 text-sm border-r border-default">Trevor White</td>
+                          <td class="px-3 py-1 text-sm text-gray-700 border-r border-default">Partnership Sales</td>
+                          <td class="px-3 py-1 text-sm"><span class="px-2 py-1 text-xs">Inactive</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+              </div>
+
+              <!-- RIGHT COLUMN -->
+              <div class="space-y-6">
+
+                <!-- DSP Fields Table -->
+                <section id="dspFieldsSection" class="space-y-2 hidden">
+                  <div class="overflow-x-auto border border-default rounded-md">
+                    <table class="w-full tbl tbl-row-hover table-fixed advertiser-details-table">
+                      <colgroup>
+                        <col class="w-1/3">
+                        <col class="w-2/3">
+                      </colgroup>
+                      <thead style="background-color: #dbeafe;">
+                        <tr>
+                          <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-blue-900 uppercase tracking-wider">
+                            DSP FIELDS • The Trade Desk
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y border-default">
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Name</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDspName" class="text-gray-800 break-words">—</span>
+                            <input id="inputDspName" type="text" class="hidden adgroup-details-input" aria-label="DSP Name" title="DSP Name">
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Partner</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDspPartner" class="text-gray-800 break-words">—</span>
+                            <select id="inputDspPartner" class="hidden adgroup-details-input" aria-label="DSP Partner" title="DSP Partner">
+                              <option value="">-- Select Partner --</option>
+                              <option value="Multiview">Multiview</option>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Domain Address</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDspDomain" class="text-gray-800 break-words">—</span>
+                            <input id="inputDspDomain" type="text" class="hidden adgroup-details-input" aria-label="DSP Domain" title="DSP Domain" placeholder="https://example.com">
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Country</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDspCountry" class="text-gray-800 break-words">—</span>
+                            <select id="inputDspCountry" class="hidden adgroup-details-input" aria-label="DSP Country" title="DSP Country">
+                              <option value="">-- Select Country --</option>
+                              <option value="United States">United States</option>
+                              <option value="Canada">Canada</option>
+                              <option value="United Kingdom">United Kingdom</option>
+                              <option value="Australia">Australia</option>
+                              <option value="Germany">Germany</option>
+                              <option value="France">France</option>
+                              <option value="Other">Other</option>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Targeting EU?</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDspEuTargeting" class="text-gray-800 break-words">—</span>
+                            <select id="inputDspEuTargeting" class="hidden adgroup-details-input" aria-label="DSP EU Targeting" title="DSP EU Targeting">
+                              <option value="">-- Select --</option>
+                              <option value="No">No</option>
+                              <option value="Yes">Yes</option>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Industry Category</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDspIndustry" class="text-gray-800 break-words">—</span>
+                            <select id="inputDspIndustry" class="hidden adgroup-details-input" aria-label="DSP Industry" title="DSP Industry">
+                              <option value="">-- Select Industry --</option>
+                              <option value="Technology">Technology</option>
+                              <option value="Healthcare">Healthcare</option>
+                              <option value="Finance">Finance</option>
+                              <option value="Retail">Retail</option>
+                              <option value="Automotive">Automotive</option>
+                              <option value="Travel">Travel</option>
+                              <option value="Education">Education</option>
+                              <option value="Entertainment">Entertainment</option>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Attribution Click Window</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDspAttrClick" class="text-gray-800 break-words">—</span>
+                            <input id="inputDspAttrClick" type="text" class="hidden adgroup-details-input" aria-label="Attribution Click Window" title="Attribution Click Window" placeholder="e.g., 90 Days">
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Attribution Impression Window</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDspAttrImpression" class="text-gray-800 break-words">—</span>
+                            <input id="inputDspAttrImpression" type="text" class="hidden adgroup-details-input" aria-label="Attribution Impression Window" title="Attribution Impression Window" placeholder="e.g., 90 Days">
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Dedup Click Window</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDspDedupClick" class="text-gray-800 break-words">—</span>
+                            <input id="inputDspDedupClick" type="text" class="hidden adgroup-details-input" aria-label="Dedup Click Window" title="Dedup Click Window" placeholder="e.g., 7 Seconds">
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Dedup Conversion Window</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDspDedupConversion" class="text-gray-800 break-words">—</span>
+                            <input id="inputDspDedupConversion" type="text" class="hidden adgroup-details-input" aria-label="Dedup Conversion Window" title="Dedup Conversion Window" placeholder="e.g., 60 Seconds">
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Yahoo Integration</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDspYahoo" class="text-gray-800 break-words">—</span>
+                            <select id="inputDspYahoo" class="hidden adgroup-details-input" aria-label="Yahoo Integration" title="Yahoo Integration">
+                              <option value="">-- Select --</option>
+                              <option value="Enabled">Enabled</option>
+                              <option value="Disabled">Disabled</option>
+                            </select>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <!-- Ad Server Fields Table -->
+                <section id="adServerFieldsSection" class="space-y-2 hidden">
+                  <div class="overflow-x-auto border border-default rounded-md">
+                    <table class="w-full tbl tbl-row-hover table-fixed advertiser-details-table">
+                      <colgroup>
+                        <col class="w-1/3">
+                        <col class="w-2/3">
+                      </colgroup>
+                      <thead style="background-color: #d1fae5;">
+                        <tr>
+                          <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-green-900 uppercase tracking-wider">
+                            AD SERVER FIELDS • Google Campaign Manager
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y border-default">
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Advertiser Name</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerName" class="text-gray-800 break-words">—</span>
+                            <input id="inputAdServerName" type="text" class="hidden adgroup-details-input" aria-label="Ad Server Advertiser Name" title="Ad Server Advertiser Name">
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">Advertiser Vertical</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerVertical" class="text-gray-800 break-words">—</span>
+                            <select id="inputAdServerVertical" class="hidden adgroup-details-input" aria-label="Ad Server Vertical" title="Ad Server Vertical">
+                              <option value="">-- Select Vertical --</option>
+                              <option value="Technology">Technology</option>
+                              <option value="Healthcare">Healthcare</option>
+                              <option value="Finance">Finance</option>
+                              <option value="Retail">Retail</option>
+                              <option value="Automotive">Automotive</option>
+                              <option value="Travel">Travel</option>
+                              <option value="Education">Education</option>
+                              <option value="Entertainment">Entertainment</option>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">EU Political Ads</td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerEuPolitical" class="text-gray-800 break-words">—</span>
+                            <select id="inputAdServerEuPolitical" class="hidden adgroup-details-input" aria-label="EU Political Ads" title="EU Political Ads">
+                              <option value="">-- Select --</option>
+                              <option value="Yes">Yes</option>
+                              <option value="No">No</option>
+                            </select>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+            </div>
+
           </div>
+
+          <!-- Campaigns and Ad Groups tables removed per CO Change Spec (sections 1b/1c) -->
+
         </div>
       </main>
     </div>
@@ -362,9 +738,36 @@
         } catch { return []; }
       }
 
+      function getNestedValue(obj, path, fallback = '—') {
+        if (!obj || !path) return fallback;
+        const keys = path.split('.');
+        let value = obj;
+        for (const key of keys) {
+          if (value && typeof value === 'object' && key in value) {
+            value = value[key];
+          } else {
+            return fallback;
+          }
+        }
+        return (value != null && String(value).trim() !== '') ? value : fallback;
+      }
+
+      function formatAttributionWindow(data) {
+        if (!data || typeof data !== 'object') return '—';
+        const value = data.value || '';
+        const unit = data.unit || 'Days';
+        return value ? `${value} ${unit}` : '—';
+      }
+
       function bindAll(key, value, fallback = '—') {
         const nodes = document.querySelectorAll(`[data-bind="${key}"]`);
-        const text = (value != null && String(value).trim() !== '') ? value : fallback;
+        let text = (value != null && String(value).trim() !== '') ? value : fallback;
+        
+        // Special formatting for attribution windows
+        if (key.includes('attributionWindows')) {
+          text = formatAttributionWindow(value);
+        }
+        
         nodes.forEach(el => {
           if (el.tagName === 'INPUT' || el.tagName === 'SELECT') {
             el.value = text;
@@ -389,20 +792,37 @@
       }
 
       document.addEventListener('DOMContentLoaded', () => {
+        console.log('[DATA BINDING SCRIPT] Starting at:', new Date().toISOString());
         let adv = null;
         try {
           const rawObj = localStorage.getItem('adv_selected_data');
+          console.log('[DATA BINDING] Raw adv_selected_data:', rawObj);
           if (rawObj) adv = JSON.parse(rawObj);
-        } catch {}
+          console.log('[DATA BINDING] Parsed advertiser:', adv?.name, 'ID:', adv?.id);
+          console.log('[DATA BINDING] DSP data:', adv?.dsp);
+          console.log('[DATA BINDING] Ad Server data:', adv?.adServer);
+        } catch (e) {
+          console.error('[DATA BINDING] Error parsing adv_selected_data:', e);
+        }
 
         const selectedId = localStorage.getItem('adv_selected_id');
         if (!adv && selectedId) {
           const advertisers = loadAdvertisersFromStorage();
           adv = advertisers.find(a => String(a.id) === String(selectedId)) || null;
+          console.log('Loaded advertiser from list by ID:', adv);
         }
         if (!adv) {
           const advertisers = loadAdvertisersFromStorage();
           adv = (advertisers && advertisers.length) ? advertisers[0] : null;
+          console.log('Fallback to first advertiser:', adv);
+        }
+
+        // Populate breadcrumb
+        if (adv) {
+          const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
+          if (breadcrumbAdvertiser) {
+            breadcrumbAdvertiser.textContent = `${adv.name || 'Unknown'}`;
+          }
         }
 
         if (adv) {
@@ -411,21 +831,163 @@
             adv.state = adv.status;
           }
           
+          // Bind Beacon fields
           bindAll('adv.name', adv.name, 'No advertiser found');
           bindAll('adv.id', adv.id, '');
           bindAll('adv.account', adv.account, 'N/A');
-          bindAll('adv.state', adv.state, 'N/A');     // ✓ use state field
-          bindAll('adv.website', adv.website, 'N/A');
+          bindAll('adv.state', adv.state, 'N/A');
+          
+          // Generate and persist mock DSP/Ad Server IDs if they don't exist
+          let needsUpdate = false;
+          if (!adv.deliveryId) {
+            adv.deliveryId = 'DLV-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+            needsUpdate = true;
+          }
+          if (!adv.reportingId) {
+            adv.reportingId = 'RPT-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+            needsUpdate = true;
+          }
+          
+          // Save back to localStorage if IDs were generated
+          if (needsUpdate) {
+            localStorage.setItem('adv_selected_data', JSON.stringify(adv));
+            // Also update in the advertisers list
+            const advertisers = loadAdvertisersFromStorage();
+            const idx = advertisers.findIndex(a => String(a.id) === String(adv.id));
+            if (idx !== -1) {
+              advertisers[idx] = adv;
+              localStorage.setItem('adv_list_data', JSON.stringify(advertisers));
+            }
+          }
+          
+          bindAll('adv.deliveryId', adv.deliveryId, '—');
+          bindAll('adv.reportingId', adv.reportingId, '—');
+          
+          // Bind DSP fields if they exist
+          console.log('Checking DSP data to bind:', adv.dsp);
+          if (adv.dsp) {
+            console.log('DSP data exists, populating fields...');
+            // Populate DSP display spans directly
+            const dspName = document.getElementById('displayDspName');
+            console.log('displayDspName element:', dspName);
+            console.log('displayDspName current content:', dspName?.textContent);
+            if (dspName) {
+              dspName.textContent = adv.dsp.name || '—';
+              console.log('displayDspName set to:', dspName.textContent);
+              
+              // Watch for changes to this span
+              const nameObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                  console.log('[DSP NAME WATCHER] Content changed to:', dspName.textContent);
+                  console.trace('[DSP NAME WATCHER] Stack trace:');
+                });
+              });
+              nameObserver.observe(dspName, { childList: true, characterData: true, subtree: true });
+            }
+            
+            const dspPartner = document.getElementById('displayDspPartner');
+            if (dspPartner) dspPartner.textContent = adv.dsp.partner || '—';
+            
+            const dspDomain = document.getElementById('displayDspDomain');
+            if (dspDomain) dspDomain.textContent = adv.dsp.domain || '—';
+            
+            const dspCountry = document.getElementById('displayDspCountry');
+            if (dspCountry) dspCountry.textContent = adv.dsp.country || '—';
+            
+            const dspEuTargeting = document.getElementById('displayDspEuTargeting');
+            if (dspEuTargeting) dspEuTargeting.textContent = adv.dsp.euTargeting || '—';
+            
+            const dspIndustry = document.getElementById('displayDspIndustry');
+            if (dspIndustry) dspIndustry.textContent = adv.dsp.industry || '—';
+            
+            // Format attribution windows
+            const dspAttrClick = document.getElementById('displayDspAttrClick');
+            if (dspAttrClick) {
+              if (adv.dsp.attributionWindows && adv.dsp.attributionWindows.click) {
+                const click = adv.dsp.attributionWindows.click;
+                dspAttrClick.textContent = click.value ? `${click.value} ${click.unit || 'Days'}` : '—';
+              } else {
+                dspAttrClick.textContent = '—';
+              }
+            }
+            
+            const dspAttrImpression = document.getElementById('displayDspAttrImpression');
+            if (dspAttrImpression) {
+              if (adv.dsp.attributionWindows && adv.dsp.attributionWindows.impression) {
+                const impression = adv.dsp.attributionWindows.impression;
+                dspAttrImpression.textContent = impression.value ? `${impression.value} ${impression.unit || 'Days'}` : '—';
+              } else {
+                dspAttrImpression.textContent = '—';
+              }
+            }
+            
+            // Format deduplication windows
+            const dspDedupClick = document.getElementById('displayDspDedupClick');
+            if (dspDedupClick) {
+              const dedupClick = adv.dsp.deduplicationWindows?.click;
+              dspDedupClick.textContent = dedupClick ? `${dedupClick} Seconds` : '—';
+            }
+            
+            const dspDedupConversion = document.getElementById('displayDspDedupConversion');
+            if (dspDedupConversion) {
+              const dedupConv = adv.dsp.deduplicationWindows?.conversion;
+              dspDedupConversion.textContent = dedupConv ? `${dedupConv} Seconds` : '—';
+            }
+            
+            const dspYahoo = document.getElementById('displayDspYahoo');
+            if (dspYahoo) dspYahoo.textContent = adv.dsp.yahooIntegration || '—';
+            
+            // Show DSP section
+            const dspSection = document.getElementById('dspFieldsSection');
+            console.log('[DATA BINDING] DSP section element:', dspSection);
+            console.log('[DATA BINDING] DSP section classList before:', dspSection?.classList.toString());
+            if (dspSection) {
+              dspSection.classList.remove('hidden');
+              console.log('[DATA BINDING] DSP section classList after:', dspSection.classList.toString());
+              
+              // DEBUG: Monitor for changes to this element
+              const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                  if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    console.log('[DSP WATCHER] Class changed to:', dspSection.classList.toString());
+                    console.trace('[DSP WATCHER] Stack trace:');
+                  }
+                });
+              });
+              observer.observe(dspSection, { attributes: true });
+            }
+          }
+          
+          // Bind Ad Server fields if they exist
+          if (adv.adServer) {
+            // Populate Ad Server display spans directly
+            const adServerName = document.getElementById('displayAdServerName');
+            if (adServerName) adServerName.textContent = adv.adServer.advertiserName || '—';
+            
+            const adServerVertical = document.getElementById('displayAdServerVertical');
+            if (adServerVertical) adServerVertical.textContent = adv.adServer.vertical || '—';
+            
+            const adServerEuPolitical = document.getElementById('displayAdServerEuPolitical');
+            if (adServerEuPolitical) {
+              adServerEuPolitical.textContent = adv.adServer.declarations?.euPoliticalAds || '—';
+            }
+            
+            // Show Ad Server section
+            const adServerSection = document.getElementById('adServerFieldsSection');
+            if (adServerSection) adServerSection.classList.remove('hidden');
+          }
         } else {
           bindAll('adv.name', 'No advertiser found', 'No advertiser found');
           bindAll('adv.id', '', '');
           bindAll('adv.account', 'N/A', 'N/A');
           bindAll('adv.state', 'N/A', 'N/A');
-          bindAll('adv.website', 'N/A', 'N/A');
+          bindAll('adv.deliveryId', '—', '—');
+          bindAll('adv.reportingId', '—', '—');
         }
 
         // Expose for other modules if needed
         window.bindAll = bindAll;
+        window.currentAdvertiser = adv;
       });
     })();
   </script>
@@ -510,171 +1072,311 @@
       const SELECTED_ID_KEY  = 'adv_selected_id';
       const SELECTED_DATA_KEY= 'adv_selected_data';
 
-      const editableSelectors = ['#companyName', '#advertiserState', '#advertiserWebsite'];
+      // Pairs of span/input elements for inline editing - Beacon Fields
+      const beaconPairs = [
+        { span: 'displayAdvertiserName', input: 'inputAdvertiserName' },
+        { span: 'displayState', input: 'inputState' }
+      ];
+
+      // DSP Fields pairs
+      const dspPairs = [
+        { span: 'displayDspName', input: 'inputDspName' },
+        { span: 'displayDspPartner', input: 'inputDspPartner' },
+        { span: 'displayDspDomain', input: 'inputDspDomain' },
+        { span: 'displayDspCountry', input: 'inputDspCountry' },
+        { span: 'displayDspEuTargeting', input: 'inputDspEuTargeting' },
+        { span: 'displayDspIndustry', input: 'inputDspIndustry' },
+        { span: 'displayDspAttrClick', input: 'inputDspAttrClick' },
+        { span: 'displayDspAttrImpression', input: 'inputDspAttrImpression' },
+        { span: 'displayDspDedupClick', input: 'inputDspDedupClick' },
+        { span: 'displayDspDedupConversion', input: 'inputDspDedupConversion' },
+        { span: 'displayDspYahoo', input: 'inputDspYahoo' }
+      ];
+
+      // Ad Server Fields pairs
+      const adServerPairs = [
+        { span: 'displayAdServerName', input: 'inputAdServerName' },
+        { span: 'displayAdServerVertical', input: 'inputAdServerVertical' },
+        { span: 'displayAdServerEuPolitical', input: 'inputAdServerEuPolitical' }
+      ];
+
+      // All pairs combined
+      const pairs = [...beaconPairs, ...dspPairs, ...adServerPairs];
 
       const btnEdit   = document.getElementById('editGeneralBtn');
       const btnSave   = document.getElementById('saveGeneralBtn');
       const btnCancel = document.getElementById('cancelGeneralBtn');
+      const ellipsisBtn = document.getElementById('ellipsisBtn');
+      const ellipsisMenu = document.getElementById('ellipsisMenu');
+      const deleteBtn = document.getElementById('deleteAdvertiserBtn');
+      const ellipsisDropdown = document.querySelector('.ellipsis-dropdown');
 
       let editing = false;
       let snapshot = null;
-      let dirty = false;
 
-      function qInputs() {
-        return editableSelectors.map(s => document.querySelector(s)).filter(Boolean);
+      // Ellipsis dropdown toggle
+      ellipsisBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = ellipsisMenu.classList.contains('open');
+        ellipsisMenu.classList.toggle('open', !isOpen);
+        ellipsisBtn.setAttribute('aria-expanded', !isOpen);
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (ellipsisDropdown && !ellipsisDropdown.contains(e.target)) {
+          ellipsisMenu?.classList.remove('open');
+          ellipsisBtn?.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Delete advertiser functionality
+      deleteBtn?.addEventListener('click', () => {
+        const advId = localStorage.getItem('adv_selected_id');
+        if (!advId) {
+          if (typeof showToast === 'function') {
+            showToast('No advertiser selected.', 2000);
+          }
+          return;
+        }
+
+        const advertisers = JSON.parse(localStorage.getItem('adv_list_data') || '[]');
+        const adv = advertisers.find(a => String(a.id) === String(advId));
+        
+        if (!adv) {
+          if (typeof showToast === 'function') {
+            showToast('Advertiser not found.', 2000);
+          }
+          return;
+        }
+        
+        const confirmMsg = 'Are you sure you want to delete "' + adv.name + '"?';
+        if (!confirm(confirmMsg)) {
+          ellipsisMenu?.classList.remove('open');
+          return;
+        }
+        
+        const updatedAdvertisers = advertisers.filter(a => String(a.id) !== String(advId));
+        localStorage.setItem('adv_list_data', JSON.stringify(updatedAdvertisers));
+        
+        // Clear selected data
+        localStorage.removeItem('adv_selected_id');
+        localStorage.removeItem('adv_selected_data');
+        
+        if (typeof showToast === 'function') {
+          showToast('Advertiser "' + adv.name + '" deleted successfully.', 2500);
+        }
+        
+        // Redirect back to list page
+        setTimeout(() => {
+          window.location.href = './index.html';
+        }, 500);
+      });
+
+      function showSpans() {
+        pairs.forEach(p => {
+          const span = document.getElementById(p.span);
+          const input = document.getElementById(p.input);
+          if (!span || !input) return;
+          
+          // Update span with input value
+          let displayValue = input.value.trim();
+          if (!displayValue || displayValue === '') {
+            displayValue = '—';
+          }
+          
+          span.textContent = displayValue;
+          input.classList.add('hidden');
+          span.classList.remove('hidden');
+        });
       }
-      function getValues() {
-        const map = {};
-        qInputs().forEach(i => { map[i.id] = i.value ?? ''; });
-        return map;
+
+      function showInputs() {
+        pairs.forEach(p => {
+          const span = document.getElementById(p.span);
+          const input = document.getElementById(p.input);
+          if (!span || !input) return;
+          
+          input.classList.remove('hidden');
+          span.classList.add('hidden');
+          
+          // Set input/select value from span
+          let value = span.textContent.trim();
+          if (value === '—' || value === 'N/A') {
+            value = '';
+          }
+          
+          // Special handling for SELECT elements
+          if (input.tagName === 'SELECT') {
+            const options = Array.from(input.options);
+            const match = options.find(opt => opt.value.toLowerCase() === value.toLowerCase());
+            input.value = match ? match.value : '';
+          } else {
+            input.value = value;
+          }
+        });
       }
-      function setValues(vals) {
-        qInputs().forEach(i => { if (vals.hasOwnProperty(i.id)) i.value = vals[i.id]; });
+
+      function currentValues() {
+        const obj = {};
+        pairs.forEach(p => {
+          const input = document.getElementById(p.input);
+          if (input) obj[p.input] = input.value.trim();
+        });
+        return obj;
       }
+
       function shallowEqual(a,b){
         const ka = Object.keys(a), kb = Object.keys(b);
         if (ka.length !== kb.length) return false;
-        for (const k of ka) if ((a[k] ?? '') !== (b[k] ?? '')) return false;
+        for (const k of ka) if (a[k] !== b[k]) return false;
         return true;
       }
 
-      function applyViewStyle(input) {
-        input.readOnly = true;
-        input.setAttribute('aria-readonly','true');
-        input.tabIndex = -1;
+      btnEdit?.addEventListener('click', () => {
+        editing = true;
+        snapshot = currentValues();
+        showInputs();
         
-        if (input.tagName === 'SELECT') {
-          // For select elements in read-only mode
-          ['border','rounded','px-3','py-2','focus:outline-none','focus:bg-white','focus:border-blue-300','bg-white','w-full','text-gray-900']
-            .forEach(c => input.classList.remove(c));
-          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight']
-            .forEach(c => input.classList.add(c));
-          input.style.pointerEvents = 'none';
-          input.style.appearance = 'none';
-        } else {
-          // For input elements
-          ['border','rounded','px-3','py-2','focus:outline-none','focus:bg-white','focus:border-blue-300','bg-white','w-full','text-gray-900']
-            .forEach(c => input.classList.remove(c));
-          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight']
-            .forEach(c => input.classList.add(c));
-        }
-      }
-
-      function applyEditStyle(input) {
-        input.readOnly = false;
-        input.removeAttribute('aria-readonly');
-        input.tabIndex = 0;
+        // Hide ellipsis dropdown and show save/cancel buttons
+        ellipsisDropdown?.classList.add('hidden');
+        ellipsisMenu?.classList.remove('open');
+        btnSave.classList.remove('hidden');
+        btnCancel.classList.remove('hidden');
         
-        if (input.tagName === 'SELECT') {
-          // For select elements in edit mode
-          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight'].forEach(c => input.classList.remove(c));
-          ['bg-white','border','border-gray-300','rounded','px-3','py-2','text-gray-900','w-full','focus:outline-none','focus:bg-white','focus:border-blue-300'].forEach(c => input.classList.add(c));
-          input.style.pointerEvents = '';
-          input.style.appearance = '';
-        } else {
-          // For input elements
-          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight'].forEach(c => input.classList.remove(c));
-          ['bg-white','border','border-gray-300','rounded','px-3','py-2','text-gray-900','w-full','focus:outline-none','focus:bg-white','focus:border-blue-300'].forEach(c => input.classList.add(c));
+        // Auto-focus first editable field
+        const firstInput = document.getElementById('inputAdvertiserName');
+        if (firstInput) {
+          setTimeout(() => firstInput.focus(), 50);
         }
-      }
+      });
 
-      function setMode(isEditing) {
-        editing = isEditing;
-        const inputs = qInputs();
-        inputs.forEach(i => isEditing ? applyEditStyle(i) : applyViewStyle(i));
-        btnEdit?.classList.toggle('hidden', isEditing);
-        btnSave?.classList.toggle('hidden', !isEditing);
-        btnCancel?.classList.toggle('hidden', !isEditing);
+      btnCancel?.addEventListener('click', () => {
+        if (!editing) return;
+        
+        // Revert to snapshot
+        pairs.forEach(p => {
+          const input = document.getElementById(p.input);
+          if (input && snapshot && snapshot[p.input] != null) {
+            input.value = snapshot[p.input];
+          }
+        });
+        
+        showSpans();
+        editing = false;
+        snapshot = null;
+        
+        // Show ellipsis dropdown and hide save/cancel buttons
+        ellipsisDropdown?.classList.remove('hidden');
+        btnSave.classList.add('hidden');
+        btnCancel.classList.add('hidden');
+      });
 
-        if (isEditing) {
-          snapshot = getValues();
-          dirty = false;
-          inputs.forEach(i => i.addEventListener('input', onDirty));
-          inputs.forEach(i => i.addEventListener('change', onDirty)); // For select elements
-          inputs[0]?.focus();
-        } else {
+      btnSave?.addEventListener('click', () => {
+        if (!editing) return;
+        const now = currentValues();
+        
+        if (snapshot && shallowEqual(snapshot, now)) {
+          // No changes
+          showSpans();
+          editing = false;
           snapshot = null;
-          dirty = false;
-          inputs.forEach(i => i.removeEventListener('input', onDirty));
-          inputs.forEach(i => i.removeEventListener('change', onDirty));
+          ellipsisDropdown?.classList.remove('hidden');
+          btnSave.classList.add('hidden');
+          btnCancel.classList.add('hidden');
+          return;
         }
-      }
 
-      function onDirty() {
-        if (!editing || !snapshot) return;
-        dirty = !shallowEqual(snapshot, getValues());
-      }
-
-      function saveAll() {
+        // Save changes
         const selectedId = localStorage.getItem(SELECTED_ID_KEY);
         if (!selectedId) {
           showToast({ message: 'No advertiser selected.', type: 'error' });
-          return false;
+          return;
         }
+
         try {
-          const vals = getValues();
           const advertisers = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA) || '[]');
           const idx = advertisers.findIndex(a => String(a.id) === String(selectedId));
           if (idx === -1) {
             showToast({ message: 'Advertiser not found in storage.', type: 'error' });
-            return false;
+            return;
           }
 
-          // Map inputs → adv fields
-          advertisers[idx].name    = vals.companyName?.trim() || '';
-          advertisers[idx].state   = vals.advertiserState?.trim() || '';   // ✓ use state field
-          advertisers[idx].website = vals.advertiserWebsite?.trim() || '';
+          // Update Beacon fields
+          advertisers[idx].name = now.inputAdvertiserName?.trim() || '';
+          advertisers[idx].state = now.inputState?.trim() || '';
+
+          // Update DSP fields if they exist
+          if (!advertisers[idx].dsp) advertisers[idx].dsp = {};
+          advertisers[idx].dsp.name = now.inputDspName?.trim() || '';
+          advertisers[idx].dsp.partner = now.inputDspPartner?.trim() || '';
+          advertisers[idx].dsp.domain = now.inputDspDomain?.trim() || '';
+          advertisers[idx].dsp.country = now.inputDspCountry?.trim() || '';
+          advertisers[idx].dsp.euTargeting = now.inputDspEuTargeting?.trim() || '';
+          advertisers[idx].dsp.industry = now.inputDspIndustry?.trim() || '';
+          advertisers[idx].dsp.yahooIntegration = now.inputDspYahoo?.trim() || '';
+
+          // Attribution windows (parse from "value unit" format back to object structure)
+          if (!advertisers[idx].dsp.attributionWindows) advertisers[idx].dsp.attributionWindows = {};
+          
+          // Parse click attribution (e.g., "90 Days" -> {value: "90", unit: "Days"})
+          const clickStr = now.inputDspAttrClick?.trim() || '';
+          if (clickStr && clickStr !== '—') {
+            const clickParts = clickStr.split(' ');
+            const clickValue = clickParts[0] || '';
+            const clickUnit = clickParts.slice(1).join(' ') || 'Days';
+            advertisers[idx].dsp.attributionWindows.click = {
+              value: clickValue,
+              unit: clickUnit
+            };
+          } else {
+            advertisers[idx].dsp.attributionWindows.click = { value: '', unit: 'Days' };
+          }
+          
+          // Parse impression attribution (e.g., "90 Days" -> {value: "90", unit: "Days"})
+          const impressionStr = now.inputDspAttrImpression?.trim() || '';
+          if (impressionStr && impressionStr !== '—') {
+            const impressionParts = impressionStr.split(' ');
+            const impressionValue = impressionParts[0] || '';
+            const impressionUnit = impressionParts.slice(1).join(' ') || 'Days';
+            advertisers[idx].dsp.attributionWindows.impression = {
+              value: impressionValue,
+              unit: impressionUnit
+            };
+          } else {
+            advertisers[idx].dsp.attributionWindows.impression = { value: '', unit: 'Days' };
+          }
+
+          // Deduplication windows (remove "Seconds" suffix if present)
+          if (!advertisers[idx].dsp.deduplicationWindows) advertisers[idx].dsp.deduplicationWindows = {};
+          advertisers[idx].dsp.deduplicationWindows.click = (now.inputDspDedupClick?.trim() || '').replace(' Seconds', '');
+          advertisers[idx].dsp.deduplicationWindows.conversion = (now.inputDspDedupConversion?.trim() || '').replace(' Seconds', '');
+
+          // Update Ad Server fields if they exist
+          if (!advertisers[idx].adServer) advertisers[idx].adServer = {};
+          advertisers[idx].adServer.advertiserName = now.inputAdServerName?.trim() || '';
+          advertisers[idx].adServer.vertical = now.inputAdServerVertical?.trim() || '';
+          
+          if (!advertisers[idx].adServer.declarations) advertisers[idx].adServer.declarations = {};
+          advertisers[idx].adServer.declarations.euPoliticalAds = now.inputAdServerEuPolitical?.trim() || '';
 
           localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(advertisers));
           localStorage.setItem(SELECTED_DATA_KEY, JSON.stringify(advertisers[idx]));
 
-          // Rebind view
-          if (typeof window.bindAll === 'function') {
-            bindAll('adv.name', advertisers[idx].name, 'No advertiser found');
-            bindAll('adv.state', advertisers[idx].state, 'N/A');
-            bindAll('adv.website', advertisers[idx].website, 'N/A');
-          }
-
-          return true;
+          showSpans();
+          editing = false;
+          snapshot = null;
+          
+          ellipsisDropdown?.classList.remove('hidden');
+          btnSave.classList.add('hidden');
+          btnCancel.classList.add('hidden');
+          
+          showToast({ message: 'Data saved successfully.', type: 'success' });
         } catch (e) {
           console.error(e);
           showToast({ message: 'Save failed. Check console.', type: 'error' });
-          return false;
         }
-      }
-
-      function beforeUnloadHandler(e){
-        if (dirty) {
-          e.preventDefault();
-          e.returnValue = '';
-          return '';
-        }
-      }
-      function navGuard(e){
-        if (!dirty) return;
-        const a = e.target.closest('a,button,[role="link"]');
-        if (!a) return;
-        if (a === btnSave || a === btnCancel || a === btnEdit) return;
-        e.preventDefault();
-        e.stopPropagation();
-        const wantsSave = confirm('You have unsaved changes. Save now?\n\nOK = Save  |  Cancel = Discard');
-        if (wantsSave) {
-          const ok = saveAll();
-          if (ok) {
-            dirty = false;
-            window.removeEventListener('beforeunload', beforeUnloadHandler);
-            document.removeEventListener('click', navGuard, true);
-            showToast({ message: 'Saved successfully.', type: 'success' });
-            if (a.tagName === 'A' && a.href) window.location.href = a.href; else a.click?.();
-          }
-        } else {
-          setValues(snapshot || {});
-          dirty = false;
-          window.removeEventListener('beforeunload', beforeUnloadHandler);
-          document.removeEventListener('click', navGuard, true);
-          if (a.tagName === 'A' && a.href) window.location.href = a.href; else a.click?.();
-        }
-      }
+      });
 
       // Simple toast function for compatibility
       function showToast(options) {
@@ -691,39 +1393,21 @@
         }
       }
 
-      btnEdit?.addEventListener('click', () => {
-        setMode(true);
-        window.addEventListener('beforeunload', beforeUnloadHandler);
-        document.addEventListener('click', navGuard, true);
-      });
-      btnCancel?.addEventListener('click', () => {
-        if (snapshot) setValues(snapshot);
-        dirty = false;
-        window.removeEventListener('beforeunload', beforeUnloadHandler);
-        document.removeEventListener('click', navGuard, true);
-        setMode(false);
-      });
-      btnSave?.addEventListener('click', () => {
-        if (!dirty) {
-          showToast({ message: 'No changes to save.', type: 'warning' });
-          setMode(false);
-          window.removeEventListener('beforeunload', beforeUnloadHandler);
-          document.removeEventListener('click', navGuard, true);
-          return;
-        }
-        const ok = saveAll();
-        if (ok) {
-          dirty = false;
-          window.removeEventListener('beforeunload', beforeUnloadHandler);
-          document.removeEventListener('click', navGuard, true);
-          setMode(false);
-          showToast({ message: 'Data saved successfully.', type: 'success' });
-        }
-      });
-
-      // Initialize to view mode
+      // Initialize to view mode (spans visible) - DON'T call showSpans here
+      // as it would overwrite values already set by data binding
       document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => { qInputs().forEach(applyViewStyle); }, 50);
+        // Just ensure inputs are hidden and spans are visible, without overwriting content
+        setTimeout(() => {
+          pairs.forEach(p => {
+            const span = document.getElementById(p.span);
+            const input = document.getElementById(p.input);
+            if (!span || !input) return;
+            
+            // Only hide inputs and show spans - don't change content
+            input.classList.add('hidden');
+            span.classList.remove('hidden');
+          });
+        }, 100);
       });
     })();
   </script>
@@ -912,6 +1596,9 @@
     });
   });
   </script>
+
+  <!-- Campaigns and Ad Groups table scripts removed per CO Change Spec (sections 1b/1c) -->
+
   <script src="./assets/sidebar.js" defer></script>
 </body>
 </html>

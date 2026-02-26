@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="./assets/theme.css">
   <link rel="stylesheet" href="./assets/loading.css">
   <script src="./assets/loading.js" defer></script>
+  <link rel="stylesheet" href="./assets/changeorder.css">
+  <script src="./assets/changeorder.js" defer></script>
   <style>
     body { font-family: 'apple-system', 'Segoe UI', 'Roboto', 'Inter', sans-serif; }
 
@@ -109,6 +111,84 @@
       opacity: 1;
       visibility: visible;
     }
+    
+    /* Drag and Drop Styles */
+    .campaign-row {
+      cursor: move;
+    }
+    
+    .campaign-row:hover {
+      background-color: #f9fafb !important;
+    }
+    
+    .campaign-row.dragging {
+      opacity: 0.5;
+    }
+    
+    .group-drop-zone {
+      transition: all 0.2s ease;
+    }
+    
+    .ungrouped-drop-zone {
+      transition: all 0.2s ease;
+    }
+    
+    
+    .drop-zone {
+      position: relative;
+    }
+    
+    .drop-zone::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+
+    /* Wizard Modal Styles */
+    .wizard-step {
+      transition: all 0.2s ease;
+    }
+
+    .wizard-step.active .step-number {
+      transform: scale(1.1);
+    }
+
+    .wizard-step:hover:not(.active) {
+      background-color: rgba(59, 130, 246, 0.05);
+    }
+
+    .wizard-step.completed .step-number {
+      background-color: #10b981;
+    }
+
+    .wizard-content {
+      display: none;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .wizard-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .connector-card {
+      transition: all 0.2s ease;
+    }
   </style>
 
 <script src="./assets/audit.js" defer></script>
@@ -122,7 +202,7 @@
     <header class="border-b border-strong shadow-sm app-header">
       <div class="flex items-center justify-between px-4 py-2">
         <div class="flex items-center gap-3">
-          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+          <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
         </div>
 
         <nav class="flex items-center gap-3 ml-auto">
@@ -202,14 +282,29 @@
             </button>
             <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-              <a href="#" id="menuAdmin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
             </div>
           </div>
         </nav>
       </div>
     </header>
+
+    <!-- Breadcrumb Bar -->
+    <div class="bg-white border-b border-gray-200 px-6 py-2">
+      <nav class="flex items-center text-sm text-gray-600">
+        <a href="./index.html" class="hover:text-blue-600 transition-colors">Advertisers</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">—</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <span class="font-semibold text-gray-900">Campaigns</span>
+      </nav>
+    </div>
 
     <!-- Body -->
     <div class="flex flex-1 overflow-hidden">
@@ -238,22 +333,8 @@
           <li>
             <a href="./WFAdvertiserDetails.html" data-nav-link
                class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
-              <span data-link-label>Details</span>
-            </a>
-          </li>
-          <li>
-            <a href="./AdvertiserSalesOrder.html" data-nav-link
-               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
-              <span data-link-label>Sales Orders</span>
-            </a>
-          </li>
-          <li>
-            <a href="./WFAdvertiserConnections.html" data-nav-link
-               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
-              <span data-link-label>Connections (P2)</span>
+              <img src="./assets/svgs/Details.svg" alt="Overview" class="w-6 h-6 mr-2" />
+              <span data-link-label>Overview</span>
             </a>
           </li>
           <li>
@@ -264,16 +345,24 @@
             </a>
           </li>
           <li>
-            <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="">
+            <a href="./AdvertiserAdGroup.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
               <span data-link-label>Ad Groups</span>
             </a>
           </li>
-          <!-- CAD (added) -->
           <li>
-            <a href="./CAD.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Blueprint.svg" class="w-6 h-6 mr-2" alt="CAD">
-              <span data-link-label>CAD</span>
+            <a href="./ChangeOrderList.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/ChangeOrder.svg" alt="Change Orders" class="w-6 h-6 mr-2" />
+              <span data-link-label>Change Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="./WFAdvertiserConnections.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+              <span data-link-label>Connections</span>
             </a>
           </li>
         </ul>
@@ -284,12 +373,25 @@
        <div class="app-card rounded-lg shadow-lg overflow-hidden">
           <!-- Advertiser Header -->
           <div class="px-4 pt-4">
-            <div class="flex items-start gap-4 mb-3">
-              <div class="flex-1">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <!-- Left Column: Advertiser Name & Account # -->
+              <div>
                 <h1 data-bind="adv.name" class="text-xl md:text-2xl font-semibold text-gray-900">Loading…</h1>
-                <div class="flex justify-between items-center">
-                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
-                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+              </div>
+              <!-- Right Column: IDs -->
+              <div class="text-right">
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <a href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.deliveryId">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <a href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.reportingId">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">ID:</span>
+                  <span data-bind="adv.id" class="text-sm text-gray-500 w-28 text-left">—</span>
                 </div>
               </div>
             </div>
@@ -308,7 +410,7 @@
           <!-- Toolbar -->
           <div class="px-6 py-3">
             <div class="mb-4">
-              <div class="flex items-center space-x-3 bg-[var(--tbl-head-bg)] border border-gray-300 rounded-md">
+              <div class="flex items-center justify-between bg-[var(--tbl-head-bg)] border border-gray-300 rounded-md">
                 <!-- New Campaign Button -->
                 <button id="createBtn" class="flex items-center h-10 px-3 rounded-md hover:bg-gray-50 transition" title="Create New Campaign">
                   <span class="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-gray-400 mr-2">
@@ -354,9 +456,9 @@
                       </div>
                     </div>
 
-                    <!-- DSP Filter -->
+                    <!-- Connectors Filter -->
                     <div class="relative">
-                      <button id="dspChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="dsp" title="DSP filter">
+                      <button id="dspChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="dsp" title="Connectors filter">
                         <span id="dspChipLabel">All</span>
                         <svg class="w-4 h-4 text-gray-500 ml-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                           <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
@@ -383,7 +485,7 @@
                           <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                         </svg>
                       </button>
-                      <input type="text" id="searchInput" class="search-input" placeholder="Enter ID, DSP, or Campaign Name" autocomplete="off" aria-label="Search campaigns" />
+                      <input type="text" id="searchInput" class="search-input" placeholder="Enter ID, Connectors, or Campaign Name" autocomplete="off" aria-label="Search campaigns" />
                       <button id="searchClear" class="clear-button" aria-label="Clear search" type="button">
                         <svg viewBox="0 0 24 24">
                           <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -392,6 +494,20 @@
                     </div>
                   </div>
                 </div>
+
+                <!-- New Change Order Button -->
+                <button id="newChangeOrderBtn" onclick="openCOPickerModal()" class="flex items-center gap-2 px-3 py-1 text-sm bg-green-600 text-white border border-green-600 rounded-md hover:bg-green-700 transition-colors ml-auto" title="New Change Order">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                  <span>New Change Order</span>
+                </button>
+
+                <!-- Universal Export Button -->
+                <button id="universalExportBtn" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors mr-2" title="Export all campaigns and ad groups">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  <span>Export</span>
+                </button>
               </div>
             </div>
 
@@ -420,6 +536,12 @@
                     <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
                       <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp" aria-label="Sort by DSP">
                         <span>DSP</span>
+                        <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adServer" aria-label="Sort by Ad Server">
+                        <span>Ad Server</span>
                         <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
                       </button>
                     </th>
@@ -485,39 +607,490 @@
 
 <!-- Create Campaign Modal -->
 <div id="createCampaignModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 relative">
-    <button id="closeCampaignModal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </button>
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-6xl max-h-[90vh] relative mx-4 overflow-hidden">
+    
+    <!-- Wizard Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-semibold text-white">Create New Campaign</h2>
+        </div>
+        <button id="closeCampaignModal" class="text-white hover:text-blue-200 transition-colors" aria-label="Close wizard">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
 
-    <h2 class="text-xl font-semibold text-gray-900 mb-4">Create New Campaign</h2>
+    <!-- Wizard Body -->
+    <div class="flex max-h-[calc(90vh-180px)]">
+      
+      <!-- Left Sidebar - Steps Navigation -->
+      <div class="w-64 bg-gray-50 border-r border-gray-200 p-6 overflow-y-auto">
+        <nav class="space-y-2">
+          
+          <!-- Step 1 -->
+          <div class="wizard-step active" data-step="1">
+            <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold step-number">
+                1
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 step-title">Campaign Details</p>
+                <p class="text-xs text-gray-500 step-subtitle">Basic information</p>
+              </div>
+            </div>
+          </div>
 
-    <form id="createCampaignForm" class="space-y-6 overflow-y-auto max-h-[75vh] pr-2">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div><label class="block text-sm font-medium text-gray-700">Campaign Name<input type="text" id="campaignName" class="mt-1 w-full border border-gray-300 rounded px-3 py-2" required></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">Channel<input type="text" id="campaignChannel" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">KPI<input type="text" id="campaignKPI" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">KPI Target<input type="text" id="campaignKPITarget" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">Pacing<input type="text" id="campaignPacing" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">Advertiser<input type="text" id="campaignAdvertiser" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">Objective<input type="text" id="campaignObjective" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">Start Date<input type="date" id="campaignStartDate" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">End Date<input type="date" id="campaignEndDate" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">Total Budget<input type="number" id="campaignTotalBudget" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">Daily Budget<input type="number" id="campaignDailyBudget" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div class="sm:col-span-2"><label class="block text-sm font-medium text-gray-700">Target Audience<input type="text" id="targetAudience" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">Geographic Targeting<input type="text" id="geoTargeting" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">Device Targeting<input type="text" id="deviceTargeting" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+          <!-- Step 2 -->
+          <div class="wizard-step" data-step="2">
+            <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-semibold step-number">
+                2
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-600 step-title">Platform Connectors</p>
+                <p class="text-xs text-gray-500 step-subtitle">Select DSPs & Ad Servers</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="wizard-step" data-step="3">
+            <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-semibold step-number">
+                3
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-600 step-title">Platform Configuration</p>
+                <p class="text-xs text-gray-500 step-subtitle">Configure Platform Fields</p>
+              </div>
+            </div>
+          </div>
+
+        </nav>
+
+        <!-- Progress Indicator -->
+        <div class="mt-8 pt-6 border-t border-gray-200">
+          <div class="flex items-center justify-between text-xs text-gray-600 mb-2">
+            <span>Progress</span>
+            <span id="campaignWizardProgressText">33%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div id="campaignWizardProgressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 33%"></div>
+          </div>
+        </div>
       </div>
 
-<div class="flex justify-end space-x-3 pt-4">
-        <button type="button" id="cancelCampaignModal" class="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded hover:bg-gray-100">Cancel</button>
-        <button type="submit" class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">Create</button>
-        <button type="button" id="createAndAddAdGroup" class="px-4 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700">Create & Add Ad Group</button>
+      <!-- Right Content Area -->
+      <div class="flex-1 p-6 overflow-y-auto">
+        <form id="createCampaignForm">
+          
+          <!-- STEP 1: Campaign Details (Beacon Fields) -->
+          <div class="wizard-content active" data-content="1">
+            <div class="mb-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">Campaign Details</h3>
+              <p class="text-sm text-gray-600">Enter the basic information for the new campaign</p>
+            </div>
+
+            <div class="space-y-5">
+              
+              <!-- ID Field -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Campaign ID</label>
+                <input 
+                  type="text" 
+                  id="beaconCampaignId" 
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                  placeholder="System-generated ID"
+                  readonly
+                />
+                <p class="mt-1 text-xs text-gray-500">Auto-generated unique identifier</p>
+              </div>
+
+              <!-- Campaign Name -->
+              <div>
+                <label for="beaconCampaignName" class="block text-sm font-medium text-gray-700 mb-2">
+                  Name <span class="text-red-500">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="beaconCampaignName" 
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter campaign name"
+                  required
+                />
+                <p class="mt-1 text-xs text-gray-500">Common identifier across all platforms</p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- STEP 2: Platform Connectors -->
+          <div class="wizard-content" data-content="2">
+            <div class="mb-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">Platform Connectors</h3>
+              <p class="text-sm text-gray-600">Select which DSPs and Ad Servers to connect</p>
+            </div>
+
+            <div class="space-y-4">
+              
+              <!-- Toggle All Connectors -->
+              <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div>
+                  <p class="text-sm font-medium text-gray-900">Enable Platform Connectors</p>
+                  <p class="text-xs text-gray-600 mt-1">Toggle to mark selected platforms as Synced</p>
+                </div>
+                <button type="button" id="connectorsToggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false">
+                  <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                </button>
+              </div>
+
+              <!-- Connectors Content -->
+              <div id="connectorsContent" class="space-y-4">
+                
+                <!-- DSP Section Header -->
+                <div class="pt-2">
+                  <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                    </svg>
+                    DSP (Demand-Side Platform)
+                  </h4>
+                </div>
+
+                <!-- The Trade Desk -->
+                <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="tradeDesk">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <input 
+                        type="checkbox" 
+                        id="dsp-trade-desk" 
+                        name="dsp" 
+                        value="trade-desk"
+                        class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <div>
+                        <p class="text-sm font-semibold text-gray-900">The Trade Desk</p>
+                        <p class="text-xs text-gray-500">Programmatic advertising platform</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
+                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="tradeDesk">
+                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- DV360 -->
+                <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="dv360">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <input 
+                        type="checkbox" 
+                        id="dsp-dv360" 
+                        name="dsp" 
+                        value="dv360"
+                        class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <div>
+                        <p class="text-sm font-semibold text-gray-900">DV360</p>
+                        <p class="text-xs text-gray-500">Google Display & Video 360</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
+                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="dv360">
+                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Simplifi -->
+                <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="simplifi">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <input 
+                        type="checkbox" 
+                        id="dsp-simplifi" 
+                        name="dsp" 
+                        value="simplifi"
+                        class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <div>
+                        <p class="text-sm font-semibold text-gray-900">Simplifi</p>
+                        <p class="text-xs text-gray-500">Local advertising platform</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
+                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="simplifi">
+                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Ad Server Section Header -->
+                <div class="pt-4">
+                  <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                    </svg>
+                    Ad Server
+                  </h4>
+                </div>
+
+                <!-- Google Campaign Manager -->
+                <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="gcm">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <input 
+                        type="checkbox" 
+                        id="adserver-gcm" 
+                        name="adserver" 
+                        value="google-campaign-manager"
+                        class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <div>
+                        <p class="text-sm font-semibold text-gray-900">Google Campaign Manager</p>
+                        <p class="text-xs text-gray-500">Ad serving and campaign management</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
+                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="gcm">
+                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+          <!-- STEP 3: Platform Configuration -->
+          <div class="wizard-content" data-content="3">
+            <div class="mb-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">Platform Configuration</h3>
+              <p class="text-sm text-gray-600">Configure settings for selected platforms</p>
+            </div>
+
+      <!-- DSP Fields Section (Trade Desk) -->
+      <div id="dspFieldsSection" class="hidden mb-3">
+        <div class="bg-white border border-blue-200 rounded-lg shadow-sm">
+          <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-3 rounded-t-lg">
+            <h4 class="font-semibold flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+              </svg>
+              The Trade Desk Configuration
+            </h4>
+          </div>
+          <div class="p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Seed</label>
+                <select id="campaignSeed" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" aria-label="Select Seed" title="Select Seed">
+                  <option value="">-- Select Seed --</option>
+                  <option value="Default Seed List">Default Seed List</option>
+                </select>
+              </div>
+              <div class="xl:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">How would you like to organize your campaigns?</label>
+                <select id="campaignOrganization" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" aria-label="Select Campaign Organization" title="Select Campaign Organization">
+                  <option value="">-- Select Organization --</option>
+                  <option value="Create new campaign group">Create new campaign group</option>
+                  <option value="Add campaigns to existing group">Add campaigns to existing group</option>
+                  <option value="Do not create campaign group">Do not create campaign group</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Pace Ahead</label>
+                <select id="campaignPacing" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" aria-label="Select Pacing" title="Select Pacing">
+                  <option value="">-- Select Pacing --</option>
+                  <option value="Pace Ahead">Pace Ahead</option>
+                  <option value="Pace Behind">Pace Behind</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
+                <select id="campaignTimezone" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" aria-label="Select Timezone" title="Select Timezone">
+                  <option value="">-- Select Timezone --</option>
+                  <option value="UTC">UTC (Coordinated Universal Time)</option>
+                  <option value="EST">EST (Eastern Standard Time)</option>
+                  <option value="CST">CST (Central Standard Time)</option>
+                  <option value="MST">MST (Mountain Standard Time)</option>
+                  <option value="PST">PST (Pacific Standard Time)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date (UTC)</label>
+                <input type="date" id="campaignStartDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" aria-label="Select Start Date" title="Select Start Date">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">End Date (UTC)</label>
+                <input type="date" id="campaignEndDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" aria-label="Select End Date" title="Select End Date">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Channel</label>
+                <select id="campaignChannel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" aria-label="Select Campaign Channel" title="Select Campaign Channel">
+                  <option value="">-- Select Channel --</option>
+                  <option value="Display">Display</option>
+                  <option value="Video">Video</option>
+                  <option value="Audio">Audio</option>
+                  <option value="Native">Native</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Name</label>
+                <select id="campaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" aria-label="Select Campaign Name" title="Select Campaign Name">
+                  <option value="">-- Select Campaign Name --</option>
+                  <option value="Brand Awareness">Brand Awareness</option>
+                  <option value="Persona">Persona</option>
+                  <option value="Company Targeting">Company Targeting</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Budget</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-2 text-gray-500">$</span>
+                  <input type="number" id="campaignBudget" class="w-full border border-gray-300 rounded-md pl-8 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" step="0.01" min="0">
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Impressions</label>
+                <input type="number" id="campaignImpressions" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0" step="1" min="0" inputmode="numeric" aria-label="Enter Campaign Impressions" title="Enter Campaign Impressions">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign KPI</label>
+                <select id="campaignKPI" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" aria-label="Select Campaign KPI" title="Select Campaign KPI">
+                  <option value="">-- Select KPI --</option>
+                  <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
+                  <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">KPI Target</label>
+                <div class="relative">
+                  <input type="number" id="campaignKPITarget" class="w-full border border-gray-300 rounded-md pr-8 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" step="0.01" min="0">
+                  <span class="absolute right-3 top-2 text-gray-500">%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- Ad Server Fields Section (Google Campaign Manager) -->
+      <div id="adServerFieldsSection" class="platform-config mb-6 hidden">
+        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-3 rounded-t-lg">
+          <h4 class="font-semibold flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 14a2 2 0 00-2-2h-4a2 2 0 100 4h4a2 2 0 002-2z"></path>
+            </svg>
+            Google Campaign Manager Configuration
+          </h4>
+        </div>
+        <div class="border border-gray-200 rounded-b-lg p-6 bg-white">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Campaign Name</label>
+              <select id="adServerCampaignName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                  <option value="">-- Select Campaign Name --</option>
+                  <option value="Brandawareness">Brand Awareness</option>
+                  <option value="Persona">Persona</option>
+                  <option value="Targeting">Targeting</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Schedule</label>
+                <input type="date" id="adServerSchedule" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Landing Page Name</label>
+                <input type="text" id="adServerLandingPageName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Enter landing page name">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Landing Page URL</label>
+                <input type="text" id="adServerLandingPageURL" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Enter any URL or value">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+            
+
+          </div>
+
         </form>
+      </div>
+
+    
+
+    <!-- Wizard Footer - Navigation Buttons -->
+    <div class="border-t border-gray-200 px-6 py-4 bg-gray-50 flex items-center justify-between">
+      <button 
+        type="button" 
+        id="campaignWizardPrevBtn"
+        class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled
+      >
+        <svg class="inline-block w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Previous
+      </button>
+
+      <div class="text-sm text-gray-600">
+        Step <span id="campaignWizardCurrentStep">1</span> of 3
+      </div>
+
+      <div class="space-x-3">
+        <button 
+          type="button" 
+          id="cancelCampaignModal"
+          class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        
+        <button 
+          type="button" 
+          id="campaignWizardNextBtn"
+          class="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Next
+          <svg class="inline-block w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+
+        <button 
+          type="submit" 
+          id="campaignCreateBtn"
+          class="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors hidden"
+        >
+          Create Campaign
+        </button>
+
+        <button 
+          type="button" 
+          id="createAndAddAdGroup"
+          class="px-6 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors hidden"
+        >
+          Create & Add Ad Group
+        </button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -539,7 +1112,7 @@
   <div class="-mx-2 px-4 py-1 mb-2 text-xs font-semibold text-gray-600 uppercase rounded-md" style="background-color: #d1d5db;">
     Custom Instructions
   </div>
-  <textarea id="customInstructions" rows="4" data-audit-notes class="block w-full border border-gray-300 rounded-md p-2 text-sm text-gray-900"></textarea>
+  <textarea id="customInstructions" rows="4" data-audit-notes class="block w-full border border-gray-300 rounded-md p-2 text-sm text-gray-900" aria-label="Enter Custom Instructions" title="Enter Custom Instructions"></textarea>
 </div>
     <div class="mt-4 flex justify-between">
       <button data-clear class="bg-red-100 text-red-700 px-4 py-2 text-sm rounded-md hover:bg-red-200">Clear</button>
@@ -558,69 +1131,22 @@
         DSP_FILTER: 'campaign_dsp_filter'
       },
       PAGINATION: {
-        DEFAULT_ROWS: 15,
+        DEFAULT_ROWS: 50,
         MAX_ROWS: 200
       }
     };
 
     // === SAMPLE GROUPED DATA (Tree) ===
-    const DEFAULT_GROUPS = [
-      {
-        id: 'GRP-AUR',
-        name: 'Aurora Launch',
-        expanded: true,
-        campaigns: [
-          { id: 'CAM-001', name: 'Aurora Teaser', state: 'Active', dsp: 'DV360', adGroups: 4 },
-          { id: 'CAM-002', name: 'Aurora Reveal', state: 'Inactive', dsp: 'Trade Desk', adGroups: 6 }
-        ]
-      },
-      {
-        id: 'GRP-HRV',
-        name: 'Harvest Promo',
-        expanded: true,
-        campaigns: [
-          { id: 'CAM-003', name: 'Autumn Offers', state: 'Active', dsp: 'Google Campaign Manager', adGroups: 3 },
-          { id: 'CAM-004', name: 'Thanksgiving Push', state: 'Active', dsp: 'DV360', adGroups: 5 },
-          { id: 'CAM-005', name: 'Weekend Harvest', state: 'Inactive', dsp: 'Trade Desk', adGroups: 2 },
-          { id: 'CAM-006', name: 'Last Call Harvest', state: 'Active', dsp: 'Trade Desk', adGroups: 4 }
-        ]
-      },
-      {
-        id: 'GRP-LUN',
-        name: 'Lunar Brand Lift',
-        expanded: false,
-        campaigns: [
-          { id: 'CAM-007', name: 'Moonlight Social', state: 'Active', dsp: 'Trade Desk', adGroups: 7 },
-          { id: 'CAM-008', name: 'Night Sky Video', state: 'Inactive', dsp: 'DV360', adGroups: 6 },
-          { id: 'CAM-009', name: 'Crater Display', state: 'Active', dsp: 'Google Campaign Manager', adGroups: 5 },
-          { id: 'CAM-010', name: 'Orbit Awareness', state: 'Active', dsp: 'DV360', adGroups: 8 },
-          { id: 'CAM-011', name: 'Eclipse Countdown', state: 'Inactive', dsp: 'Trade Desk', adGroups: 3 },
-          { id: 'CAM-012', name: 'Tidal Retargeting', state: 'Active', dsp: 'DV360', adGroups: 4 }
-        ]
-      },
-      {
-        id: 'GRP-VEL',
-        name: 'Velocity Retargeting',
-        expanded: true,
-        campaigns: [
-          { id: 'CAM-013', name: 'Cart Abandoners', state: 'Active', dsp: 'Google Campaign Manager', adGroups: 9 },
-          { id: 'CAM-014', name: 'Repeat Buyers', state: 'Active', dsp: 'Trade Desk', adGroups: 6 },
-          { id: 'CAM-015', name: 'Lookalike Sprint', state: 'Inactive', dsp: 'DV360', adGroups: 5 },
-          { id: 'CAM-016', name: 'Frequency Cap Tune', state: 'Active', dsp: 'Trade Desk', adGroups: 7 },
-          { id: 'CAM-017', name: 'Video Retarget', state: 'Active', dsp: 'DV360', adGroups: 8 },
-          { id: 'CAM-018', name: 'Search Warmup', state: 'Inactive', dsp: 'Google Campaign Manager', adGroups: 4 },
-          { id: 'CAM-019', name: 'Dynamic Creative', state: 'Active', dsp: 'Trade Desk', adGroups: 10 },
-          { id: 'CAM-020', name: 'High-Intent Pulse', state: 'Active', dsp: 'DV360', adGroups: 6 }
-        ]
-      }
-    ];
+    const DEFAULT_GROUPS = [];
 
     // === MAIN APPLICATION (Tree Table) ===
     let app = null;
 
     document.addEventListener('DOMContentLoaded', function() {
       app = {
+        campaigns: [],
         groups: [],
+        ungroupedExpanded: true,  // Track expand/collapse state for ungrouped section
         currentPage: 1,
         rowsPerPage: CONFIG.PAGINATION.DEFAULT_ROWS,
         filters: { state: 'All', dsp: 'All' },
@@ -631,71 +1157,79 @@
 
         init: function() {
           this.loadGroups();
+          this.loadUngroupedState();
           this.cacheElements();
           this.loadFilters();
           this.initEventListeners();
+          this.setupDragAndDrop();
           this.applyFiltersAndRender();
+        },
+
+        loadUngroupedState: function() {
+          try {
+            const stored = localStorage.getItem('ungrouped_expanded_state');
+            if (stored !== null) {
+              this.ungroupedExpanded = JSON.parse(stored);
+            }
+          } catch (e) {
+            console.warn('Failed to load ungrouped state:', e);
+            this.ungroupedExpanded = true; // Default to expanded
+          }
         },
 
         loadGroups: function() {
           try {
             const stored = localStorage.getItem(CONFIG.STORAGE_KEYS.DATA);
             if (stored) {
-              this.groups = JSON.parse(stored);
+              const data = JSON.parse(stored);
+              // Handle both old and new data structures
+              if (Array.isArray(data)) {
+                // Old structure - convert to new
+                this.campaigns = [];
+                this.groups = Array.isArray(data) ? data : [];
+              } else {
+                // New structure
+                this.campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
+                this.groups = Array.isArray(data.groups) ? data.groups : [];
+              }
             } else {
+              this.campaigns = [];
               this.groups = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
               this.saveGroups();
             }
+            
+            // Additional safety check to ensure groups is always an array
+            if (!Array.isArray(this.groups)) {
+              console.warn('Groups was not an array, resetting to default');
+              this.groups = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+            }
+            if (!Array.isArray(this.campaigns)) {
+              console.warn('Campaigns was not an array, resetting to empty');
+              this.campaigns = [];
+            }
           } catch (e) {
             console.warn('Failed to load groups:', e);
+            this.campaigns = [];
             this.groups = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
           }
         },
 
         saveGroups: function() {
           try {
-            localStorage.setItem(CONFIG.STORAGE_KEYS.DATA, JSON.stringify(this.groups));
-            try {
-const latestGroup = this.groups.at(-1);
-const campaign = latestGroup?.campaign; // this is the real campaign object
-  if (campaign && campaign.id) {
-  audit.recordCreate({
-    campaignId: campaign.id,
-    entityType: 'campaign',
-    entityId: campaign.id,
-    data: {
-      campaignName: campaign.name,
-      campaignChannel: campaign.channel,
-      campaignKPI: campaign.kpi,
-      campaignKPITarget: campaign.kpiTarget,
-      campaignPacing: campaign.pacing,
-      campaignAdvertiser: campaign.advertiser,
-      campaignObjective: campaign.objective,
-      campaignStartDate: campaign.startDate,
-      campaignEndDate: campaign.endDate,
-      campaignTotalBudget: campaign.totalBudget,
-      campaignDailyBudget: campaign.dailyBudget,
-      targetAudience: campaign.audience,
-      geoTargeting: campaign.geo,
-      deviceTargeting: campaign.device
-    }
-  });
-
-  console.log('✔️ Audit logged for campaign:', campaign.id);
-}
-} catch (e) {
-  console.warn('Failed to log audit creation:', e);
-}
-
+            const data = {
+              campaigns: this.campaigns || [],
+              groups: this.groups || []
+            };
+            localStorage.setItem(CONFIG.STORAGE_KEYS.DATA, JSON.stringify(data));
           } catch (e) {
-            console.warn('Failed to save groups:', e);
+            console.warn('Failed to save data:', e);
           }
         },
 
         cacheElements: function() {
           const ids = [
             'menuButton','menuDropdown','notificationButton','notificationDropdown',
-            'createBtn','stateChip','stateChipLabel','stateMenu',
+            'createBtn','manageCampaignGroupBtn','stateChip','stateChipLabel','stateMenu',
             'dspChip','dspChipLabel','dspMenu',
             'searchWrapper','searchToggle','searchInput','searchClear','filtersGroup',
             'campaignTableBody','recordCount','pagination',
@@ -704,7 +1238,7 @@ const campaign = latestGroup?.campaign; // this is the real campaign object
           ];
           ids.forEach(id => this.elements[id] = document.getElementById(id));
 
-          // Delegate toggles and edit buttons on the tbody
+          // Delegate toggles, edit and delete buttons on the tbody
           if (this.elements.campaignTableBody) {
             this.elements.campaignTableBody.addEventListener('click', (e) => {
               const toggleBtn = e.target.closest('[data-action="toggle-group"]');
@@ -713,7 +1247,14 @@ const campaign = latestGroup?.campaign; // this is the real campaign object
                 const g = this.groups.find(x => x.id === gid);
                 if (!g) return;
                 g.expanded = !g.expanded;
+                this.saveGroups();
                 this.applyFiltersAndRender();
+                return;
+              }
+
+              const toggleUngroupedBtn = e.target.closest('[data-action="toggle-ungrouped"]');
+              if (toggleUngroupedBtn) {
+                this.toggleUngrouped();
                 return;
               }
 
@@ -721,6 +1262,14 @@ const campaign = latestGroup?.campaign; // this is the real campaign object
               if (editBtn) {
                 const gid = editBtn.getAttribute('data-group-id');
                 this.openEditGroupModal(gid);
+                return;
+              }
+
+              const deleteBtn = e.target.closest('[data-action="delete-group"]');
+              if (deleteBtn) {
+                const gid = deleteBtn.getAttribute('data-group-id');
+                this.deleteGroup(gid);
+                return;
               }
             });
           }
@@ -744,7 +1293,67 @@ if (this.elements.createBtn) {
     if (modal) {
       modal.classList.remove('hidden');
       modal.classList.add('flex');
+      
+      // Reset wizard to step 1
+      if (typeof campaignWizardGoToStep === 'function') {
+        setTimeout(() => campaignWizardGoToStep(1), 50);
+      }
+      
+      // Reset form and state immediately (like ad groups)
+      const form = document.getElementById('createCampaignForm');
+      if (form) form.reset();
+      
+      // Reset connectors toggle and status badges
+      const connectorsContent = document.getElementById('connectorsContent');
+      const connectorsToggle = document.getElementById('connectorsToggle');
+      
+      if (connectorsToggle) {
+        connectorsToggle.classList.remove('bg-blue-600');
+        connectorsToggle.classList.add('bg-gray-200');
+        connectorsToggle.setAttribute('aria-checked', 'false');
+        const toggleSpan = connectorsToggle.querySelector('span');
+        if (toggleSpan) {
+          toggleSpan.classList.remove('translate-x-5');
+          toggleSpan.classList.add('translate-x-0');
+        }
+      }
+      
+      // Reset all connection toggles to "Not Synced"
+      document.querySelectorAll('.connector-toggle').forEach(toggle => {
+        toggle.setAttribute('aria-checked', 'false');
+        toggle.classList.remove('bg-green-500');
+        toggle.classList.add('bg-gray-200');
+        const toggleSwitch = toggle.querySelector('span');
+        if (toggleSwitch) {
+          toggleSwitch.classList.remove('translate-x-5');
+          toggleSwitch.classList.add('translate-x-0');
+        }
+      });
+      
+      // Reset all connection status labels to "Not Synced"
+      document.querySelectorAll('.connector-status-label').forEach(label => {
+        label.textContent = 'Not Synced';
+        label.classList.remove('text-green-700');
+        label.classList.add('text-gray-600');
+      });
+      
+      // Hide all expanded sections
+      const dspFieldsSection = document.getElementById('dspFieldsSection');
+      const adServerFieldsSection = document.getElementById('adServerFieldsSection');
+      if (dspFieldsSection) dspFieldsSection.classList.add('hidden');
+      if (adServerFieldsSection) adServerFieldsSection.classList.add('hidden');
+      
+      // Clear all checkboxes
+      const allCheckboxes = document.querySelectorAll('#createCampaignModal input[type="checkbox"]');
+      allCheckboxes.forEach(cb => cb.checked = false);
     }
+  });
+}
+
+          // Manage Campaign Group button
+if (this.elements.manageCampaignGroupBtn) {
+  this.elements.manageCampaignGroupBtn.addEventListener('click', () => {
+    this.createNewCampaignGroup();
   });
 }
 
@@ -915,21 +1524,106 @@ if (this.elements.createBtn) {
           }
         },
 
-        // Build visible rows (group headers + children)
+        // Get live ad group count for a campaign
+        getAdGroupCount: function(campaignId) {
+          try {
+            const adGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+            return adGroups.filter(ag => {
+              // Check multiple possible campaign reference formats
+              const agCampaignId = ag.campaignId || ag.campaign;
+              
+              // Direct match
+              if (agCampaignId === campaignId) return true;
+              
+              // Check if the ad group campaign is a campaign name and we need to match by name
+              if (typeof agCampaignId === 'string') {
+                // Try to find campaign by name to get the ID
+                const campaignData = this.findCampaignByName(agCampaignId);
+                if (campaignData && campaignData.id === campaignId) return true;
+              }
+              
+              return false;
+            }).length;
+          } catch (e) {
+            console.warn('Failed to count ad groups:', e);
+            return 0;
+          }
+        },
+
+        // Helper function to find campaign by name
+        findCampaignByName: function(campaignName) {
+          // Search in individual campaigns
+          if (this.campaigns) {
+            const found = this.campaigns.find(c => 
+              c.beaconCampaignName === campaignName || c.name === campaignName
+            );
+            if (found) return found;
+          }
+          
+          // Search in grouped campaigns
+          for (const group of this.groups) {
+            const found = group.campaigns.find(c => 
+              c.beaconCampaignName === campaignName || c.name === campaignName
+            );
+            if (found) return found;
+          }
+          
+          return null;
+        },
+
+        // Build visible rows (individual campaigns + group headers + children)
         getVisibleRows: function() {
           const q = this.searchQuery.trim().toLowerCase();
+          
+          // Get current advertiser ID
+          let currentAdvertiserId = null;
+          try {
+            const selectedData = localStorage.getItem('adv_selected_data');
+            if (selectedData) {
+              const advertiser = JSON.parse(selectedData);
+              currentAdvertiserId = advertiser.id;
+            }
+          } catch (e) {
+            console.warn('Failed to load advertiser ID:', e);
+          }
+          
           const filterBy = (c) => {
+            // Filter by advertiser ID first
+            if (currentAdvertiserId && String(c.advertiserId) !== String(currentAdvertiserId)) return false;
             if (this.filters.state !== 'All' && c.state !== this.filters.state) return false;
-            if (this.filters.dsp !== 'All' && c.dsp !== this.filters.dsp) return false;
+            if (this.filters.dsp !== 'All' && (!c.dsp || !c.dsp.includes(this.filters.dsp))) return false;
             if (!q) return true;
             return (
               (c.id && c.id.toLowerCase().includes(q)) ||
+              (c.beaconCampaignName && c.beaconCampaignName.toLowerCase().includes(q)) ||
               (c.name && c.name.toLowerCase().includes(q)) ||
               (c.dsp && c.dsp.toLowerCase().includes(q))
             );
           };
 
           const rows = [];
+          
+          // Add individual campaigns first (at the top)
+          const individualCampaigns = this.campaigns ? this.campaigns.filter(filterBy) : [];
+          
+          // Always add ungrouped header, even if there are no campaigns
+          rows.push({ 
+            type: 'ungrouped-header', 
+            name: 'Ungrouped Campaigns',
+            campaignCount: individualCampaigns.length,
+            expanded: this.ungroupedExpanded
+          });
+          
+          // Only add campaigns if ungrouped section is expanded
+          if (this.ungroupedExpanded) {
+            for (const c of individualCampaigns) {
+              // Update ad group count dynamically
+              c.liveAdGroupCount = this.getAdGroupCount(c.id);
+              rows.push({ type: 'campaign', groupId: null, campaign: c });
+            }
+          }
+          
+          // Then add groups
           for (const g of this.groups) {
             const groupMatchesSearch = q && g.name.toLowerCase().includes(q);
             const children = g.campaigns.filter(filterBy);
@@ -941,6 +1635,8 @@ if (this.elements.createBtn) {
 
             if (g.expanded) {
               for (const c of children) {
+                // Update ad group count dynamically
+                c.liveAdGroupCount = this.getAdGroupCount(c.id);
                 rows.push({ type: 'campaign', groupId: g.id, campaign: c });
               }
             }
@@ -952,11 +1648,39 @@ if (this.elements.createBtn) {
           // total campaigns after filters/search (not paginated)
           const q = this.searchQuery.trim().toLowerCase();
           let total = 0;
+          
+          // Get current advertiser ID
+          let currentAdvertiserId = null;
+          try {
+            const selectedData = localStorage.getItem('adv_selected_data');
+            if (selectedData) {
+              const advertiser = JSON.parse(selectedData);
+              currentAdvertiserId = advertiser.id;
+            }
+          } catch (e) {
+            console.warn('Failed to load advertiser ID:', e);
+          }
+          
+          // Count individual campaigns
+          if (this.campaigns) {
+            for (const c of this.campaigns) {
+              // Filter by advertiser ID first
+              if (currentAdvertiserId && String(c.advertiserId) !== String(currentAdvertiserId)) continue;
+              const matchesState = this.filters.state === 'All' || c.state === this.filters.state;
+              const matchesDsp = this.filters.dsp === 'All' || (c.dsp && c.dsp.includes(this.filters.dsp));
+              const matchesSearch = !q || (c.id?.toLowerCase().includes(q) || c.beaconCampaignName?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q) || c.dsp?.toLowerCase().includes(q));
+              if (matchesState && matchesDsp && matchesSearch) total++;
+            }
+          }
+          
+          // Count grouped campaigns
           for (const g of this.groups) {
             for (const c of g.campaigns) {
+              // Filter by advertiser ID first
+              if (currentAdvertiserId && String(c.advertiserId) !== String(currentAdvertiserId)) continue;
               const matchesState = this.filters.state === 'All' || c.state === this.filters.state;
-              const matchesDsp = this.filters.dsp === 'All' || c.dsp === this.filters.dsp;
-              const matchesSearch = !q || (c.id?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q) || c.dsp?.toLowerCase().includes(q) || g.name.toLowerCase().includes(q));
+              const matchesDsp = this.filters.dsp === 'All' || (c.dsp && c.dsp.includes(this.filters.dsp));
+              const matchesSearch = !q || (c.id?.toLowerCase().includes(q) || c.beaconCampaignName?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q) || c.dsp?.toLowerCase().includes(q) || g.name.toLowerCase().includes(q));
               if (matchesState && matchesDsp && matchesSearch) total++;
             }
           }
@@ -987,11 +1711,13 @@ if (this.elements.createBtn) {
         },
 
         // Modal controls
-        openEditGroupModal: function(groupId) {
+        openEditGroupModal: function(groupId, isNewGroup = false) {
           const group = this.groups.find(g => g.id === groupId);
           if (!group) return;
 
           this.editingGroupId = groupId;
+          this.isEditingNewGroup = isNewGroup || group.isNewlyCreated;
+          
           if (this.elements.editGroupNameInput) {
             this.elements.editGroupNameInput.value = group.name || '';
             this.elements.editGroupNameInput.dataset.original = group.name || '';
@@ -1000,13 +1726,19 @@ if (this.elements.createBtn) {
             this.elements.editGroupModal.classList.remove('hidden');
             this.elements.editGroupModal.classList.add('flex');
           }
-          // Focus input
-          setTimeout(() => this.elements.editGroupNameInput?.focus(), 50);
+          // Focus input and select all text for easy editing
+          setTimeout(() => {
+            if (this.elements.editGroupNameInput) {
+              this.elements.editGroupNameInput.focus();
+              this.elements.editGroupNameInput.select();
+            }
+          }, 50);
           this.updateEditGroupSaveState();
         },
 
         closeEditGroupModal: function() {
           this.editingGroupId = null;
+          this.isEditingNewGroup = false;
           if (this.elements.editGroupModal) {
             this.elements.editGroupModal.classList.add('hidden');
             this.elements.editGroupModal.classList.remove('flex');
@@ -1017,7 +1749,14 @@ if (this.elements.createBtn) {
           if (!this.elements.editGroupNameInput || !this.elements.editGroupSaveBtn) return;
           const val = (this.elements.editGroupNameInput.value || '').trim();
           const orig = this.elements.editGroupNameInput.dataset.original || '';
-          this.elements.editGroupSaveBtn.disabled = (val.length === 0 || val === orig);
+          
+          // For new groups, enable save as long as there's text
+          // For existing groups, enable save only if text changed and not empty
+          if (this.isEditingNewGroup) {
+            this.elements.editGroupSaveBtn.disabled = (val.length === 0);
+          } else {
+            this.elements.editGroupSaveBtn.disabled = (val.length === 0 || val === orig);
+          }
         },
 
         saveEditGroupName: function() {
@@ -1046,10 +1785,233 @@ try {
 
           
           group.name = newName;
+          // Clear the newly created flag since it's now been saved
+          if (group.isNewlyCreated) {
+            delete group.isNewlyCreated;
+          }
+          
           this.saveGroups();
           this.applyFiltersAndRender();
           this.closeEditGroupModal();
-          if (typeof showToast === 'function') showToast('Campaign Group name updated');
+          if (typeof showToast === 'function') {
+            const message = this.isEditingNewGroup ? 'Campaign Group created successfully' : 'Campaign Group name updated';
+            showToast(message);
+          }
+        },
+
+        setupDragAndDrop: function() {
+          const tbody = this.elements.campaignTableBody;
+          if (!tbody) return;
+
+          // Handle drag start for campaign rows
+          tbody.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('campaign-row')) {
+              e.target.style.opacity = '0.5';
+              e.dataTransfer.effectAllowed = 'move';
+              e.dataTransfer.setData('text/plain', JSON.stringify({
+                campaignId: e.target.dataset.campaignId,
+                sourceGroupId: e.target.dataset.groupId
+              }));
+              
+              // Add visual feedback to drop zones
+              document.querySelectorAll('.group-drop-zone, .ungrouped-drop-zone').forEach(zone => {
+                zone.style.backgroundColor = '#e0f2fe';
+                zone.style.border = '2px dashed #0284c7';
+              });
+            }
+          });
+
+          // Handle drag end
+          tbody.addEventListener('dragend', (e) => {
+            if (e.target.classList.contains('campaign-row')) {
+              e.target.style.opacity = '';
+              
+              // Remove visual feedback from drop zones
+              document.querySelectorAll('.group-drop-zone, .ungrouped-drop-zone').forEach(zone => {
+                zone.style.backgroundColor = '';
+                zone.style.border = '';
+              });
+            }
+          });
+
+          // Handle drag over for group rows (to allow dropping)
+          tbody.addEventListener('dragover', (e) => {
+            if (e.target.closest('.group-drop-zone, .ungrouped-drop-zone')) {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = 'move';
+              
+              // Add hover effect
+              const dropZone = e.target.closest('.group-drop-zone, .ungrouped-drop-zone');
+              dropZone.style.backgroundColor = '#bfdbfe';
+            }
+          });
+
+          // Handle drag leave
+          tbody.addEventListener('dragleave', (e) => {
+            if (e.target.closest('.group-drop-zone, .ungrouped-drop-zone')) {
+              const dropZone = e.target.closest('.group-drop-zone, .ungrouped-drop-zone');
+              dropZone.style.backgroundColor = '#e0f2fe';
+            }
+          });
+
+          // Handle drop
+          tbody.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const dropZone = e.target.closest('.group-drop-zone, .ungrouped-drop-zone');
+            if (dropZone) {
+              try {
+                const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const targetGroupId = dropZone.dataset.groupId;
+                
+                if (dragData.campaignId && targetGroupId && dragData.sourceGroupId !== targetGroupId) {
+                  this.moveCampaignToGroup(dragData.campaignId, dragData.sourceGroupId, targetGroupId);
+                }
+              } catch (error) {
+                console.error('Failed to process drop:', error);
+              }
+              
+              // Reset drop zone styling
+              dropZone.style.backgroundColor = '';
+              dropZone.style.border = '';
+            }
+          });
+        },
+
+        moveCampaignToGroup: function(campaignId, sourceGroupId, targetGroupId) {
+          let campaignToMove = null;
+          
+          // Find and remove campaign from source location
+          if (sourceGroupId === 'ungrouped') {
+            // Remove from individual campaigns array
+            const index = this.campaigns.findIndex(c => c.id === campaignId);
+            if (index !== -1) {
+              campaignToMove = this.campaigns.splice(index, 1)[0];
+            }
+          } else {
+            // Remove from source group
+            const sourceGroup = this.groups.find(g => g.id === sourceGroupId);
+            if (sourceGroup) {
+              const index = sourceGroup.campaigns.findIndex(c => c.id === campaignId);
+              if (index !== -1) {
+                campaignToMove = sourceGroup.campaigns.splice(index, 1)[0];
+              }
+            }
+          }
+          
+          if (!campaignToMove) {
+            console.error('Campaign not found:', campaignId);
+            return;
+          }
+          
+          // Add campaign to target location
+          if (targetGroupId === 'ungrouped') {
+            // Move to ungrouped campaigns
+            if (!this.campaigns) this.campaigns = [];
+            this.campaigns.unshift(campaignToMove);
+            
+            // Show success message
+            if (typeof showToast === 'function') {
+              showToast(`Campaign "${campaignToMove.beaconCampaignName || campaignToMove.name}" moved to ungrouped campaigns`);
+            }
+          } else {
+            // Move to target group
+            const targetGroup = this.groups.find(g => g.id === targetGroupId);
+            if (targetGroup) {
+              targetGroup.campaigns.push(campaignToMove);
+              
+              // Show success message
+              if (typeof showToast === 'function') {
+                showToast(`Campaign "${campaignToMove.beaconCampaignName || campaignToMove.name}" moved to "${targetGroup.name}"`);
+              }
+            } else {
+              console.error('Target group not found:', targetGroupId);
+              return;
+            }
+          }
+          
+          // Save changes
+          this.saveGroups();
+          
+          // Refresh the display
+          this.applyFiltersAndRender();
+        },
+
+        createNewCampaignGroup: function() {
+          // Generate unique ID for new group
+          const timestamp = Date.now();
+          const newGroup = {
+            id: `GRP-${timestamp}`,
+            name: 'Campaign Group',
+            expanded: true,
+            campaigns: [],
+            isNewlyCreated: true  // Mark as newly created
+          };
+
+          // Add the new group to the groups array
+          this.groups.push(newGroup);
+          
+          // Save to localStorage
+          this.saveGroups();
+          
+          // Re-render the table to show the new group
+          this.applyFiltersAndRender();
+          
+          // Automatically open edit modal for the new group
+          setTimeout(() => {
+            this.openEditGroupModal(newGroup.id, true);  // Pass true for isNewGroup
+          }, 100);
+        },
+
+        toggleUngrouped: function() {
+          this.ungroupedExpanded = !this.ungroupedExpanded;
+          
+          // Save state to localStorage
+          try {
+            localStorage.setItem('ungrouped_expanded_state', JSON.stringify(this.ungroupedExpanded));
+          } catch (e) {
+            console.warn('Failed to save ungrouped state:', e);
+          }
+          
+          this.applyFiltersAndRender();
+        },
+
+        deleteGroup: function(groupId) {
+          const group = this.groups.find(g => g.id === groupId);
+          if (!group) return;
+
+          const campaignCount = group.campaigns?.length || 0;
+          let message = `Are you sure you want to delete the campaign group "${group.name}"?`;
+          if (campaignCount > 0) {
+            message += `\n\nThis group contains ${campaignCount} campaign(s). The campaigns will be moved to the individual campaigns list (not grouped).`;
+          }
+
+          if (!confirm(message)) return;
+
+          // Move campaigns to individual campaigns list
+          if (group.campaigns && group.campaigns.length > 0) {
+            if (!this.campaigns) this.campaigns = [];
+            this.campaigns.unshift(...group.campaigns);
+          }
+
+          // Remove the group
+          this.groups = this.groups.filter(g => g.id !== groupId);
+          
+          // Log deletion audit
+          try {
+            audit.recordDelete({
+              entityType: 'campaignGroup',
+              entityId: groupId,
+              data: { name: group.name, campaignCount }
+            });
+          } catch (e) {
+            console.warn('Failed to log group deletion audit:', e);
+          }
+
+          this.saveGroups();
+          this.applyFiltersAndRender();
+          if (typeof showToast === 'function') {
+            showToast(`Campaign Group "${group.name}" deleted. ${campaignCount} campaign(s) moved to individual list.`);
+          }
         },
 
         renderTable: function(rows) {
@@ -1059,7 +2021,7 @@ try {
 
           if (rows.length === 0) {
             const tr = document.createElement('tr');
-            tr.innerHTML = '<td colspan="5" class="px-6 py-4 text-center text-gray-500">No results</td>';
+            tr.innerHTML = '<td colspan="6" class="px-6 py-4 text-center text-gray-500">No results</td>';
             tbody.appendChild(tr);
             return;
           }
@@ -1067,39 +2029,58 @@ try {
           rows.forEach(r => {
             const tr = document.createElement('tr');
 
-            if (r.type === 'group') {
+            if (r.type === 'ungrouped-header') {
+              tr.innerHTML = `
+  <td class="px-3 py-1 text-sm font-semibold bg-gray-100">
+    <button data-action="toggle-ungrouped" class="w-4 h-4 inline-flex items-center justify-center rounded border border-strong bg-white mr-2" title="${r.expanded ? 'Collapse' : 'Expand'}">
+      ${r.expanded ? '&minus;' : '+'}
+    </button>
+  </td>
+  <td colspan="5" class="px-3 py-1 text-sm font-semibold bg-gray-100 drop-zone ungrouped-drop-zone" data-group-id="ungrouped">
+    ${r.name} (${r.campaignCount})
+  </td>
+  <td class="px-6 py-1 text-sm bg-gray-100 text-center">
+    <!-- No actions for ungrouped header -->
+  </td>
+`;
+              tr.className = 'row-ungrouped-header ungrouped-drop-zone';
+              tr.dataset.groupId = 'ungrouped';
+            } else if (r.type === 'group') {
              tr.innerHTML = `
-  <td class="px-3 py-1 text-sm font-semibold border-r border-default bg-gray-100">
+  <td class="px-3 py-1 text-sm font-semibold bg-gray-100">
     <button data-action="toggle-group" data-group-id="${r.groupId}" class="w-4 h-4 inline-flex items-center justify-center rounded border border-strong bg-white mr-2" title="${r.expanded ? 'Collapse' : 'Expand'}">
       ${r.expanded ? '&minus;' : '+'}
     </button>
   </td>
-  <td colspan="4" class="px-3 py-1 text-sm font-semibold border-r border-default bg-gray-100">
+  <td colspan="5" class="px-3 py-1 text-sm font-semibold bg-gray-100 drop-zone" data-group-id="${r.groupId}">
     Campaign Group: ${r.name}
-    <button class="ml-2 align-middle" title="Edit Group" data-action="edit-group" data-group-id="${r.groupId}">
-      <svg class="inline w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-      </svg>
-    </button>
   </td>
-  <td class="bg-gray-100 border-default border-r"></td>
+  <td class="px-6 py-1 text-sm bg-gray-100 text-center flex gap-3 justify-center items-center">
+    <button data-action="edit-group" data-group-id="${r.groupId}" class="text-blue-600 hover:underline" title="Edit Group Name">Edit</button>
+    <button data-action="delete-group" data-group-id="${r.groupId}" class="text-red-600 hover:underline" title="Delete Group">Delete</button>
+  </td>
 `;
 ;
-              tr.className = 'row-group';
+              tr.className = 'row-group group-drop-zone';
+              tr.dataset.groupId = r.groupId;
             } else {
               const c = r.campaign;
 
-tr.className = 'hover:bg-gray-50';
+tr.className = 'hover:bg-gray-50 campaign-row';
+tr.draggable = true;
+tr.dataset.campaignId = c.id;
+tr.dataset.groupId = r.groupId || 'ungrouped';
 tr.innerHTML = `
-  <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.id || ''}</td>
+  <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.beaconCampaignId || c.id || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm font-medium border-r border-default">
-    <a href="./CampaignDetails.html?campaignId=${encodeURIComponent(c.id)}&campaignName=${encodeURIComponent(c.name)}" class="text-blue-600 hover:underline">
-      ${c.name || ''}
+    <a href="./CampaignDetails.html?campaignId=${encodeURIComponent(c.id)}&campaignName=${encodeURIComponent(c.beaconCampaignName || c.name)}" class="text-blue-600 hover:underline">
+      ${c.beaconCampaignName || c.name || ''}
     </a>
   </td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
-  <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums border-r border-default">${c.adGroups ?? 0}</td>
+  <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.adServer || ''}</td>
+  <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums border-r border-default">${c.liveAdGroupCount !== undefined ? c.liveAdGroupCount : (c.adGroups ?? 0)}</td>
 `;
 const tdActions = document.createElement('td');
 tdActions.className = 'px-6 py-1 whitespace-nowrap text-sm text-center flex gap-3 justify-center items-center';
@@ -1186,10 +2167,21 @@ tr.appendChild(tdActions);
           const nameEl = document.querySelector('[data-bind="adv.name"]');
           const accountEl = document.querySelector('[data-bind="adv.account"]');
           const idEl = document.querySelector('[data-bind="adv.id"]');
+          const deliveryIdEl = document.querySelector('[data-bind="adv.deliveryId"]');
+          const reportingIdEl = document.querySelector('[data-bind="adv.reportingId"]');
           
           if (nameEl) nameEl.textContent = advertiser.name || 'Unknown Advertiser';
           if (accountEl) accountEl.textContent = advertiser.account || '—';
           if (idEl) idEl.textContent = advertiser.id || '—';
+          if (deliveryIdEl) deliveryIdEl.textContent = advertiser.deliveryId || '—';
+          if (reportingIdEl) reportingIdEl.textContent = advertiser.reportingId || '—';
+          
+          // Populate breadcrumbs
+          const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
+          if (breadcrumbAdvertiser) {
+            breadcrumbAdvertiser.textContent = `${advertiser.name || 'Unknown'}`;
+            breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
+          }
         }
       } catch (e) {
         console.warn('Failed to load advertiser data:', e);
@@ -1207,6 +2199,12 @@ document.addEventListener('click', (e) => {
 
   if (!confirm(`Are you sure you want to delete Campaign ID "${campaignId}"?`)) return;
 
+  // Delete from individual campaigns list
+  if (app.campaigns) {
+    app.campaigns = app.campaigns.filter(c => c.id !== campaignId);
+  }
+
+  // Delete from grouped campaigns
   app.groups.forEach(group => {
     group.campaigns = group.campaigns.filter(c => c.id !== campaignId);
   });
@@ -1217,22 +2215,369 @@ document.addEventListener('click', (e) => {
 
 // Show / hide modal handlers
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('createCampaignBtn')?.addEventListener('click', () => {
-    document.getElementById('createCampaignModal')?.classList.remove('hidden');
+  // Get connector elements
+  const connectorsToggle = document.getElementById('connectorsToggle');
+  const connectorsContent = document.getElementById('connectorsContent');
+  const dspCheckboxes = document.querySelectorAll('input[name="dsp"]');
+  const adServerCheckboxes = document.querySelectorAll('input[name="adserver"]');
+  
+  // Get field sections
+  const dspFieldsSection = document.getElementById('dspFieldsSection');
+  const adServerFieldsSection = document.getElementById('adServerFieldsSection');
+
+  // Connectors are always visible - no need to toggle visibility
+  // connectorsContent is always shown
+
+  // Toggle functionality - only updates connection status
+  function toggleConnectors() {
+    const isEnabled = connectorsToggle.getAttribute('aria-checked') === 'true';
+    const newState = !isEnabled;
+    
+    // Update toggle appearance
+    connectorsToggle.setAttribute('aria-checked', newState);
+    if (newState) {
+      connectorsToggle.classList.add('bg-blue-600');
+      connectorsToggle.classList.remove('bg-gray-200');
+      connectorsToggle.querySelector('span').classList.add('translate-x-5');
+      connectorsToggle.querySelector('span').classList.remove('translate-x-0');
+    } else {
+      connectorsToggle.classList.remove('bg-blue-600');
+      connectorsToggle.classList.add('bg-gray-200');
+      connectorsToggle.querySelector('span').classList.remove('translate-x-5');
+      connectorsToggle.querySelector('span').classList.add('translate-x-0');
+    }
+
+    // Update connection status for all connector toggles and labels
+    document.querySelectorAll('.connector-toggle').forEach(toggle => {
+      const label = toggle.parentElement.querySelector('.connector-status-label');
+      const toggleSwitch = toggle.querySelector('span');
+      
+      if (newState) {
+        // Set all to Synced
+        toggle.setAttribute('aria-checked', 'true');
+        toggle.classList.remove('bg-gray-200');
+        toggle.classList.add('bg-green-500');
+        if (toggleSwitch) {
+          toggleSwitch.classList.remove('translate-x-0');
+          toggleSwitch.classList.add('translate-x-5');
+        }
+        if (label) {
+          label.textContent = 'Synced';
+          label.classList.remove('text-gray-600');
+          label.classList.add('text-green-700');
+        }
+      } else {
+        // Set all to Not Synced
+        toggle.setAttribute('aria-checked', 'false');
+        toggle.classList.remove('bg-green-500');
+        toggle.classList.add('bg-gray-200');
+        if (toggleSwitch) {
+          toggleSwitch.classList.remove('translate-x-5');
+          toggleSwitch.classList.add('translate-x-0');
+        }
+        if (label) {
+          label.textContent = 'Not Synced';
+          label.classList.remove('text-green-700');
+          label.classList.add('text-gray-600');
+        }
+      }
+    });
+  }
+
+  function updateFieldsDisplay() {
+    const tradeDeskSelected = document.getElementById('dsp-trade-desk')?.checked;
+    const gcmSelected = document.getElementById('adserver-gcm')?.checked;
+    const noPlatformsMessage = document.getElementById('noPlatformsMessage');
+    
+    const anyPlatformSelected = tradeDeskSelected || gcmSelected;
+
+    // Show/hide DSP fields (only for Trade Desk)
+    if (tradeDeskSelected) {
+      dspFieldsSection?.classList.remove('hidden');
+    } else {
+      dspFieldsSection?.classList.add('hidden');
+    }
+
+    // Show/hide Ad Server fields (only for Google Campaign Manager)
+    if (gcmSelected) {
+      adServerFieldsSection?.classList.remove('hidden');
+    } else {
+      adServerFieldsSection?.classList.add('hidden');
+    }
+    
+    // Show/hide "No platforms selected" message
+    if (noPlatformsMessage) {
+      if (anyPlatformSelected) {
+        noPlatformsMessage.classList.add('hidden');
+      } else {
+        noPlatformsMessage.classList.remove('hidden');
+      }
+    }
+  }
+
+  // Event listeners for modal
+  connectorsToggle?.addEventListener('click', toggleConnectors);
+
+  // Add individual toggle functionality for each connector
+  document.querySelectorAll('.connector-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation(); // Prevent card click event
+      
+      const isConnected = this.getAttribute('aria-checked') === 'true';
+      const label = this.parentElement.querySelector('.connector-status-label');
+      const toggleSwitch = this.querySelector('span');
+      
+      if (isConnected) {
+        // Change to Not Synced
+        this.setAttribute('aria-checked', 'false');
+        this.classList.remove('bg-green-500');
+        this.classList.add('bg-gray-200');
+        toggleSwitch.classList.remove('translate-x-5');
+        toggleSwitch.classList.add('translate-x-0');
+        if (label) {
+          label.textContent = 'Not Synced';
+          label.classList.remove('text-green-700');
+          label.classList.add('text-gray-600');
+        }
+      } else {
+        // Change to Synced
+        this.setAttribute('aria-checked', 'true');
+        this.classList.remove('bg-gray-200');
+        this.classList.add('bg-green-500');
+        toggleSwitch.classList.remove('translate-x-0');
+        toggleSwitch.classList.add('translate-x-5');
+        if (label) {
+          label.textContent = 'Synced';
+          label.classList.remove('text-gray-600');
+          label.classList.add('text-green-700');
+        }
+      }
+    });
   });
+
+  // Simple event listeners for opening/closing modal (like ad groups)
+  const createBtn = document.getElementById('createBtn');
+  if (createBtn && !createBtn.hasCustomListener) {
+    createBtn.hasCustomListener = true; // Prevent duplicate listeners
+    createBtn.addEventListener('click', () => {
+      const modal = document.getElementById('createCampaignModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Reset immediately inline (no delays, no async)
+        const form = document.getElementById('createCampaignForm');
+        if (form) form.reset();
+        
+        // Generate and display Campaign ID
+        const campaignIdField = document.getElementById('beaconCampaignId');
+        if (campaignIdField) {
+          campaignIdField.value = 'CAM-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        }
+        
+        // Reset connectors toggle (but keep content visible)
+        if (connectorsToggle) {
+          connectorsToggle.classList.remove('bg-blue-600');
+          connectorsToggle.classList.add('bg-gray-200');
+          connectorsToggle.setAttribute('aria-checked', 'false');
+          const toggleSpan = connectorsToggle.querySelector('span');
+          if (toggleSpan) {
+            toggleSpan.classList.remove('translate-x-5');
+            toggleSpan.classList.add('translate-x-0');
+          }
+        }
+        
+        // Initialize wizard to step 1
+        if (typeof campaignWizardGoToStep === 'function') {
+          campaignWizardGoToStep(1);
+        }
+        
+        // Hide sections
+        const dspFieldsSection = document.getElementById('dspFieldsSection');
+        const adServerFieldsSection = document.getElementById('adServerFieldsSection');
+        if (dspFieldsSection) dspFieldsSection.classList.add('hidden');
+        if (adServerFieldsSection) adServerFieldsSection.classList.add('hidden');
+        
+        // Clear checkboxes
+        document.querySelectorAll('#createCampaignModal input[type="checkbox"]').forEach(cb => cb.checked = false);
+        
+        // Update fields display
+        updateFieldsDisplay();
+      }
+    });
+  }
 
   document.getElementById('closeCampaignModal')?.addEventListener('click', () => {
     document.getElementById('createCampaignModal')?.classList.add('hidden');
+    document.getElementById('createCampaignModal')?.classList.remove('flex');
   });
 
   document.getElementById('cancelCampaignModal')?.addEventListener('click', () => {
     document.getElementById('createCampaignModal')?.classList.add('hidden');
+    document.getElementById('createCampaignModal')?.classList.remove('flex');
+    // Reset to step 1 when closing
+    if (typeof campaignWizardGoToStep === 'function') campaignWizardGoToStep(1);
   });
+
+  // Campaign Wizard Navigation Logic
+  let campaignCurrentStep = 1;
+  const campaignTotalSteps = 3;
+
+  function campaignWizardGoToStep(step) {
+    if (step < 1 || step > campaignTotalSteps) return;
+    
+    campaignCurrentStep = step;
+    
+    // Update step indicators
+    document.querySelectorAll('.wizard-step').forEach((stepEl, idx) => {
+      const stepNum = idx + 1;
+      const stepNumber = stepEl.querySelector('.step-number');
+      const stepTitle = stepEl.querySelector('.step-title');
+      
+      if (stepNum < campaignCurrentStep) {
+        // Completed steps
+        stepEl.classList.remove('active');
+        stepEl.classList.add('completed');
+        stepNumber?.classList.remove('bg-blue-600', 'bg-gray-300', 'text-gray-600');
+        stepNumber?.classList.add('bg-green-600', 'text-white');
+        stepTitle?.classList.remove('text-gray-600');
+        stepTitle?.classList.add('text-gray-900');
+      } else if (stepNum === campaignCurrentStep) {
+        // Active step
+        stepEl.classList.add('active');
+        stepEl.classList.remove('completed');
+        stepNumber?.classList.remove('bg-gray-300', 'bg-green-600', 'text-gray-600');
+        stepNumber?.classList.add('bg-blue-600', 'text-white');
+        stepTitle?.classList.remove('text-gray-600');
+        stepTitle?.classList.add('text-gray-900');
+      } else {
+        // Future steps
+        stepEl.classList.remove('active', 'completed');
+        stepNumber?.classList.remove('bg-blue-600', 'bg-green-600', 'text-white');
+        stepNumber?.classList.add('bg-gray-300', 'text-gray-600');
+        stepTitle?.classList.add('text-gray-600');
+        stepTitle?.classList.remove('text-gray-900');
+      }
+    });
+    
+    // Update content sections
+    document.querySelectorAll('.wizard-content').forEach((content, idx) => {
+      if (idx + 1 === campaignCurrentStep) {
+        content.classList.add('active');
+      } else {
+        content.classList.remove('active');
+      }
+    });
+    
+    // Update progress bar
+    const progressPercent = (campaignCurrentStep / campaignTotalSteps) * 100;
+    const progressBar = document.getElementById('campaignWizardProgressBar');
+    const progressText = document.getElementById('campaignWizardProgressText');
+    if (progressBar) progressBar.style.width = progressPercent + '%';
+    if (progressText) progressText.textContent = Math.round(progressPercent) + '%';
+    
+    // Update step counter
+    const currentStepEl = document.getElementById('campaignWizardCurrentStep');
+    if (currentStepEl) currentStepEl.textContent = campaignCurrentStep;
+    
+    // Update button states
+    const prevBtn = document.getElementById('campaignWizardPrevBtn');
+    const nextBtn = document.getElementById('campaignWizardNextBtn');
+    const createBtn = document.getElementById('campaignCreateBtn');
+    const createAndAddBtn = document.getElementById('createAndAddAdGroup');
+    
+    if (prevBtn) prevBtn.disabled = campaignCurrentStep === 1;
+    
+    if (campaignCurrentStep === campaignTotalSteps) {
+      // Last step - show create buttons
+      if (nextBtn) nextBtn.classList.add('hidden');
+      if (createBtn) createBtn.classList.remove('hidden');
+      if (createAndAddBtn) createAndAddBtn.classList.remove('hidden');
+    } else {
+      // Not last step - show next button
+      if (nextBtn) nextBtn.classList.remove('hidden');
+      if (createBtn) createBtn.classList.add('hidden');
+      if (createAndAddBtn) createAndAddBtn.classList.add('hidden');
+    }
+  }
+
+  // Wizard navigation buttons
+  document.getElementById('campaignWizardPrevBtn')?.addEventListener('click', () => {
+    campaignWizardGoToStep(campaignCurrentStep - 1);
+  });
+
+  document.getElementById('campaignWizardNextBtn')?.addEventListener('click', () => {
+    campaignWizardGoToStep(campaignCurrentStep + 1);
+  });
+
+  // Allow clicking on steps to navigate (only to completed or active steps)
+  document.querySelectorAll('.wizard-step').forEach((stepEl, idx) => {
+    stepEl.addEventListener('click', () => {
+      const stepNum = idx + 1;
+      // Only allow going back to previous steps or current step
+      if (stepNum <= campaignCurrentStep) {
+        campaignWizardGoToStep(stepNum);
+      }
+    });
+  });
+
+  // Initialize wizard on modal open (reset to step 1)
+  const origCreateBtnListener = document.getElementById('createBtn');
+  if (origCreateBtnListener) {
+    const oldClick = origCreateBtnListener.onclick;
+    origCreateBtnListener.addEventListener('click', () => {
+      setTimeout(() => campaignWizardGoToStep(1), 50);
+    });
+  }
+
+  // Add event listeners for connector checkboxes
+  dspCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateFieldsDisplay);
+  });
+  
+  adServerCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateFieldsDisplay);
+  });
+
+  // Initialize display state
+  updateFieldsDisplay();
 });
+
+// Add global storage listener to refresh campaign list when ad groups change
+window.addEventListener('storage', function(e) {
+  if (e.key === 'adgroups_data_v1' && app) {
+    console.log('📊 Ad groups data changed, refreshing campaign list...');
+    app.applyFiltersAndRender?.();
+  }
+});
+
+// Add custom event listener for same-tab updates
+window.addEventListener('adGroupsUpdated', function(e) {
+  if (app) {
+    console.log('📊 Ad groups updated in same tab, refreshing campaign list...');
+    app.applyFiltersAndRender?.();
+  }
+});
+
+// Function to trigger ad group update event (for use by other pages)
+window.triggerAdGroupUpdate = function() {
+  window.dispatchEvent(new CustomEvent('adGroupsUpdated'));
+};
 
 // Create campaign logic
 document.getElementById('createCampaignForm').addEventListener('submit', function (e) {
   e.preventDefault();
+  handleCampaignCreation(false);
+});
+
+// Handle "Create Campaign" button
+document.getElementById('campaignCreateBtn')?.addEventListener('click', function() {
+  // Validate the form first
+  const form = document.getElementById('createCampaignForm');
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
   handleCampaignCreation(false);
 });
 
@@ -1249,35 +2594,123 @@ document.getElementById('createAndAddAdGroup')?.addEventListener('click', functi
 
 // Unified campaign creation handler
 function handleCampaignCreation(redirectToAdGroups) {
+  // Get selected platforms (checked checkboxes) and their connection status
+  const selectedDSP = [];
+  const selectedAdServer = [];
+  const connectionStatus = {}; // Track status for each platform
+  
+  // Check each connector card
+  document.querySelectorAll('.connector-card').forEach(card => {
+    const connectorToggle = card.querySelector('.connector-toggle');
+    const checkbox = card.querySelector('input[type="checkbox"]');
+    
+    if (checkbox && checkbox.checked) {
+      const connectorType = checkbox.name; // 'dsp' or 'adserver'
+      const connectorValue = checkbox.value;
+      const isConnected = connectorToggle && connectorToggle.getAttribute('aria-checked') === 'true';
+      
+      // Add to selected arrays
+      if (connectorType === 'dsp') {
+        selectedDSP.push(connectorValue);
+      } else if (connectorType === 'adserver') {
+        selectedAdServer.push(connectorValue);
+      }
+      
+      // Track connection status
+      connectionStatus[connectorValue] = isConnected ? 'Connected' : 'Disconnected';
+    }
+  });
+  
+  // Debug: Log form field values
+  console.log('🔍 Form field values during creation:');
+  console.log('beaconCampaignName:', document.getElementById('beaconCampaignName')?.value);
+  console.log('campaignName:', document.getElementById('campaignName')?.value);
+  console.log('campaignSeed:', document.getElementById('campaignSeed')?.value);
+  console.log('campaignBudget:', document.getElementById('campaignBudget')?.value);
+  console.log('campaignImpressions:', document.getElementById('campaignImpressions')?.value);
+  console.log('Selected DSPs:', selectedDSP);
+  console.log('Selected Ad Servers:', selectedAdServer);
+  console.log('Connection Status:', connectionStatus);
+  
+  // Create separate DSP and Ad Server display strings
+  const dspLabels = {
+    'trade-desk': 'Trade Desk',
+    'dv360': 'DV360',
+    'simplifi': 'Simplifi'
+  };
+  const adServerLabels = {
+    'google-campaign-manager': 'Google Campaign Manager'
+  };
+  
+  const dspList = [];
+  const adServerList = [];
+  
+  selectedDSP.forEach(dsp => {
+    if (dspLabels[dsp]) {
+      dspList.push(dspLabels[dsp]);
+    }
+  });
+  selectedAdServer.forEach(adServer => {
+    if (adServerLabels[adServer]) {
+      adServerList.push(adServerLabels[adServer]);
+    }
+  });
+  
+  const dspDisplay = dspList.length > 0 ? dspList.join(', ') : '';
+  const adServerDisplay = adServerList.length > 0 ? adServerList.join(', ') : '';
+  
+  // Get current advertiser ID
+  const advData = JSON.parse(localStorage.getItem('adv_selected_data') || '{}');
+  const advertiserId = advData.id || null;
+  
   const campaign = {
     id: 'CAM-' + Date.now(),
+    advertiserId: advertiserId, // Track which advertiser this campaign belongs to
     name: document.getElementById('campaignName')?.value || '',
-    advertiser: document.getElementById('campaignAdvertiser')?.value || '',
-    objective: document.getElementById('campaignObjective')?.value || '',
+    seed: document.getElementById('campaignSeed')?.value || '',
+    organization: document.getElementById('campaignOrganization')?.value || '',
+    pacing: document.getElementById('campaignPacing')?.value || '',
+    timezone: document.getElementById('campaignTimezone')?.value || '',
     startDate: document.getElementById('campaignStartDate')?.value || '',
     endDate: document.getElementById('campaignEndDate')?.value || '',
-    totalBudget: document.getElementById('campaignTotalBudget')?.value || '0',
-    dailyBudget: document.getElementById('campaignDailyBudget')?.value || '0',
-    targetAudience: document.getElementById('targetAudience')?.value || '',
-    geoTargeting: document.getElementById('geoTargeting')?.value || '',
-    deviceTargeting: document.getElementById('deviceTargeting')?.value || '',
     channel: document.getElementById('campaignChannel')?.value || '',
+    budget: document.getElementById('campaignBudget')?.value || '0',
+    impressions: document.getElementById('campaignImpressions')?.value || '',
     kpi: document.getElementById('campaignKPI')?.value || '',
     kpiTarget: document.getElementById('campaignKPITarget')?.value || '',
-    pacing: document.getElementById('campaignPacing')?.value || '',
     state: 'Active',
-    dsp: 'DV360',
-    adGroups: 0
+    dsp: dspDisplay, // Only contains DSP selections
+    adServer: adServerDisplay, // Only contains Ad Server selections
+    adGroups: 0, // Initialize with 0 - will be updated dynamically by live count
+    // Beacon Fields mapped to Common Data
+    beaconCampaignId: document.getElementById('beaconCampaignId')?.value || '',
+    beaconCampaignName: document.getElementById('beaconCampaignName')?.value || '',
+    // New Ad Server fields
+    adServerCampaignName: document.getElementById('adServerCampaignName')?.value || '',
+    adServerSchedule: document.getElementById('adServerSchedule')?.value || '',
+    adServerLandingPageName: document.getElementById('adServerLandingPageName')?.value || '',
+    adServerLandingPageURL: document.getElementById('adServerLandingPageURL')?.value || '',
+    // Connector information - selected platforms and their status
+    connectors: {
+      dsp: selectedDSP,
+      adServer: selectedAdServer,
+      status: connectionStatus // Store connection status for each platform
+    }
   };
 
+  console.log('🔍 Created campaign object:', campaign);
+
   const raw = localStorage.getItem('campaign_tree_groups');
-  let groups = raw ? JSON.parse(raw) : [];
+  let data = raw ? JSON.parse(raw) : { campaigns: [], groups: [] };
 
-  if (!groups.length) {
-    groups.push({ id: 'DEFAULT', name: 'Ungrouped', expanded: true, campaigns: [] });
-  }
+  // Ensure the data structure has both campaigns and groups arrays
+  if (!data.campaigns) data.campaigns = [];
+  if (!data.groups) data.groups = [];
 
-  groups[0].campaigns.unshift(campaign);
+  // Add campaign directly to the top-level campaigns array
+  data.campaigns.unshift(campaign);
+
+  console.log('🔍 Updated campaigns data:', data.campaigns);
 
   // Log creation to audit
   audit.recordCreate({
@@ -1285,33 +2718,55 @@ function handleCampaignCreation(redirectToAdGroups) {
     entityType: 'campaign',
     entityId: campaign.id,
     data: {
+      beaconCampaignName: campaign.beaconCampaignName,
+      seed: campaign.seed,
+      organization: campaign.organization,
+      pacing: campaign.pacing,
+      timezone: campaign.timezone,
+      startDate: campaign.startDate,
+      endDate: campaign.endDate,
+      channel: campaign.channel,
       campaignName: campaign.name,
-      campaignChannel: campaign.channel,
-      campaignKPI: campaign.kpi,
-      campaignKPITarget: campaign.kpiTarget,
-      campaignPacing: campaign.pacing,
-      campaignAdvertiser: campaign.advertiser,
-      campaignObjective: campaign.objective,
+      budget: campaign.budget,
+      impressions: campaign.impressions,
+      kpi: campaign.kpi,
+      kpiTarget: campaign.kpiTarget,
       campaignStartDate: campaign.startDate,
       campaignEndDate: campaign.endDate,
       campaignTotalBudget: campaign.totalBudget,
       campaignDailyBudget: campaign.dailyBudget,
       targetAudience: campaign.targetAudience,
       geoTargeting: campaign.geoTargeting,
-      deviceTargeting: campaign.deviceTargeting
+      deviceTargeting: campaign.deviceTargeting,
+      // Beacon fields
+      beaconCampaignId: campaign.beaconCampaignId,
+      beaconCampaignName: campaign.beaconCampaignName,
+      // Ad Server fields in audit
+      adServerCampaignName: campaign.adServerCampaignName,
+      adServerSchedule: campaign.adServerSchedule,
+      adServerLandingPageName: campaign.adServerLandingPageName,
+      adServerLandingPageURL: campaign.adServerLandingPageURL,
+      connectors: campaign.connectors
     }
   });
   console.log('✔️ Audit log created for:', campaign.id);
 
-  localStorage.setItem('campaign_tree_groups', JSON.stringify(groups));
+  localStorage.setItem('campaign_tree_groups', JSON.stringify(data));
 
-  app.groups = groups;
-  app.saveGroups?.();
-  app.applyFiltersAndRender?.();
+  // Update app instance to reflect new data
+  if (app) {
+    app.campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
+    app.groups = Array.isArray(data.groups) ? data.groups : [];
+    app.applyFiltersAndRender?.();
+  }
 
-  // Reset and close modal
-  document.getElementById('createCampaignForm').reset();
-  document.getElementById('createCampaignModal')?.classList.add('hidden');
+  // Close modal first
+  const modal = document.getElementById('createCampaignModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    console.log('✅ Modal closed after campaign creation');
+  }
 
   // If redirecting to ad groups
   if (redirectToAdGroups) {
@@ -1319,9 +2774,8 @@ function handleCampaignCreation(redirectToAdGroups) {
   }
 }
 
-
-
 document.addEventListener('DOMContentLoaded', function () {
+  // Individual campaign export
   document.addEventListener('click', function (e) {
     const exportBtn = e.target.closest('[data-export]');
     if (!exportBtn) return;
@@ -1342,6 +2796,100 @@ document.addEventListener('DOMContentLoaded', function () {
       advertiserAccount: advAccount
     });
   });
+
+  // Universal export button
+  const universalExportBtn = document.getElementById('universalExportBtn');
+  if (universalExportBtn) {
+    universalExportBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Get current advertiser from selected data (same as the page uses)
+      const selectedData = localStorage.getItem('adv_selected_data');
+      let advertiserId = null;
+      let advName = 'Unknown Advertiser';
+      let advAccount = 'N/A';
+      
+      if (selectedData) {
+        try {
+          const advertiser = JSON.parse(selectedData);
+          advertiserId = advertiser.id;
+          advName = advertiser.name || 'Unknown Advertiser';
+          advAccount = advertiser.account || 'N/A';
+          console.log('Current advertiser:', advertiserId, advName);
+        } catch (err) {
+          console.error('Error parsing selected advertiser data:', err);
+        }
+      }
+      
+      // Get all campaigns for this advertiser (matching page's logic)
+      const campaignData = localStorage.getItem('campaign_tree_groups');
+      let allCampaignIds = [];
+      
+      if (campaignData) {
+        try {
+          const data = JSON.parse(campaignData);
+          
+          // Handle both old and new data structures (matching getCounts function)
+          let campaigns = [];
+          
+          if (Array.isArray(data)) {
+            // Old structure - extract campaigns from groups
+            data.forEach(group => {
+              if (group.campaigns) {
+                campaigns.push(...group.campaigns);
+              }
+            });
+          } else {
+            // New structure - get campaigns from both arrays
+            if (Array.isArray(data.campaigns)) {
+              campaigns.push(...data.campaigns);
+            }
+            if (Array.isArray(data.groups)) {
+              data.groups.forEach(group => {
+                if (group.campaigns) {
+                  campaigns.push(...group.campaigns);
+                }
+              });
+            }
+          }
+          
+          console.log('Total campaigns found:', campaigns.length);
+          
+          // Filter campaigns for this advertiser (using String comparison like the page does)
+          allCampaignIds = campaigns
+            .filter(c => {
+              const matches = advertiserId && String(c.advertiserId) === String(advertiserId);
+              return matches;
+            })
+            .map(c => c.id);
+          
+          console.log('Filtered campaigns for advertiser', advertiserId, ':', allCampaignIds.length);
+            
+        } catch (err) {
+          console.error('Error parsing campaign data:', err);
+        }
+      }
+      
+      if (!advertiserId) {
+        alert('Could not determine current advertiser. Please make sure you are on an advertiser page.');
+        return;
+      }
+      
+      if (allCampaignIds.length === 0) {
+        alert(`No campaigns found for this advertiser (${advName}).`);
+        console.log('Debug: Advertiser ID:', advertiserId);
+        console.log('Debug: Campaign data exists:', !!campaignData);
+        return;
+      }
+      
+      // Open universal drawer with all campaign IDs
+      audit.openUniversalDrawer({
+        campaignIds: allCampaignIds,
+        advertiserName: advName,
+        advertiserAccount: advAccount
+      });
+    });
+  }
 });
 
 
