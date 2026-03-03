@@ -1,4 +1,4 @@
-# [Project Name]
+# Beacon
 
 ## Overview
 Describe what this project does and why it exists.
