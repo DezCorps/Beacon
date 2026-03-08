@@ -691,84 +691,64 @@
                   <p class="mt-1 text-xs text-gray-500">Auto-generated unique identifier</p>
                 </div>
 
-                <!-- Account Number -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Account Number <span class="text-red-500" id="accountRequiredAsterisk">*</span>
-                  </label>
-                  <div class="flex items-center space-x-2">
-                    <input 
-                      type="text" 
-                      id="accountNumber" 
-                      class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter account number"
-                    />
-                    <button 
-                      type="button"
-                      id="lookupBtn" 
-                      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                      title="Lookup account"
-                    >
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                      </svg>
-                    </button>
-                  </div>
-                  <p id="accountDupError" class="mt-2 text-sm text-red-600 hidden" role="alert">
-                    An advertiser with this Account # already exists.
-                  </p>
-                </div>
-
-                <!-- No CRM Account Checkbox -->
-                <div class="flex items-center">
-                  <input 
-                    type="checkbox" 
-                    id="noCrmAccount" 
-                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label for="noCrmAccount" class="ml-2 text-sm text-gray-700">
-                    Advertiser is Not Connected to a CRM Account
-                  </label>
-                </div>
-
-                <!-- Advertiser Name -->
-                <div>
-                  <label for="advertiserName" class="block text-sm font-medium text-gray-700 mb-2">
-                    Account Name <span class="text-red-500">*</span>
-                  </label>
-                  <input 
-                    type="text" 
-                    id="advertiserName" 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-100"
-                    placeholder="Enter advertiser name"
-                    disabled
-                  />
-                  <p id="nameDupError" class="mt-2 text-sm text-red-600 hidden" role="alert">
-                    An advertiser with this Name already exists.
-                  </p>
-                  <div id="crmAccountDisplay" class="hidden mt-1 text-xs text-gray-500">
-                    CRM Account: <span id="crmAccountName"></span>
-                  </div>
-                </div>
-
-                <div class="border-t border-gray-200 pt-4">
-                  <p class="text-sm font-medium text-gray-900">CAD Informational Fields (Optional)</p>
-                  <p class="text-xs text-gray-500 mt-1">These support Change Order output and Sebpo setup readiness.</p>
-                </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label for="totalInvoiceBudget" class="block text-sm font-medium text-gray-700 mb-2">Total Invoice Budget</label>
-                    <input type="text" id="totalInvoiceBudget" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="N/A" />
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Account Number <span class="text-red-500" id="accountRequiredAsterisk">*</span>
+                    </label>
+                    <div class="flex items-center space-x-2">
+                      <input 
+                        type="text" 
+                        id="accountNumber" 
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter account number"
+                      />
+                      <button 
+                        type="button"
+                        id="lookupBtn" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        title="Lookup account"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                      </button>
+                    </div>
+                    <p id="accountDupError" class="mt-2 text-sm text-red-600 hidden" role="alert">
+                      An advertiser with this Account # already exists.
+                    </p>
                   </div>
+
                   <div>
-                    <label for="totalBudget" class="block text-sm font-medium text-gray-700 mb-2">Total Budget</label>
-                    <input type="text" id="totalBudget" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="N/A" />
+                    <label for="advertiserName" class="block text-sm font-medium text-gray-700 mb-2">
+                      Account Name <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      id="advertiserName" 
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-100"
+                      placeholder="Enter advertiser name"
+                      disabled
+                    />
+                    <p id="nameDupError" class="mt-2 text-sm text-red-600 hidden" role="alert">
+                      An advertiser with this Name already exists.
+                    </p>
+                    <div id="crmAccountDisplay" class="hidden mt-1 text-xs text-gray-500">
+                      CRM Account: <span id="crmAccountName"></span>
+                    </div>
                   </div>
-                  <div>
-                    <label for="budgetRemaining" class="block text-sm font-medium text-gray-700 mb-2">Budget Remaining</label>
-                    <input type="text" id="budgetRemaining" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="N/A" />
+
+                  <div class="md:col-span-2 flex items-center">
+                    <input 
+                      type="checkbox" 
+                      id="noCrmAccount" 
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label for="noCrmAccount" class="ml-2 text-sm text-gray-700">
+                      Advertiser is Not Connected to a CRM Account
+                    </label>
                   </div>
+
                   <div>
                     <label for="totalInvoiceImpressions" class="block text-sm font-medium text-gray-700 mb-2">Total Invoice Impressions</label>
                     <input type="text" id="totalInvoiceImpressions" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="1600000" />
@@ -778,8 +758,12 @@
                     <input type="text" id="totalImpressions" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="1600000" />
                   </div>
                   <div>
-                    <label for="impressionsRemaining" class="block text-sm font-medium text-gray-700 mb-2">Impressions Remaining</label>
-                    <input type="text" id="impressionsRemaining" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="N/A" />
+                    <label for="totalInvoiceBudget" class="block text-sm font-medium text-gray-700 mb-2">Total Invoice Budget</label>
+                    <input type="text" id="totalInvoiceBudget" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="N/A" />
+                  </div>
+                  <div>
+                    <label for="totalBudget" class="block text-sm font-medium text-gray-700 mb-2">Total Budget</label>
+                    <input type="text" id="totalBudget" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="N/A" />
                   </div>
                 </div>
 
@@ -1258,16 +1242,16 @@
     ];
 
     const SAMPLE_CRM_ACCOUNTS = [
-      { accountNumber: '987654', accountName: 'BlueSky Technologies' },
-      { accountNumber: '246810', accountName: 'Horizon Business Solutions' },
-      { accountNumber: '135792', accountName: 'RedRock Consulting Group' },
-      { accountNumber: '864207', accountName: 'Silverline Communications' },
-      { accountNumber: '159753', accountName: 'GreenField Marketing Agency' },
-      { accountNumber: '753159', accountName: 'Northstar Digital Ventures' },
-      { accountNumber: '951357', accountName: 'Blackstone Media Corp' },
-      { accountNumber: '147258', accountName: 'Goldmine Software Solutions' },
-      { accountNumber: '369741', accountName: 'Whitehouse Analytics LLC' },
-      { accountNumber: '258147', accountName: 'Crystal Clear Communications' }
+      { accountNumber: '987654', accountName: 'BlueSky Technologies', website: 'https://blueskytechnologies.com' },
+      { accountNumber: '246810', accountName: 'Horizon Business Solutions', website: 'https://horizonbusinesssolutions.com' },
+      { accountNumber: '135792', accountName: 'RedRock Consulting Group', website: 'https://redrockconsultinggroup.com' },
+      { accountNumber: '864207', accountName: 'Silverline Communications', website: 'https://silverlinecommunications.com' },
+      { accountNumber: '159753', accountName: 'GreenField Marketing Agency', website: 'https://greenfieldmarketingagency.com' },
+      { accountNumber: '753159', accountName: 'Northstar Digital Ventures', website: 'https://northstardigitalventures.com' },
+      { accountNumber: '951357', accountName: 'Blackstone Media Corp', website: 'https://blackstonemediacorp.com' },
+      { accountNumber: '147258', accountName: 'Goldmine Software Solutions', website: 'https://goldminesoftwaresolutions.com' },
+      { accountNumber: '369741', accountName: 'Whitehouse Analytics LLC', website: 'https://whitehouseanalytics.com' },
+      { accountNumber: '258147', accountName: 'Crystal Clear Communications', website: 'https://crystalclearcommunications.com' }
     ];
 
     // === MAIN APPLICATION ===
@@ -1632,6 +1616,7 @@ self.elements.advertiserName.classList.add('bg-gray-100');
 // do not clear advertiserName automatically; keep user's typed value if any
 }
                   self.validateForm();
+                  self.applyCreatePlatformDefaults();
 
                   // keep lookup search in sync so typing in the Create modal filters the lookup immediately
                   const lookupSearch = document.getElementById('lookupSearch');
@@ -1651,6 +1636,7 @@ self.elements.advertiserName.classList.add('bg-gray-100');
 const nameDup = document.getElementById('nameDupError');
 if (nameDup) nameDup.classList.add('hidden');
                 self.validateForm();
+                self.applyCreatePlatformDefaults();
 
                 // also allow advertiser name to pre-fill the lookup box for name-based search
                 const lookupSearch = document.getElementById('lookupSearch');
@@ -1687,6 +1673,7 @@ if (nameDup) nameDup.classList.add('hidden');
                   tr.className = 'cursor-pointer hover:bg-gray-50';
                   tr.dataset.accountNumber = acc.accountNumber;
                   tr.dataset.accountName = acc.accountName;
+                  tr.dataset.website = acc.website || '';
                   tr.innerHTML = '<td class="py-2 px-4">' + acc.accountNumber + '</td>' +
                                  '<td class="py-2 px-4">' + acc.accountName + '</td>';
                   tr.addEventListener('click', function() {
@@ -1739,8 +1726,9 @@ if (nameDup) nameDup.classList.add('hidden');
                   if (!sel) return;
                   const accNum = sel.dataset.accountNumber;
                   const accName = sel.dataset.accountName;
+                  const accWebsite = sel.dataset.website || '';
 
-                  self.selectedAccount = { accountNumber: accNum, accountName: accName };
+                  self.selectedAccount = { accountNumber: accNum, accountName: accName, website: accWebsite };
 
                   if (self.elements.accountNumber) {
                     self.elements.accountNumber.value = accNum;
@@ -1766,6 +1754,7 @@ if (accDup) accDup.classList.add('hidden');
 const nameDup = document.getElementById('nameDupError');
 if (nameDup) nameDup.classList.add('hidden');
 self.validateForm();
+                  self.applyCreatePlatformDefaults();
 
                   closeLookup();
                 });
@@ -2160,12 +2149,10 @@ self.validateForm();
             this.selectedAccount = null;
 
             [
-              'totalInvoiceBudget',
-              'totalBudget',
-              'budgetRemaining',
               'totalInvoiceImpressions',
               'totalImpressions',
-              'impressionsRemaining'
+              'totalInvoiceBudget',
+              'totalBudget'
             ].forEach((id) => {
               const field = document.getElementById(id);
               if (field) field.value = '';
@@ -2181,7 +2168,7 @@ self.validateForm();
             if (adServerSection) adServerSection.classList.add('hidden');
 
             // Reset all DSP fields
-            const dspFields = ['dspName', 'dspPartner', 'dspDomain', 'dspCountry', 'dspEuTargeting', 
+            const dspFields = ['dspName', 'dspPartner', 'dspDomain', 'dspCountry', 'dspEu', 
                               'dspIndustry', 'dspAttrClickValue', 'dspAttrClickUnit', 
                               'dspAttrImpressionValue', 'dspAttrImpressionUnit', 'dspDedupClick', 
                               'dspDedupConversion', 'dspYahoo'];
@@ -2289,6 +2276,7 @@ self.validateForm();
               }
             }
             this.validateForm();
+            this.applyCreatePlatformDefaults();
           },
 
           validateForm: function() {
@@ -2373,8 +2361,68 @@ return true;
 return false;
 },
 
+          getCreateAccountNumber: function() {
+            if (this.selectedAccount?.accountNumber) {
+              return String(this.selectedAccount.accountNumber).trim();
+            }
+            return (this.elements.accountNumber?.value || '').trim();
+          },
+
+          getCreateAccountName: function() {
+            const name = (this.elements.advertiserName?.value || '').trim();
+            if (name) return name;
+            if (this.selectedAccount?.accountName) {
+              return String(this.selectedAccount.accountName).trim();
+            }
+            return '';
+          },
+
+          getCreateWebsite: function() {
+            if (this.selectedAccount?.website) {
+              return String(this.selectedAccount.website).trim();
+            }
+            return '';
+          },
+
+          buildCreatePlatformDefaultName: function() {
+            const account = this.getCreateAccountNumber();
+            const name = this.getCreateAccountName();
+            if (!account && !name) return '';
+            return [account, name].filter(Boolean).join('_');
+          },
+
+          applyCreatePlatformDefaults: function() {
+            const defaultName = this.buildCreatePlatformDefaultName();
+            const website = this.getCreateWebsite();
+            const dspValue = document.getElementById('dspDropdown')?.value || '';
+            const adServerValue = document.getElementById('adServerDropdown')?.value || '';
+
+            if (dspValue === 'trade-desk') {
+              const dspName = document.getElementById('dspName');
+              if (dspName && !dspName.value.trim() && defaultName) {
+                dspName.value = defaultName;
+              }
+              const dspPartner = document.getElementById('dspPartner');
+              if (dspPartner && !dspPartner.value) {
+                dspPartner.value = 'Multiview';
+              }
+              const dspDomain = document.getElementById('dspDomain');
+              if (dspDomain && !dspDomain.value.trim() && website) {
+                dspDomain.value = website;
+              }
+            }
+
+            if (adServerValue === 'google-campaign-manager') {
+              const adServerName = document.getElementById('adServerAdvertiserName');
+              if (adServerName && !adServerName.value.trim() && defaultName) {
+                adServerName.value = defaultName;
+              }
+            }
+          },
+
           handleCreateAdvertiser: function() {
             if (!this.elements.createAdvertiserBtn || this.elements.createAdvertiserBtn.disabled) return;
+            this.applyCreatePlatformDefaults();
 
             const accToCheck = this.selectedAccount ? this.selectedAccount.accountNumber : 
                               (this.elements.accountNumber ? this.elements.accountNumber.value.trim() : '');
@@ -2450,12 +2498,11 @@ return false;
               name: this.elements.advertiserName ? this.elements.advertiserName.value.trim() : '',
               account: this.selectedAccount ? this.selectedAccount.accountNumber : 
                       (noCrm ? '' : (this.elements.accountNumber ? this.elements.accountNumber.value.trim() : '')),
-              totalInvoiceBudget: document.getElementById('totalInvoiceBudget')?.value?.trim() || '',
-              totalBudget: document.getElementById('totalBudget')?.value?.trim() || '',
-              budgetRemaining: document.getElementById('budgetRemaining')?.value?.trim() || '',
               totalInvoiceImpressions: document.getElementById('totalInvoiceImpressions')?.value?.trim() || '',
               totalImpressions: document.getElementById('totalImpressions')?.value?.trim() || '',
-              impressionsRemaining: document.getElementById('impressionsRemaining')?.value?.trim() || '',
+              totalInvoiceBudget: document.getElementById('totalInvoiceBudget')?.value?.trim() || '',
+              totalBudget: document.getElementById('totalBudget')?.value?.trim() || '',
+              website: this.getCreateWebsite(),
               status: 'Active',
               state: 'Active',
               campaign: '0',
@@ -2716,6 +2763,8 @@ init: function() {
                 noPlat.style.display = 'none';
               }
             }
+
+            app?.applyCreatePlatformDefaults?.();
           },
 
 nextStep: function() {
@@ -2848,6 +2897,10 @@ nextStep: function() {
             const progressText = document.getElementById('wizardProgressText');
             if (progressBar) progressBar.style.width = `${progress}%`;
             if (progressText) progressText.textContent = `${Math.round(progress)}%`;
+
+            if (this.currentStep === 3) {
+              this.updatePlatformConfigVisibility();
+            }
           }
         };
 
