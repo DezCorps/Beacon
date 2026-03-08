@@ -250,12 +250,12 @@
               <!-- Right Column: Ad Group IDs -->
               <div class="text-right">
                 <div class="flex justify-end gap-2">
-                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
-                  <a id="adGroupDeliveryId" href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a>
+                  <!-- <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <a id="adGroupDeliveryId" href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a> -->
                 </div>
                 <div class="flex justify-end gap-2">
-                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
-                  <a id="adGroupReportingId" href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a>
+                  <!-- <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <a id="adGroupReportingId" href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a> -->
                 </div>
                 <div class="flex justify-end gap-2">
                   <span class="text-sm font-semibold text-gray-600">ID:</span>
@@ -322,7 +322,7 @@
                       <!-- Name -->
                       <tr class="border-b border-default">
                         <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                          Name
+                          Ad Group Name
                         </td>
                         <td class="px-6 py-1 text-sm">
                           <span id="displayAdGroupName" class="text-gray-800 break-words">N/A</span>
@@ -346,14 +346,23 @@
                       <!-- Multiview Classification -->
                       <tr class="border-b border-default">
                         <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                          Multiview Classification
+                          MV Classification
                         </td>
                         <td class="px-6 py-1 text-sm">
                           <span id="displayMultiviewClassification" class="text-gray-800 break-words">N/A</span>
                           <select id="inputMultiviewClassification" class="hidden adgroup-details-input" title="Multiview Classification selection" aria-label="Select multiview classification">
                             <option value="">-- Select --</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
+                            <option value="Programmatic Display">Programmatic Display</option>
+                            <option value="Programmatic Video">Programmatic Video</option>
+                            <option value="Programmatic Audio">Programmatic Audio</option>
+                            <option value="Connected TV">Connected TV</option>
+                            <option value="Paid Social">Paid Social</option>
+                            <option value="Paid Search">Paid Search</option>
+                            <option value="Event Targeting">Event Targeting</option>
+                            <option value="Native Video">Native Video</option>
+                            <option value="DOOH">DOOH</option>
+                            <option value="PLD Display">PLD Display</option>
+                            <option value="PLD Video">PLD Video</option>
                           </select>
                         </td>
                       </tr>
@@ -361,15 +370,35 @@
                       <!-- Multiview Tactic -->
                       <tr class="border-b border-default">
                         <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                          Multiview Tactic
+                          Tactic
                         </td>
                         <td class="px-6 py-1 text-sm">
                           <span id="displayMultiviewTactic" class="text-gray-800 break-words">N/A</span>
                           <select id="inputMultiviewTactic" class="hidden adgroup-details-input" title="Multiview Tactic selection" aria-label="Select multiview tactic">
                             <option value="">-- Select --</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
+                            <option value="Persona">Persona</option>
+                            <option value="Retargeting">Retargeting</option>
+                            <option value="Data Onboarding">Data Onboarding</option>
+                            <option value="Company Targeting">Company Targeting</option>
+                            <option value="IP Targeting">IP Targeting</option>
+                            <option value="Addressable">Addressable</option>
+                            <option value="Location Targeting">Location Targeting</option>
+                            <option value="Frequency Fencing">Frequency Fencing</option>
+                            <option value="Contextual">Contextual</option>
+                            <option value="Advanced ABM">Advanced ABM</option>
+                            <option value="Sector">Sector</option>
                           </select>
+                        </td>
+                      </tr>
+
+                      <!-- Content Category -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Content Category
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayContentCategory" class="text-gray-800 break-words">N/A</span>
+                          <input id="inputContentCategory" type="text" class="hidden adgroup-details-input" title="Content Category input" aria-label="Enter content category" />
                         </td>
                       </tr>
 
@@ -381,6 +410,72 @@
                         <td class="px-6 py-1 text-sm">
                           <span id="displayBeaconAudience" class="text-gray-800 break-words">N/A</span>
                           <input id="inputBeaconAudience" type="text" class="hidden adgroup-details-input" title="Beacon Audience input" aria-label="Enter beacon audience" />
+                        </td>
+                      </tr>
+
+                      <!-- Geo Target -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Geo Target
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayGeoTarget" class="text-gray-800 break-words">N/A</span>
+                          <input id="inputGeoTarget" type="text" class="hidden adgroup-details-input" title="Geo Target input" aria-label="Enter geo target" />
+                        </td>
+                      </tr>
+
+                      <!-- Start Date -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Start Date
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayBeaconStartDate" class="text-gray-800 break-words">N/A</span>
+                          <input id="inputBeaconStartDate" type="date" class="hidden adgroup-details-input" title="Start Date input" aria-label="Enter start date" />
+                        </td>
+                      </tr>
+
+                      <!-- End Date -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          End Date
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayBeaconEndDate" class="text-gray-800 break-words">N/A</span>
+                          <input id="inputBeaconEndDate" type="date" class="hidden adgroup-details-input" title="End Date input" aria-label="Enter end date" />
+                        </td>
+                      </tr>
+
+                      <!-- Impressions -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Impressions
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayBeaconImpressions" class="text-gray-800 break-words">N/A</span>
+                          <input id="inputBeaconImpressions" type="text" class="hidden adgroup-details-input" title="Impressions input" aria-label="Enter impressions" />
+                        </td>
+                      </tr>
+
+                      <!-- Landing Page -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Landing Page
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayBeaconLandingPage" class="text-gray-800 break-words">N/A</span>
+                          <input id="inputBeaconLandingPage" type="text" class="hidden adgroup-details-input" title="Landing Page input" aria-label="Enter landing page" />
+                        </td>
+                      </tr>
+
+                      <!-- UTM Code -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          UTM Code
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayBeaconUtmCode" class="text-gray-800 break-words">N/A</span>
+                          <input id="inputBeaconUtmCode" type="text" class="hidden adgroup-details-input" title="UTM Code input" aria-label="Enter UTM code" />
                         </td>
                       </tr>
 
@@ -574,7 +669,7 @@
                   </div>
 
                   <!-- Ad Server Fields Table -->
-                  <div class="overflow-x-auto border border-default rounded-md">
+                  <div id="adGroupAdServerFieldsPanel" class="overflow-x-auto border border-default rounded-md hidden">
                     <table class="w-full tbl tbl-row-hover table-fixed adgroup-details-table">
                       <colgroup>
                         <col class="w-1/3">
@@ -723,7 +818,14 @@
   { span: 'displayCampaign', input: 'inputCampaign' },
   { span: 'displayMultiviewClassification', input: 'inputMultiviewClassification' },
   { span: 'displayMultiviewTactic', input: 'inputMultiviewTactic' },
+  { span: 'displayContentCategory', input: 'inputContentCategory' },
   { span: 'displayBeaconAudience', input: 'inputBeaconAudience' },
+  { span: 'displayGeoTarget', input: 'inputGeoTarget' },
+  { span: 'displayBeaconStartDate', input: 'inputBeaconStartDate' },
+  { span: 'displayBeaconEndDate', input: 'inputBeaconEndDate' },
+  { span: 'displayBeaconImpressions', input: 'inputBeaconImpressions' },
+  { span: 'displayBeaconLandingPage', input: 'inputBeaconLandingPage' },
+  { span: 'displayBeaconUtmCode', input: 'inputBeaconUtmCode' },
   // DSP Fields (these are linked to actual ad group data)
   { span: 'displayDspName', input: 'adGroupNameInput' },
   { span: 'displayFunnelLocation', input: 'funnelLocationInput' },
@@ -756,7 +858,14 @@
   'inputCampaign',
   'inputMultiviewClassification',
   'inputMultiviewTactic',
+  'inputContentCategory',
   'inputBeaconAudience',
+  'inputGeoTarget',
+  'inputBeaconStartDate',
+  'inputBeaconEndDate',
+  'inputBeaconImpressions',
+  'inputBeaconLandingPage',
+  'inputBeaconUtmCode',
   // DSP Fields
   'adGroupNameInput',
   'funnelLocationInput',
@@ -786,6 +895,13 @@
                         const btnEdit   = document.getElementById('editGeneralBtn');
                         const btnSave   = document.getElementById('saveGeneralBtn');
                         const btnCancel = document.getElementById('cancelGeneralBtn');
+
+                        document.getElementById('inputMultiviewTactic')?.addEventListener('change', (event) => {
+                          const contentCategoryInput = document.getElementById('inputContentCategory');
+                          if (contentCategoryInput) {
+                            contentCategoryInput.value = event.target.value || '';
+                          }
+                        });
 
                         let snapshot = null;
                         let inlineEditing = false;
@@ -956,9 +1072,31 @@
                             // Update Beacon Fields
                             if (now.inputAdGroupName !== undefined) adGroup.name = now.inputAdGroupName;
                             if (now.inputCampaign !== undefined) adGroup.campaign = now.inputCampaign;
-                            if (now.inputMultiviewClassification !== undefined) adGroup.multiviewClassification = now.inputMultiviewClassification;
-                            if (now.inputMultiviewTactic !== undefined) adGroup.multiviewTactic = now.inputMultiviewTactic;
+                            if (now.inputMultiviewClassification !== undefined) {
+                              adGroup.multiviewClassification = now.inputMultiviewClassification;
+                              adGroup.template = now.inputMultiviewClassification;
+                            }
+                            if (now.inputMultiviewTactic !== undefined) {
+                              adGroup.multiviewTactic = now.inputMultiviewTactic;
+                              if (!now.inputContentCategory) adGroup.contentCategory = now.inputMultiviewTactic;
+                            }
+                            if (now.inputContentCategory !== undefined) adGroup.contentCategory = now.inputContentCategory;
                             if (now.inputBeaconAudience !== undefined) adGroup.beaconAudience = now.inputBeaconAudience;
+                            if (now.inputGeoTarget !== undefined) {
+                              adGroup.geoTarget = now.inputGeoTarget;
+                              adGroup.geos = now.inputGeoTarget;
+                            }
+                            if (now.inputBeaconStartDate !== undefined) {
+                              adGroup.startDate = now.inputBeaconStartDate;
+                              adGroup.adServerStartDate = now.inputBeaconStartDate;
+                            }
+                            if (now.inputBeaconEndDate !== undefined) {
+                              adGroup.endDate = now.inputBeaconEndDate;
+                              adGroup.adServerEndDate = now.inputBeaconEndDate;
+                            }
+                            if (now.inputBeaconImpressions !== undefined) adGroup.impressions = now.inputBeaconImpressions;
+                            if (now.inputBeaconLandingPage !== undefined) adGroup.landingPage = now.inputBeaconLandingPage;
+                            if (now.inputBeaconUtmCode !== undefined) adGroup.utmCode = now.inputBeaconUtmCode;
                             
                             // Update DSP Fields
                             if (now.adGroupNameInput !== undefined) adGroup.dspName = now.adGroupNameInput;
@@ -1385,17 +1523,17 @@ const editableSelectors = [
       }
 
       // Simple toast function for compatibility
-      function showToast(options) {
-        const message = typeof options === 'string' ? options : options.message;
-        const type = options.type || 'info';
-        
-        if (window.toast && typeof window.toast.success === 'function') {
-          if (type === 'success') window.toast.success(message);
-          else if (type === 'error') window.toast.error(message);
-          else if (type === 'warning') window.toast.warning(message);
-          else window.toast.info(message);
+      function showToast(options, fallbackType = 'info') {
+        const isObject = typeof options === 'object' && options !== null;
+        const message = typeof options === 'string' ? options : (options && options.message) || 'Notification';
+        const type = isObject ? (options.type || fallbackType) : fallbackType;
+        const duration = isObject ? options.duration : undefined;
+        const title = isObject ? options.title : undefined;
+
+        if (typeof window.showToast === 'function') {
+          window.showToast({ message, type, duration, title });
         } else {
-          console.log('TOAST:', type.toUpperCase(), message);
+          console.log('TOAST:', String(type).toUpperCase(), message);
         }
       }
 
@@ -1728,25 +1866,17 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
-  // Generate and persist ad group Delivery/Reporting IDs if they don't exist
-  let needsUpdate = false;
-  if (!adGroup.deliveryId) {
-    adGroup.deliveryId = 'DLV-' + Math.random().toString(36).substr(2, 8).toUpperCase();
-    needsUpdate = true;
-  }
-  if (!adGroup.reportingId) {
-    adGroup.reportingId = 'RPT-' + Math.random().toString(36).substr(2, 8).toUpperCase();
-    needsUpdate = true;
-  }
-  
-  // Save back to localStorage if IDs were generated
-  if (needsUpdate) {
-    const adgroupsToUpdate = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-    const idx = adgroupsToUpdate.findIndex(ag => ag.id === adGroup.id);
-    if (idx !== -1) {
-      adgroupsToUpdate[idx] = adGroup;
-      localStorage.setItem('adgroups_data_v1', JSON.stringify(adgroupsToUpdate));
+  const extractConnectorValues = (rawValue) => {
+    if (Array.isArray(rawValue)) return rawValue.filter(Boolean);
+    if (typeof rawValue === 'string') {
+      return rawValue.split(',').map(v => v.trim()).filter(Boolean);
     }
+    return [];
+  };
+  const hasGcmConnector = extractConnectorValues(adGroup?.connectors?.adServer).includes('google-campaign-manager');
+  const adGroupAdServerFieldsPanel = document.getElementById('adGroupAdServerFieldsPanel');
+  if (adGroupAdServerFieldsPanel) {
+    adGroupAdServerFieldsPanel.classList.toggle('hidden', !hasGcmConnector);
   }
   
   // Display ad group IDs in header
@@ -1881,9 +2011,16 @@ document.addEventListener('DOMContentLoaded', function () {
   safeSet('displayAdGroupId', adGroup.id);
   safeSet('displayAdGroupName', adGroup.name);
   safeSet('displayCampaign', adGroup.campaign);
-  safeSet('displayMultiviewClassification', adGroup.multiviewClassification);
+  safeSet('displayMultiviewClassification', adGroup.multiviewClassification || adGroup.template);
   safeSet('displayMultiviewTactic', adGroup.multiviewTactic);
+  safeSet('displayContentCategory', adGroup.contentCategory || adGroup.multiviewTactic);
   safeSet('displayBeaconAudience', adGroup.beaconAudience);
+  safeSet('displayGeoTarget', adGroup.geoTarget || adGroup.geos);
+  safeSet('displayBeaconStartDate', adGroup.startDate || adGroup.adServerStartDate);
+  safeSet('displayBeaconEndDate', adGroup.endDate || adGroup.adServerEndDate);
+  safeSet('displayBeaconImpressions', adGroup.impressions);
+  safeSet('displayBeaconLandingPage', adGroup.landingPage);
+  safeSet('displayBeaconUtmCode', adGroup.utmCode);
   
   // DSP Fields section
   safeSet('displayDspName', adGroup.dspName);
@@ -1956,9 +2093,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   
   safeInput('inputCampaign', adGroup.campaign);
-  safeInput('inputMultiviewClassification', adGroup.multiviewClassification);
+  safeInput('inputMultiviewClassification', adGroup.multiviewClassification || adGroup.template);
   safeInput('inputMultiviewTactic', adGroup.multiviewTactic);
+  safeInput('inputContentCategory', adGroup.contentCategory || adGroup.multiviewTactic);
   safeInput('inputBeaconAudience', adGroup.beaconAudience);
+  safeInput('inputGeoTarget', adGroup.geoTarget || adGroup.geos);
+  safeInput('inputBeaconStartDate', adGroup.startDate || adGroup.adServerStartDate);
+  safeInput('inputBeaconEndDate', adGroup.endDate || adGroup.adServerEndDate);
+  safeInput('inputBeaconImpressions', adGroup.impressions);
+  safeInput('inputBeaconLandingPage', adGroup.landingPage);
+  safeInput('inputBeaconUtmCode', adGroup.utmCode);
   
   // DSP Field inputs
   safeInput('adGroupNameInput', adGroup.dspName);
@@ -2011,13 +2155,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+</script>
 
-
-
-
-
-  
-  </script>
   <script src="./assets/sidebar.js" defer></script>
-  <script src="./assets/audit.js" defer></script></body>
+</body>
 </html>

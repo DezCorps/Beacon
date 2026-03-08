@@ -869,17 +869,17 @@
       }
 
       // Simple toast function for compatibility
-      function showToast(options) {
-        const message = typeof options === 'string' ? options : options.message;
-        const type = options.type || 'info';
-        
-        if (window.toast && typeof window.toast.success === 'function') {
-          if (type === 'success') window.toast.success(message);
-          else if (type === 'error') window.toast.error(message);
-          else if (type === 'warning') window.toast.warning(message);
-          else window.toast.info(message);
+      function showToast(options, fallbackType = 'info') {
+        const isObject = typeof options === 'object' && options !== null;
+        const message = typeof options === 'string' ? options : (options && options.message) || 'Notification';
+        const type = isObject ? (options.type || fallbackType) : fallbackType;
+        const duration = isObject ? options.duration : undefined;
+        const title = isObject ? options.title : undefined;
+
+        if (typeof window.showToast === 'function') {
+          window.showToast({ message, type, duration, title });
         } else {
-          console.log('TOAST:', type.toUpperCase(), message);
+          console.log('TOAST:', String(type).toUpperCase(), message);
         }
       }
 

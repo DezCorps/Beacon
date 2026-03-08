@@ -16,46 +16,183 @@
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
 
-    /* Accordion collapse – smooth animation */
-    .co-entity-body {
-      max-height: 2000px;
-      overflow: hidden;
-      transition: max-height 0.3s ease-out;
-    }
-    .co-entity-body.collapsed {
-      max-height: 0;
-      padding: 0 1rem;
-      border-top: none;
-    }
+    /* Accordion collapse */
+    .co-entity-body.collapsed { display: none; }
     .toggle-arrow { display: inline-block; width: 16px; transition: transform 0.15s; cursor: pointer; }
     .toggle-arrow.open { transform: rotate(90deg); }
+
+    /* Hierarchical entity depth */
+    .entity-depth-0 {
+      /* Advertiser - no indent */
+      margin-left: 0;
+    }
+    .entity-depth-1 {
+      /* Campaign - indent 20px */
+      margin-left: 20px;
+    }
+    .entity-depth-2 {
+      /* Ad Group - indent 40px */
+      margin-left: 70px;
+    }
+
+    /* Entity flag label */
+    .entity-flag {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .entity-flag.flag-edit {
+      background-color: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fbbf24;
+    }
+    .entity-flag.flag-edit:hover {
+      background-color: #fde68a;
+    }
+    .entity-flag.flag-create {
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 1px solid #34d399;
+    }
+    .entity-flag.flag-create:hover {
+      background-color: #a7f3d0;
+    }
+
+    /* Entity flag label */
+    .entity-flag {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .entity-flag.flag-edit {
+      background-color: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fbbf24;
+    }
+    .entity-flag.flag-edit:hover {
+      background-color: #fde68a;
+    }
+    .entity-flag.flag-create {
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 1px solid #34d399;
+    }
+    .entity-flag.flag-create:hover {
+      background-color: #a7f3d0;
+    }
   </style>
 </head>
-<body class="bg-gray-100 flex flex-col h-screen overflow-hidden">
 
-  <!-- Top Header Bar -->
-  <header class="text-white flex-shrink-0" style="background: var(--brand-800);">
-    <div class="flex items-center justify-between px-6 py-1">
-      <div class="flex items-center gap-3">
-        <img src="./assets/Eye_Multiview.png" alt="Multiview Logo" class="h-8" />
-        <h1 class="text-xl font-medium">Beacon</h1>
-      </div>
-      <nav class="flex items-center gap-4">
-        <div class="relative">
-          <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
-            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
-            </svg>
-          </button>
-          <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
-            <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
-            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
-          </div>
+<body class="bg-gray-100">
+  <div class="flex h-screen flex-col">
+    <!-- Header -->
+    <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
+      <div class="flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-3">
+          <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
         </div>
-      </nav>
-    </div>
-  </header>
+
+        <nav class="flex items-center gap-3 ml-auto">
+            <a href="./index.html" class="text-base text-white hover:text-blue-100" style="font-size: 1.5rem; padding-right: 15px;" onmouseover="this.style.color='#48A9FE'" onmouseout="this.style.color='white'">
+            Advertisers
+            </a>
+          <span class="text-white select-none">|</span>
+
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notificationButton" class="p-2 rounded-md  text-white relative" title="Notifications" aria-label="View notifications" onmouseover="this.style.backgroundColor=''" onmouseout="this.style.backgroundColor=''" >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+              <div class="p-3 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                  <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+                </div>
+              </div>
+
+              <div class="max-h-80 overflow-y-auto">
+                <div id="notificationList">
+                  <!-- Sample items -->
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">Campaign Performance Alert</p>
+                        <p class="text-xs text-gray-500 mt-1">"Summer Sale" exceeded budget by 15%</p>
+                        <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">New Advertiser Added</p>
+                        <p class="text-xs text-gray-500 mt-1">Stallion Services LLC onboarded</p>
+                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="true">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-700">Account Sync Complete</p>
+                        <p class="text-xs text-gray-500 mt-1">CRM sync finished for 12 accounts</p>
+                        <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waffle Menu -->
+          <div class="relative">
+            <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+              </svg>
+            </button>
+            <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+              <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
 
   <!-- Breadcrumb Bar -->
   <div class="bg-white border-b border-gray-200 px-6 py-2">
@@ -104,8 +241,8 @@
         </li>
         <li>
           <a href="./ChangeOrderList.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-            <svg class="w-6 h-6 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg>
-            <span data-link-label>Back to List</span>
+            <!-- <svg class="w-6 h-6 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg> -->
+            <!-- <span data-link-label>Back to List</span> -->
           </a>
         </li>
       </ul>
@@ -141,10 +278,10 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 Save
               </button>
-              <button id="syncCOBtn" class="btn-sync text-sm px-3 py-1 rounded-md flex items-center gap-1">
+              <!-- <button id="syncCOBtn" class="btn-sync text-sm px-3 py-1 rounded-md flex items-center gap-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                 Sync
-              </button>
+              </button> -->
               <button id="exportCOBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Export
@@ -157,24 +294,41 @@
           <!-- Entity Sections Container -->
           <div id="entitySections"></div>
 
-          <!-- General Notes (collapsible) -->
-          <div class="co-entity-section">
-            <div class="co-entity-header co-notes-header" onclick="toggleSection('sec-general-notes')">
-              <div class="entity-title">
-                <span class="toggle-arrow open" id="sec-general-notes-arrow">▶</span>
-                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-                General Notes / Cover Letter
-              </div>
-            </div>
-            <div class="co-entity-body" id="sec-general-notes-body">
-              <textarea id="generalNotes" class="w-full border border-gray-300 rounded-md p-3 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none" rows="6" placeholder="Add any general notes, cover letter content, or special instructions for this change order..."></textarea>
-            </div>
+          <!-- General Notes -->
+          <div class="co-general-notes">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">General Notes / Cover Letter</label>
+            <textarea id="generalNotes" class="w-full border border-gray-300 rounded-md p-3 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" rows="4" placeholder="Add any overall notes or instructions that apply to this entire Change Order. This accompanies the export to SEPO."></textarea>
           </div>
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- Entity Select Modal (Tree-based) -->
+  <div id="entitySelectModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-xl mx-4 overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Manage Entities</h2>
+        <button class="text-gray-400 hover:text-gray-600 transition-colors"
+          onclick="closeManageEntitiesModal()" aria-label="Close">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="px-6 py-4 max-h-[60vh] overflow-y-auto">
+        <p class="text-sm text-gray-500 mb-4">Choose which Campaigns and Ad Groups to include in this Change Order. The Advertiser is always included.</p>
+        <div id="entityTreeContainer">
+          <!-- Dynamically populated by JS -->
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 px-6 py-3 bg-gray-50 border-t border-gray-200">
+        <button class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          onclick="closeManageEntitiesModal()">Cancel</button>
+        <button class="px-4 py-2 text-sm text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700"
+          onclick="applyManageEntitiesSelection()">Apply Changes</button>
+      </div>
+    </div>
   </div>
 
   <!-- Page Script -->
@@ -182,6 +336,66 @@
   document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const coId = urlParams.get('coId');
+
+    // ========== DEFINE GLOBAL FUNCTIONS FIRST (before any early returns) ==========
+    
+    // Toggle section visibility
+    window.toggleSection = function(secId) {
+      const body = document.getElementById(secId + '-body');
+      const arrow = document.getElementById(secId + '-arrow');
+      if (body) body.classList.toggle('collapsed');
+      if (arrow) arrow.classList.toggle('open');
+    };
+
+    // Toggle entity flag between EDIT and CREATE
+    window.toggleEntityFlag = function(type, id) {
+      if (!co || !co.entities) return;
+      const entity = co.entities.find(e => e.type === type && e.id === id);
+      if (!entity) return;
+
+      // Toggle between 'edit' and 'create'
+      entity.flag = (entity.flag === 'create') ? 'edit' : 'create';
+      
+      // Save and re-render
+      co.modifiedDate = new Date().toISOString();
+      saveChangeOrder(co);
+      buildEntitySections(co);
+      
+      if (typeof window.showToast === 'function') {
+        window.showToast({ message: `Flag set to ${entity.flag.toUpperCase()}`, type: 'success' });
+      }
+    };
+
+    // Toggle entity flag between EDIT and CREATE
+    window.toggleEntityFlag = function(type, id) {
+      if (!co || !co.entities) return;
+      const entity = co.entities.find(e => e.type === type && e.id === id);
+      if (!entity) return;
+
+      // Toggle between 'edit' and 'create'
+      entity.flag = (entity.flag === 'create') ? 'edit' : 'create';
+      
+      // Save and re-render
+      co.modifiedDate = new Date().toISOString();
+      saveChangeOrder(co);
+      buildEntitySections(co);
+      
+      if (typeof window.showToast === 'function') {
+        window.showToast({ message: `Flag set to ${entity.flag.toUpperCase()}`, type: 'success' });
+      }
+    };
+
+    // Close manage entities modal
+    window.closeManageEntitiesModal = function() {
+      document.getElementById('entitySelectModal').classList.add('hidden');
+    };
+
+    // Close modal on backdrop click
+    document.getElementById('entitySelectModal').addEventListener('click', (e) => {
+      if (e.target.id === 'entitySelectModal') closeManageEntitiesModal();
+    });
+
+    // ========== END GLOBAL FUNCTIONS ==========
 
     // Load advertiser info
     let adv = null;
@@ -211,6 +425,20 @@
     if (!co) {
       document.getElementById('entitySections').innerHTML = '<p class="text-gray-500 text-center py-8">Change order not found.</p>';
       return;
+    }
+
+    // Ensure advertiser entity exists
+    if (!co.entities) co.entities = [];
+    const hasAdvertiser = co.entities.some(e => e.type === 'advertiser');
+    if (!hasAdvertiser && adv) {
+      co.entities.unshift({
+        type: 'advertiser',
+        id: adv.id || adv.advertiserId || 'unknown',
+        name: adv.name || 'Unknown Advertiser',
+        fields: {}
+      });
+      // Save the updated CO with the advertiser
+      saveChangeOrder(co);
     }
 
     // Populate header
@@ -269,18 +497,22 @@
       });
 
       saveChangeOrder(co);
-      if (typeof showToast === 'function') showToast('Change order saved', 'success');
+      if (typeof window.showToast === 'function') window.showToast({ message: 'Change order saved', type: 'success' });
     });
 
-    document.getElementById('syncCOBtn').addEventListener('click', () => {
-      co.status = 'synced';
-      co.modifiedDate = new Date().toISOString();
-      saveChangeOrder(co);
-      const badge = document.getElementById('coStatusBadge');
-      badge.className = 'co-badge co-badge-synced';
-      badge.textContent = 'Synced';
-      if (typeof showToast === 'function') showToast('Change order synced', 'success');
-    });
+    // syncCOBtn is commented out in HTML, so skip adding listener
+    const syncBtn = document.getElementById('syncCOBtn');
+    if (syncBtn) {
+      syncBtn.addEventListener('click', () => {
+        co.status = 'synced';
+        co.modifiedDate = new Date().toISOString();
+        saveChangeOrder(co);
+        const badge = document.getElementById('coStatusBadge');
+        badge.className = 'co-badge co-badge-synced';
+        badge.textContent = 'Synced';
+        if (typeof window.showToast === 'function') window.showToast({ message: 'Change order synced', type: 'success' });
+      });
+    }
 
     document.getElementById('exportCOBtn').addEventListener('click', () => {
       const blob = new Blob([JSON.stringify(co, null, 2)], { type: 'application/json' });
@@ -289,11 +521,13 @@
       a.download = `${co.id}_${(co.name || 'export').replace(/\s+/g, '_')}.json`;
       a.click();
       URL.revokeObjectURL(a.href);
-      if (typeof showToast === 'function') showToast('Exported', 'success');
+      if (typeof window.showToast === 'function') window.showToast({ message: 'Exported', type: 'success' });
     });
 
     document.getElementById('manageEntitiesBtn').addEventListener('click', () => {
-      openEntitySelectModal(co.id);
+      console.log('Manage Entities button clicked');
+      console.log('window.openManageEntitiesModal function:', typeof window.openManageEntitiesModal);
+      window.openManageEntitiesModal();
     });
 
     // --- Helper functions ---
@@ -304,6 +538,30 @@
       catch { return d; }
     }
 
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+
+    function escapeJsString(value) {
+      return String(value ?? '')
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '\\"')
+        .replace(/\r/g, '\\r')
+        .replace(/\n/g, '\\n')
+        .replace(/</g, '\\x3C')
+        .replace(/>/g, '\\x3E');
+    }
+
     function entityPill(type) {
       const map = {
         advertiser: { label: 'ADV', bg: 'var(--brand-100, #dbeafe)', color: 'var(--brand-800, #014C86)' },
@@ -311,7 +569,7 @@
         adgroup:    { label: 'AG',  bg: '#fce8d5', color: '#8a5a2d' }
       };
       const p = map[type] || { label: type.toUpperCase(), bg: '#e5e7eb', color: '#374151' };
-      return `<span class="co-entity-pill" style="background:${p.bg};color:${p.color};">${p.label}</span>`;
+      return `<span class="co-entity-pill" style="background:${p.bg};color:${p.color};">${escapeHtml(p.label)}</span>`;
     }
 
     function headerClass(type) {
@@ -328,235 +586,190 @@
 
       container.innerHTML = '';
 
-      const entities = Array.isArray(co.entities) ? co.entities : [];
-      const advEntity = entities.find(e => e.type === 'advertiser') || null;
-      const camEntities = entities.filter(e => e.type === 'campaign');
-      const agEntities  = entities.filter(e => e.type === 'adgroup');
+      // Build hierarchical structure
+      const advertiser = co.entities.find(e => e.type === 'advertiser');
+      const campaigns = co.entities.filter(e => e.type === 'campaign');
+      const adgroups = co.entities.filter(e => e.type === 'adgroup');
 
-      // Lookups
-      const getCampaignById = (id) => {
+      // Map ad groups to their parent campaigns
+      const adgroupsByCampaign = {};
+      adgroups.forEach(ag => {
+        const camId = ag.campaignId;
+        if (camId) {
+          if (!adgroupsByCampaign[camId]) adgroupsByCampaign[camId] = [];
+          adgroupsByCampaign[camId].push(ag);
+        }
+      });
+
+      // Find orphaned ad groups (no parent or parent not in selection)
+      const campaignIds = new Set(campaigns.map(c => c.id));
+      const orphanedAdgroups = adgroups.filter(ag => !ag.campaignId || !campaignIds.has(ag.campaignId));
+
+      let renderIndex = 0;
+
+      // Render advertiser
+      if (advertiser) {
+        container.appendChild(renderEntitySection(advertiser, 0, renderIndex++));
+      }
+
+      // Render campaigns with nested ad groups
+      campaigns.forEach(campaign => {
+        container.appendChild(renderEntitySection(campaign, 1, renderIndex++));
+        const childAGs = adgroupsByCampaign[campaign.id] || [];
+        childAGs.forEach(ag => {
+          container.appendChild(renderEntitySection(ag, 2, renderIndex++, false));
+        });
+      });
+
+      // Render orphaned ad groups at end
+      if (orphanedAdgroups.length > 0) {
+        orphanedAdgroups.forEach(ag => {
+          container.appendChild(renderEntitySection(ag, 1, renderIndex++, true));
+        });
+      }
+    }
+
+    function renderEntitySection(entity, depth, idx, isOrphan = false) {
+      const entityType = ['advertiser', 'campaign', 'adgroup'].includes(entity.type) ? entity.type : 'entity';
+      const secId = `sec-${entityType}-${idx}`;
+      const isAdv = entityType === 'advertiser';
+      const depthClass = `entity-depth-${depth}`;
+      const orphanWarning = isOrphan ? '<span class="text-xs text-orange-600 ml-2">(No parent campaign selected)</span>' : '';
+
+      // For campaigns, look up the name from Beacon data if not available
+      let displayName = entity.name || entity.id;
+      if (entity.type === 'campaign' && !entity.name) {
         try {
           const tree = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
           let allCams = [];
           if (tree.campaigns) allCams = allCams.concat(tree.campaigns);
           if (tree.groups) tree.groups.forEach(g => { if (g.campaigns) allCams = allCams.concat(g.campaigns); });
-          return allCams.find(c => c.id === id) || null;
-        } catch { return null; }
-      };
-      const getAdGroupById = (id) => {
-        try {
-          const all = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-          return all.find(a => a.id === id) || null;
-        } catch { return null; }
-      };
-
-      // Build campaign grouping map: campaignId -> { campaignEntity?, campaignData?, adgroups: [] }
-      const camMap = new Map();
-
-      camEntities.forEach(ce => {
-        camMap.set(ce.id, {
-          campaignId: ce.id,
-          campaignEntity: ce,
-          campaignData: getCampaignById(ce.id),
-          adgroups: []
-        });
-      });
-
-      agEntities.forEach(ag => {
-        const storedAg = getAdGroupById(ag.id);
-        const inferredCamId = ag.campaignId || storedAg?.campaignId || storedAg?.campaign || '';
-        const camId = inferredCamId || '__unassigned__';
-
-        if (!camMap.has(camId)) {
-          camMap.set(camId, {
-            campaignId: camId,
-            campaignEntity: camEntities.find(c => c.id === camId) || null,
-            campaignData: camId !== '__unassigned__' ? getCampaignById(camId) : null,
-            adgroups: []
-          });
-        }
-
-        camMap.get(camId).adgroups.push(ag);
-      });
-
-      // Render advertiser section first
-      if (advEntity) {
-        const secId = 'sec-advertiser-0';
-        const section = document.createElement('div');
-        section.className = 'co-entity-section';
-        section.innerHTML = `
-          <div class="co-entity-header ${headerClass('advertiser')}" onclick="toggleSection('${secId}')">
-            <div class="entity-title">
-              <span class="toggle-arrow open" id="${secId}-arrow">▶</span>
-              ${entityPill('advertiser')}
-              ${advEntity.name || adv?.name || advEntity.id}
-            </div>
-          </div>
-          <div class="co-entity-body" id="${secId}-body">
-            ${buildEntityBody(advEntity)}
-          </div>
-        `;
-        container.appendChild(section);
+          const camData = allCams.find(c => c.id === entity.id);
+          if (camData) displayName = camData.beaconCampaignName || camData.name || entity.id;
+        } catch {}
       }
 
-      // Render campaigns (including those implied by ad group selection)
-      const camItems = Array.from(camMap.values())
-        .filter(x => x.campaignId !== '__unassigned__')
-        .sort((a, b) => {
-          const an = (a.campaignEntity?.name || a.campaignData?.beaconCampaignName || a.campaignData?.name || a.campaignId || '').toLowerCase();
-          const bn = (b.campaignEntity?.name || b.campaignData?.beaconCampaignName || b.campaignData?.name || b.campaignId || '').toLowerCase();
-          return an.localeCompare(bn);
-        });
+      // Determine entity flag (EDIT or CREATE)
+      const entityFlag = entity.flag || 'edit';
+      const flagClass = entityFlag === 'create' ? 'flag-create' : 'flag-edit';
+      const flagLabel = entityFlag === 'create' ? 'CREATE' : 'EDIT';
+      const safeDisplayName = escapeHtml(displayName);
+      const safeEntityType = escapeJsString(entityType);
+      const safeEntityId = escapeJsString(entity.id);
 
-      camItems.forEach((item, idx) => {
-        const camEntity = item.campaignEntity || { type: 'campaign', id: item.campaignId, name: (item.campaignData?.beaconCampaignName || item.campaignData?.name || item.campaignId) };
-        const camName = camEntity.name || item.campaignData?.beaconCampaignName || item.campaignData?.name || camEntity.id;
-        const secId = `sec-campaign-${idx}`;
-        const count = item.adgroups.length;
-
-        const section = document.createElement('div');
-        section.className = 'co-entity-section';
-        section.innerHTML = `
-          <div class="co-entity-header ${headerClass('campaign')}" onclick="toggleSection('${secId}')">
-            <div class="entity-title">
-              <span class="toggle-arrow open" id="${secId}-arrow">▶</span>
-              ${entityPill('campaign')}
-              ${camName}
-            </div>
-            <div class="text-xs text-gray-500">${count} Ad Groups</div>
+      const section = document.createElement('div');
+      section.className = `co-entity-section ${depthClass}`;
+      section.innerHTML = `
+        <div class="co-entity-header ${headerClass(entityType)}" onclick="toggleSection('${secId}')">
+          <div class="entity-title">
+            <span class="toggle-arrow open" id="${secId}-arrow">▶</span>
+            ${entityPill(entityType)}
+            ${safeDisplayName}
+            <span class="entity-flag ${flagClass}" onclick="event.stopPropagation();toggleEntityFlag('${safeEntityType}','${safeEntityId}')" title="Click to toggle between EDIT and CREATE">${flagLabel}</span>
+            ${orphanWarning}
           </div>
-          <div class="co-entity-body" id="${secId}-body">
-            ${buildEntityBody(camEntity, { campaignData: item.campaignData, adgroups: item.adgroups })}
-          </div>
-        `;
-        container.appendChild(section);
-      });
-
-      // Render any unassigned ad groups (should be rare)
-      const unassigned = camMap.get('__unassigned__');
-      if (unassigned && unassigned.adgroups.length) {
-        const secId = 'sec-campaign-unassigned';
-        const section = document.createElement('div');
-        section.className = 'co-entity-section';
-        section.innerHTML = `
-          <div class="co-entity-header ${headerClass('campaign')}" onclick="toggleSection('${secId}')">
-            <div class="entity-title">
-              <span class="toggle-arrow open" id="${secId}-arrow">▶</span>
-              ${entityPill('campaign')}
-              Unassigned Campaign
-            </div>
-            <div class="text-xs text-gray-500">${unassigned.adgroups.length} Ad Groups</div>
-          </div>
-          <div class="co-entity-body" id="${secId}-body">
-            ${unassigned.adgroups.map(ag => buildEntityBody(ag)).join('')}
-          </div>
-        `;
-        container.appendChild(section);
-      }
+          ${!isAdv ? `<span class="remove-btn" onclick="event.stopPropagation();removeEntity('${safeEntityType}','${safeEntityId}')">✕ Remove</span>` : ''}
+        </div>
+        <div class="co-entity-body" id="${secId}-body">
+          ${buildEntityBody(entity)}
+        </div>
+      `;
+      return section;
     }
 
-    function buildEntityBody(entity, ctx = {}) {
+    function buildEntityBody(entity) {
       if (entity.type === 'advertiser') {
         const fields = entity.fields || {};
-        const advName = fields.name ?? adv?.name ?? entity.name ?? '';
-        const advAccount = fields.account ?? fields.accountNumber ?? adv?.account ?? adv?.accountNumber ?? '';
-        const advWebsite = fields.website ?? adv?.website ?? adv?.domainUrl ?? '';
-        const advIndustry = fields.industry ?? adv?.industry ?? '';
-
+        const safeAdvAccount = escapeHtml(adv ? (adv.account || adv.accountNumber || '—') : '—');
+        const safeAdvName = escapeHtml(entity.name || '—');
         return `
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Advertiser Name <span class="text-red-500 font-bold">*</span></label>
-              <input type="text" value="${advName}" data-adv-field="name" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+          <div class="flex gap-8 text-sm text-gray-600 mb-4">
+            <span><strong>Account #:</strong> ${safeAdvAccount}</span>
+            <span><strong>Name:</strong> ${safeAdvName}</span>
+          </div>
+          <div class="co-fields-grid">
+            <div class="co-field-group">
+              <label>Contact Name</label>
+              <input type="text" value="${escapeAttr(fields.contactName || '')}" placeholder="Primary contact" data-adv-field="contactName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Account # <span class="text-red-500 font-bold">*</span></label>
-              <input type="text" value="${advAccount}" data-adv-field="account" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+            <div class="co-field-group">
+              <label>Contact Email</label>
+              <input type="email" value="${escapeAttr(fields.contactEmail || '')}" placeholder="email@example.com" data-adv-field="contactEmail" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Website</label>
-              <input type="text" value="${advWebsite}" data-adv-field="website" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" placeholder="https://..." />
+            <div class="co-field-group">
+              <label>Billing Address</label>
+              <input type="text" value="${escapeAttr(fields.billingAddress || '')}" placeholder="Street address" data-adv-field="billingAddress" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Industry</label>
-              <select data-adv-field="industry" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
-                <option value="" ${!advIndustry ? 'selected' : ''}>—</option>
-                <option value="Technology" ${advIndustry === 'Technology' ? 'selected' : ''}>Technology</option>
-                <option value="Healthcare" ${advIndustry === 'Healthcare' ? 'selected' : ''}>Healthcare</option>
-                <option value="Finance" ${advIndustry === 'Finance' ? 'selected' : ''}>Finance</option>
-                <option value="Retail" ${advIndustry === 'Retail' ? 'selected' : ''}>Retail</option>
-                <option value="Manufacturing" ${advIndustry === 'Manufacturing' ? 'selected' : ''}>Manufacturing</option>
-                <option value="Education" ${advIndustry === 'Education' ? 'selected' : ''}>Education</option>
-                <option value="Government" ${advIndustry === 'Government' ? 'selected' : ''}>Government</option>
-                <option value="Other" ${advIndustry && !['Technology','Healthcare','Finance','Retail','Manufacturing','Education','Government'].includes(advIndustry) ? 'selected' : ''}>Other</option>
-              </select>
+            <div class="co-field-group">
+              <label>Industry/Vertical</label>
+              <input type="text" value="${escapeAttr(fields.industry || '')}" placeholder="e.g. Healthcare, Retail" data-adv-field="industry" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+            </div>
+            <div class="co-field-group" style="grid-column: 1 / -1;">
+              <label>Advertiser Notes</label>
+              <textarea data-adv-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="2" placeholder="Special instructions or notes about this advertiser...">${escapeHtml(fields.notes || '')}</textarea>
             </div>
           </div>
         `;
       }
 
       if (entity.type === 'campaign') {
-        const camData = ctx.campaignData || null;
+        // Look up campaign data  
+        let camData = {};
+        try {
+          const tree = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
+          let allCams = [];
+          if (tree.campaigns) allCams = allCams.concat(tree.campaigns);
+          if (tree.groups) tree.groups.forEach(g => { if (g.campaigns) allCams = allCams.concat(g.campaigns); });
+          camData = allCams.find(c => c.id === entity.id) || {};
+        } catch {}
+
         const fields = entity.fields || {};
-
-        const camName = fields.name ?? entity.name ?? camData?.beaconCampaignName ?? camData?.name ?? '';
-        const camStart = fields.startDate ?? camData?.startDate ?? '';
-        const camEnd = fields.endDate ?? camData?.endDate ?? '';
-        const camBudget = fields.budget ?? camData?.budget ?? '';
-        const camPacing = fields.pacing ?? camData?.pacing ?? '';
-
-        const ags = Array.isArray(ctx.adgroups) ? ctx.adgroups : [];
+        const safeCamId = escapeAttr(entity.id);
+        const safeCamIdText = escapeHtml(entity.id);
+        const safeCamDsp = escapeHtml(camData.dsp || '—');
+        const safeCamStatus = escapeHtml(camData.status || '—');
 
         return `
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Campaign Name <span class="text-red-500 font-bold">*</span></label>
-              <input type="text" value="${camName}" data-cam-id="${entity.id}" data-cam-field="name" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+          <div class="flex gap-8 text-sm text-gray-600 mb-4">
+            <span><strong>ID:</strong> ${safeCamIdText}</span>
+            <span><strong>DSP:</strong> ${safeCamDsp}</span>
+            <span><strong>Status:</strong> ${safeCamStatus}</span>
+          </div>
+          <div class="co-fields-grid">
+            <div class="co-field-group">
+              <label>Campaign Name</label>
+              <input type="text" value="${escapeAttr(fields.name || camData.beaconCampaignName || camData.name || '')}" placeholder="Campaign name" data-cam-id="${safeCamId}" data-cam-field="name" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
-            <div></div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Start Date <span class="text-red-500 font-bold">*</span></label>
-              <input type="date" value="${camStart}" data-cam-id="${entity.id}" data-cam-field="startDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+            <div class="co-field-group">
+              <label>Flight Start Date</label>
+              <input type="date" value="${escapeAttr(fields.startDate || '')}" data-cam-id="${safeCamId}" data-cam-field="startDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">End Date <span class="text-red-500 font-bold">*</span></label>
-              <input type="date" value="${camEnd}" data-cam-id="${entity.id}" data-cam-field="endDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+            <div class="co-field-group">
+              <label>Flight End Date</label>
+              <input type="date" value="${escapeAttr(fields.endDate || '')}" data-cam-id="${safeCamId}" data-cam-field="endDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Budget <span class="text-red-500 font-bold">*</span></label>
-              <div class="relative">
-                <span class="absolute left-2 top-1.5 text-gray-500 text-sm">$</span>
-                <input type="number" step="0.01" min="0" value="${camBudget}" data-cam-id="${entity.id}" data-cam-field="budget" class="w-full border border-gray-300 rounded-md pl-6 pr-2 py-1 text-sm required-field" />
-              </div>
+            <div class="co-field-group">
+              <label>Budget</label>
+              <input type="text" value="${escapeAttr(fields.budget || '')}" placeholder="e.g. $10,000" data-cam-id="${safeCamId}" data-cam-field="budget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Pacing</label>
-              <select data-cam-id="${entity.id}" data-cam-field="pacing" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
-                <option value="" ${camPacing === '' ? 'selected' : ''}>—</option>
-                <option value="Even" ${String(camPacing).toLowerCase() === 'even' ? 'selected' : ''}>Even</option>
-                <option value="ASAP" ${String(camPacing).toLowerCase() === 'asap' ? 'selected' : ''}>ASAP</option>
-                <option value="Custom" ${String(camPacing).toLowerCase() === 'custom' ? 'selected' : ''}>Custom</option>
+            <div class="co-field-group">
+              <label>Pacing</label>
+              <select data-cam-id="${safeCamId}" data-cam-field="pacing" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                <option value="" ${!fields.pacing ? 'selected' : ''}>Select pacing...</option>
+                <option value="even" ${fields.pacing === 'even' ? 'selected' : ''}>Even</option>
+                <option value="asap" ${fields.pacing === 'asap' ? 'selected' : ''}>ASAP</option>
+                <option value="frontloaded" ${fields.pacing === 'frontloaded' ? 'selected' : ''}>Frontloaded</option>
+                <option value="backloaded" ${fields.pacing === 'backloaded' ? 'selected' : ''}>Backloaded</option>
               </select>
             </div>
-          </div>
-          <div class="space-y-3">
-            ${ags.map((ag, idx) => {
-              const agSecId = `sec-ag-${entity.id}-${idx}`;
-              return `
-                <div class="co-entity-section" style="margin:0;">
-                  <div class="co-entity-header ${headerClass('adgroup')}" onclick="toggleSection('${agSecId}')">
-                    <div class="entity-title">
-                      <span class="toggle-arrow open" id="${agSecId}-arrow">▶</span>
-                      ${entityPill('adgroup')}
-                      ${ag.name || ag.id}
-                    </div>
-                  </div>
-                  <div class="co-entity-body" id="${agSecId}-body">
-                    ${buildEntityBody(ag)}
-                  </div>
-                </div>
-              `;
-            }).join('')}
+            <div class="co-field-group">
+              <label>Frequency Cap</label>
+              <input type="text" value="${escapeAttr(fields.frequencyCap || '')}" placeholder="e.g. 3 per day" data-cam-id="${safeCamId}" data-cam-field="frequencyCap" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+            </div>
+            <div class="co-field-group" style="grid-column: 1 / -1;">
+              <label>Campaign Notes / Instructions</label>
+              <textarea data-cam-id="${safeCamId}" data-cam-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="2" placeholder="Targeting instructions, creative notes, special requests...">${escapeHtml(fields.notes || '')}</textarea>
+            </div>
           </div>
         `;
       }
@@ -570,33 +783,37 @@
         } catch {}
 
         const fields = entity.fields || {};
+        const safeAgId = escapeAttr(entity.id);
+        const safeAgIdText = escapeHtml(entity.id);
+        const safeClassification = escapeHtml(agData.classification || agData.multiviewClassification || '—');
+        const safeTactic = escapeHtml(agData.multiviewTactic || '—');
 
         return `
           <div class="flex gap-8 text-sm text-gray-600 mb-4">
-            <span><strong>ID:</strong> ${entity.id}</span>
-            <span><strong>Classification:</strong> ${agData.classification || agData.multiviewClassification || '—'}</span>
-            <span><strong>Tactic:</strong> ${agData.multiviewTactic || '—'}</span>
+            <span><strong>ID:</strong> ${safeAgIdText}</span>
+            <span><strong>Classification:</strong> ${safeClassification}</span>
+            <span><strong>Tactic:</strong> ${safeTactic}</span>
           </div>
           <div class="co-fields-grid">
             <div class="co-field-group">
               <label>Start Date <span class="text-red-500 font-bold">*</span></label>
-              <input type="date" value="${fields.startDate || ''}" data-ag-id="${entity.id}" data-ag-field="startDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+              <input type="date" value="${escapeAttr(fields.startDate || '')}" data-ag-id="${safeAgId}" data-ag-field="startDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
             </div>
             <div class="co-field-group">
               <label>End Date <span class="text-red-500 font-bold">*</span></label>
-              <input type="date" value="${fields.endDate || ''}" data-ag-id="${entity.id}" data-ag-field="endDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+              <input type="date" value="${escapeAttr(fields.endDate || '')}" data-ag-id="${safeAgId}" data-ag-field="endDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
             </div>
             <div class="co-field-group">
               <label>Impressions <span class="text-red-500 font-bold">*</span></label>
-              <input type="text" value="${fields.impressions || ''}" placeholder="e.g. 500,000" data-ag-id="${entity.id}" data-ag-field="impressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+              <input type="text" value="${escapeAttr(fields.impressions || '')}" placeholder="e.g. 500,000" data-ag-id="${safeAgId}" data-ag-field="impressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
             </div>
             <div class="co-field-group">
               <label>Monthly Impressions</label>
-              <input type="text" value="${fields.monthlyImpressions || ''}" placeholder="Optional" data-ag-id="${entity.id}" data-ag-field="monthlyImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              <input type="text" value="${escapeAttr(fields.monthlyImpressions || '')}" placeholder="Optional" data-ag-id="${safeAgId}" data-ag-field="monthlyImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
             <div class="co-field-group" style="grid-column: 1 / -1;">
               <label>Additional Notes / Instructions</label>
-              <textarea data-ag-id="${entity.id}" data-ag-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Targeting instructions, day parting, special requests...">${fields.notes || ''}</textarea>
+              <textarea data-ag-id="${safeAgId}" data-ag-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Targeting instructions, day parting, special requests...">${escapeHtml(fields.notes || '')}</textarea>
             </div>
           </div>
         `;
@@ -605,22 +822,241 @@
       return '';
     }
 
-    // Toggle section visibility
-    window.toggleSection = function(secId) {
-      const body = document.getElementById(secId + '-body');
-      const arrow = document.getElementById(secId + '-arrow');
-      if (body) body.classList.toggle('collapsed');
-      if (arrow) arrow.classList.toggle('open');
-    };
-
     // Remove entity from CO
     window.removeEntity = function(type, id) {
-      if (!confirm(`Remove this ${type} from the change order?`)) return;
-      co.entities = co.entities.filter(e => !(e.type === type && e.id === id));
+      if (type === 'campaign') {
+        // Count child ad groups that will be removed
+        const childAGs = co.entities.filter(e => e.type === 'adgroup' && e.campaignId === id);
+        const childCount = childAGs.length;
+        const msg = childCount > 0 
+          ? `Remove this campaign and its ${childCount} ad group${childCount > 1 ? 's' : ''} from the change order?`
+          : `Remove this campaign from the change order?`;
+        
+        if (!confirm(msg)) return;
+        
+        // Remove campaign and its children
+        co.entities = co.entities.filter(e => !(e.type === 'campaign' && e.id === id) && !(e.type === 'adgroup' && e.campaignId === id));
+      } else {
+        if (!confirm(`Remove this ${type} from the change order?`)) return;
+        co.entities = co.entities.filter(e => !(e.type === type && e.id === id));
+      }
+      
       co.modifiedDate = new Date().toISOString();
       saveChangeOrder(co);
       buildEntitySections(co);
-      if (typeof showToast === 'function') showToast(`${type} removed`, 'info');
+      if (typeof window.showToast === 'function') window.showToast({ message: `${type} removed`, type: 'info' });
+    };
+
+    // ========== ENTITY SELECT MODAL FUNCTIONS (TREE VERSION) ==========
+
+    function buildEntityTreeForManage() {
+      // Get advertiser data
+      let advData = null;
+      try {
+        const raw = localStorage.getItem('adv_selected_data');
+        if (raw) advData = JSON.parse(raw);
+      } catch (e) {}
+      if (!advData) {
+        try {
+          const raw = localStorage.getItem('selectedAdvertiser');
+          if (raw) advData = JSON.parse(raw);
+        } catch (e) {}
+      }
+      const advName = (advData && advData.name) ? advData.name : (adv && adv.name) ? adv.name : 'Unknown Advertiser';
+      const advId = advData ? advData.id : (adv ? adv.id : null);
+
+      // Get all available campaigns (filtered by advertiser)
+      let campaigns = [];
+      try {
+        const tree = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
+        let allCampaigns = [];
+        if (tree.campaigns) allCampaigns = allCampaigns.concat(tree.campaigns);
+        if (tree.groups) tree.groups.forEach(g => { if (g.campaigns) allCampaigns = allCampaigns.concat(g.campaigns); });
+        // Filter campaigns by current advertiser
+        if (advId) {
+          campaigns = allCampaigns.filter(c => String(c.advertiserId) === String(advId));
+        } else {
+          campaigns = allCampaigns;
+        }
+      } catch (e) {}
+
+      // Get all ad groups mapped by campaign
+      let adgroupsByCampaign = {};
+      try {
+        const allAdgroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+        const campaignIds = new Set(campaigns.map(c => c.id));
+        allAdgroups.forEach(ag => {
+          const camId = ag.campaign || ag.campaignId;
+          if (camId && campaignIds.has(camId)) {
+            if (!adgroupsByCampaign[camId]) adgroupsByCampaign[camId] = [];
+            adgroupsByCampaign[camId].push(ag);
+          }
+        });
+      } catch (e) {}
+
+      // Determine which entities are already in the CO
+      const selectedCamIds = new Set();
+      const selectedAgIds = new Set();
+      if (co.entities) {
+        co.entities.forEach(e => {
+          if (e.type === 'campaign') selectedCamIds.add(e.id);
+          if (e.type === 'adgroup') selectedAgIds.add(e.id);
+        });
+      }
+
+      // Build tree HTML
+      let html = '<ul class="space-y-1">';
+
+      // Advertiser (always included)
+      html += `
+        <li class="flex items-center gap-2 px-2 py-1.5 rounded-md opacity-60">
+          <input type="checkbox" checked disabled class="w-4 h-4 accent-blue-600">
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-900">ADV</span>
+          <span class="text-sm font-semibold text-gray-800">${escapeHtml(advName)}</span>
+          <span class="text-[10px] text-gray-400 ml-1">(always included)</span>
+        </li>`;
+
+      campaigns.forEach((cam, idx) => {
+        const camChildrenId = 'manageTree-cam' + idx + '-children';
+        const camName = cam.beaconCampaignName || cam.name || cam.id;
+        const isCamSelected = selectedCamIds.has(cam.id);
+        const childAGs = adgroupsByCampaign[cam.id] || [];
+        const safeCamId = escapeAttr(cam.id);
+        const safeChildrenId = escapeAttr(camChildrenId);
+        const safeCamName = escapeHtml(camName);
+
+        html += `
+        <li class="ml-5">
+          <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+            <input type="checkbox" ${isCamSelected ? 'checked' : ''} class="w-4 h-4 accent-blue-600 manage-tree-cam-check"
+                   data-cam-id="${safeCamId}" data-children="${safeChildrenId}">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+            <span class="text-sm text-gray-800">${safeCamName}</span>
+          </div>
+          <div id="${safeChildrenId}" class="ml-8 space-y-0.5">`;
+
+        if (childAGs.length === 0) {
+          html += `<div class="px-2 py-1 text-xs text-gray-400 italic">No ad groups</div>`;
+        } else {
+          childAGs.forEach(ag => {
+            const agName = ag.name || ag.id;
+            const isAgSelected = selectedAgIds.has(ag.id);
+            const safeAgId = escapeAttr(ag.id);
+            html += `
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" ${isAgSelected ? 'checked' : ''} class="w-4 h-4 accent-blue-600 manage-tree-ag-check" data-ag-id="${safeAgId}" data-cam-id="${safeCamId}">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">${escapeHtml(agName)}</span>
+            </div>`;
+          });
+        }
+        html += `</div></li>`;
+      });
+
+      if (campaigns.length === 0) {
+        html += `<li class="ml-5 px-2 py-3 text-sm text-gray-400 italic">No campaigns found for this advertiser.</li>`;
+      }
+
+      html += '</ul>';
+      return html;
+    }
+
+    window.openManageEntitiesModal = function() {
+      console.log('openManageEntitiesModal called');
+      const container = document.getElementById('entityTreeContainer');
+      console.log('entityTreeContainer:', container);
+      const treeHTML = buildEntityTreeForManage();
+      console.log('treeHTML length:', treeHTML ? treeHTML.length : 'null');
+      container.innerHTML = treeHTML;
+      const modal = document.getElementById('entitySelectModal');
+      console.log('entitySelectModal:', modal);
+      console.log('modal classes before:', modal.className);
+      modal.classList.remove('hidden');
+      console.log('modal classes after:', modal.className);
+
+      // Wire up campaign checkbox toggles
+      document.querySelectorAll('.manage-tree-cam-check').forEach(cb => {
+        cb.addEventListener('change', function() {
+          const childrenId = this.getAttribute('data-children');
+          if (childrenId) {
+            document.querySelectorAll('#' + childrenId + ' input[type="checkbox"]').forEach(c => {
+              c.checked = this.checked;
+            });
+          }
+        });
+      });
+    };
+
+    window.applyManageEntitiesSelection = function() {
+      // Get campaign data for name lookups
+      let campaignMap = {};
+      try {
+        const tree = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
+        let allCams = [];
+        if (tree.campaigns) allCams = allCams.concat(tree.campaigns);
+        if (tree.groups) tree.groups.forEach(g => { if (g.campaigns) allCams = allCams.concat(g.campaigns); });
+        allCams.forEach(c => campaignMap[c.id] = c);
+      } catch (e) {}
+
+      // Get ad group data for name lookups
+      let adgroupMap = {};
+      try {
+        const all = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+        all.forEach(ag => adgroupMap[ag.id] = ag);
+      } catch (e) {}
+
+      // Keep the advertiser entity
+      let advEntity = co.entities ? co.entities.find(e => e.type === 'advertiser') : null;
+      if (!advEntity && adv) {
+        advEntity = {
+          type: 'advertiser',
+          id: adv.id || adv.advertiserId || 'unknown',
+          name: adv.name || 'Unknown Advertiser',
+          fields: {}
+        };
+      }
+
+      const newEntities = [];
+      if (advEntity) newEntities.push(advEntity);
+
+      // Collect checked campaigns
+      document.querySelectorAll('.manage-tree-cam-check:checked').forEach(cb => {
+        const camId = cb.getAttribute('data-cam-id');
+        const cam = campaignMap[camId];
+        const existing = co.entities ? co.entities.find(e => e.type === 'campaign' && e.id === camId) : null;
+        newEntities.push({
+          type: 'campaign',
+          id: camId,
+          name: cam ? (cam.beaconCampaignName || cam.name) : camId,
+          advertiserId: advEntity ? advEntity.id : null,
+          fields: existing ? existing.fields : {}
+        });
+      });
+
+      // Collect checked ad groups
+      document.querySelectorAll('.manage-tree-ag-check:checked').forEach(cb => {
+        const agId = cb.getAttribute('data-ag-id');
+        const camId = cb.getAttribute('data-cam-id');
+        const ag = adgroupMap[agId];
+        const existing = co.entities ? co.entities.find(e => e.type === 'adgroup' && e.id === agId) : null;
+        newEntities.push({
+          type: 'adgroup',
+          id: agId,
+          name: ag ? ag.name : agId,
+          campaignId: camId,
+          advertiserId: advEntity ? advEntity.id : null,
+          fields: existing ? existing.fields : {}
+        });
+      });
+
+      // Update CO
+      co.entities = newEntities;
+      co.modifiedDate = new Date().toISOString();
+      saveChangeOrder(co);
+      buildEntitySections(co);
+      closeManageEntitiesModal();
+
+      if (typeof window.showToast === 'function') window.showToast({ message: 'Entities updated', type: 'success' });
     };
 
     // Waffle menu toggle

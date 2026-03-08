@@ -255,12 +255,12 @@
               <!-- Right Column: Campaign IDs -->
               <div class="text-right">
                 <div class="flex justify-end gap-2">
-                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
-                  <a id="campaignDeliveryId" href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a>
+                  <!-- <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <a id="campaignDeliveryId" href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a> -->
                 </div>
                 <div class="flex justify-end gap-2">
-                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
-                  <a id="campaignReportingId" href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a>
+                  <!-- <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <a id="campaignReportingId" href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a> -->
                 </div>
                 <div class="flex justify-end gap-2">
                   <span class="text-sm font-semibold text-gray-600">ID:</span>
@@ -279,10 +279,10 @@
                   <p id="campaignDetailsSubtitle" class="text-sm text-gray-500 mx-2 mt-1"></p>
                 </div>
                 <div class="flex items-center gap-2">
-                  <!-- New Change Order Button -->
+                  <!-- Add to Change Order Button -->
                   <button id="addToCOBtn" onclick="openCOPickerModal()" class="text-sm px-3 py-1 bg-green-600 text-white border border-green-600 rounded-md hover:bg-green-700 flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    New Change Order
+                    Add to Change Order
                   </button>
                   <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                   <svg viewBox="0 0 24 24" height="16" width="16">
@@ -330,7 +330,7 @@
                         <!-- Campaign Name -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Name
+                            Campaign Name
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayBeaconCampaignName" class="text-gray-800 break-words">N/A</span>
@@ -338,14 +338,60 @@
                           </td>
                         </tr>
 
-                        <!-- Campaign Impressions -->
+                        <!-- Template -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Impressions
+                            Template
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignImpressions" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignImpressions" type="number" step="1" min="0" inputmode="numeric" class="hidden campaign-details-input" placeholder="0" aria-label="Campaign Impressions" title="Campaign Impressions" />
+                            <span id="displayBeaconTemplate" class="text-gray-800 break-words">N/A</span>
+                            <select id="beaconTemplate" class="hidden campaign-details-input" aria-label="Template" title="Template">
+                              <option value="">-- Select Template --</option>
+                              <option value="Programmatic Display">Programmatic Display</option>
+                              <option value="Programmatic Video">Programmatic Video</option>
+                              <option value="Programmatic Audio">Programmatic Audio</option>
+                              <option value="Connected TV">Connected TV</option>
+                              <option value="Paid Social">Paid Social</option>
+                              <option value="Paid Search">Paid Search</option>
+                              <option value="Event Targeting">Event Targeting</option>
+                              <option value="Native Video">Native Video</option>
+                              <option value="DOOH">DOOH</option>
+                              <option value="PLD Display">PLD Display</option>
+                              <option value="PLD Video">PLD Video</option>
+                            </select>
+                          </td>
+                        </tr>
+
+                        <!-- DSP Impressions -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            DSP Impressions
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayBeaconDspImpressions" class="text-gray-800 break-words">N/A</span>
+                            <input id="beaconDspImpressions" type="text" class="hidden campaign-details-input" aria-label="DSP Impressions" title="DSP Impressions" />
+                          </td>
+                        </tr>
+
+                        <!-- Start Date -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Start Date
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayBeaconStartDate" class="text-gray-800 break-words">N/A</span>
+                            <input id="beaconStartDate" type="date" class="hidden campaign-details-input" aria-label="Start Date" title="Start Date" />
+                          </td>
+                        </tr>
+
+                        <!-- End Date -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            End Date
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayBeaconEndDate" class="text-gray-800 break-words">N/A</span>
+                            <input id="beaconEndDate" type="date" class="hidden campaign-details-input" aria-label="End Date" title="End Date" />
                           </td>
                         </tr>
 
@@ -534,7 +580,7 @@
                   </div>
 
                   <!-- Ad Server Fields Table -->
-                  <div class="overflow-x-auto border border-default rounded-md">
+                  <div id="campaignAdServerFieldsPanel" class="overflow-x-auto border border-default rounded-md hidden">
                     <table class="w-full tbl tbl-row-hover table-fixed campaign-details-table">
                       <colgroup>
                         <col class="w-1/3">
@@ -613,7 +659,10 @@
   // Beacon Fields
   { span: 'displayBeaconCampaignId', input: 'beaconCampaignId' },
   { span: 'displayBeaconCampaignName', input: 'beaconCampaignName' },
-                          { span: 'displayCampaignImpressions', input: 'campaignImpressions' },
+  { span: 'displayBeaconTemplate', input: 'beaconTemplate' },
+  { span: 'displayBeaconDspImpressions', input: 'beaconDspImpressions' },
+  { span: 'displayBeaconStartDate', input: 'beaconStartDate' },
+  { span: 'displayBeaconEndDate', input: 'beaconEndDate' },
   // DSP Fields (these are linked to actual campaign data)
   { span: 'displayCampaignSeed', input: 'campaignSeed' },
   { span: 'displayCampaignOrganization', input: 'campaignOrganization' },
@@ -638,7 +687,10 @@
   // Beacon Fields (now linked to Beacon field data)
   'beaconCampaignId',
   'beaconCampaignName',
-                          'campaignImpressions',
+  'beaconTemplate',
+  'beaconDspImpressions',
+  'beaconStartDate',
+  'beaconEndDate',
   // DSP Fields
   'campaignSeed',
   'campaignOrganization',
@@ -704,13 +756,9 @@
                           
                           // Format currency for budget fields
                           if (input.type === 'number' && displayValue !== 'N/A') {
-                            const numValue = Number(displayValue);
-                            if (!Number.isNaN(numValue)) {
-                              if (input.id === 'campaignBudget') {
-                                displayValue = `$${numValue.toLocaleString()}`;
-                              } else {
-                                displayValue = Math.trunc(numValue).toLocaleString();
-                              }
+                            const numValue = parseFloat(displayValue);
+                            if (!isNaN(numValue)) {
+                              displayValue = `$${numValue.toLocaleString()}`;
                             }
                           }
                           
@@ -751,7 +799,7 @@
                           showInputs();
                           
                           // Auto-focus the first editable field for immediate editing
-                          const firstInput = document.getElementById('campaignName');
+                          const firstInput = document.getElementById('beaconCampaignName');
                           if (firstInput) {
                             setTimeout(() => firstInput.focus(), 50);
                           }
@@ -835,12 +883,15 @@
                                 if (now.campaignChannel !== undefined) topLevelCampaign.channel = now.campaignChannel;
                                 if (now.campaignName !== undefined) topLevelCampaign.name = now.campaignName;
                                 if (now.campaignBudget !== undefined) topLevelCampaign.budget = now.campaignBudget;
-                                if (now.campaignImpressions !== undefined) topLevelCampaign.impressions = now.campaignImpressions;
                                 if (now.campaignKPI !== undefined) topLevelCampaign.kpi = now.campaignKPI;
                                 if (now.campaignKPITarget !== undefined) topLevelCampaign.kpiTarget = now.campaignKPITarget;
                                 // Beacon Fields mapping
                                 if (now.beaconCampaignId !== undefined) topLevelCampaign.beaconCampaignId = now.beaconCampaignId;
                                 if (now.beaconCampaignName !== undefined) topLevelCampaign.beaconCampaignName = now.beaconCampaignName;
+                                if (now.beaconTemplate !== undefined) topLevelCampaign.beaconTemplate = now.beaconTemplate;
+                                if (now.beaconDspImpressions !== undefined) topLevelCampaign.beaconDspImpressions = now.beaconDspImpressions;
+                                if (now.beaconTemplate !== undefined) topLevelCampaign.template = now.beaconTemplate;
+                                if (now.beaconDspImpressions !== undefined) topLevelCampaign.dspImpressions = now.beaconDspImpressions;
                                 // Ad Server Fields - New 4 Field Structure
                                 if (now.adServerCampaignName !== undefined) topLevelCampaign.adServerCampaignName = now.adServerCampaignName;
                                 if (now.adServerSchedule !== undefined) topLevelCampaign.adServerSchedule = now.adServerSchedule;
@@ -866,12 +917,15 @@
                                     if (now.campaignChannel !== undefined) campaign.channel = now.campaignChannel;
                                     if (now.campaignName !== undefined) campaign.name = now.campaignName;
                                     if (now.campaignBudget !== undefined) campaign.budget = now.campaignBudget;
-                                    if (now.campaignImpressions !== undefined) campaign.impressions = now.campaignImpressions;
                                     if (now.campaignKPI !== undefined) campaign.kpi = now.campaignKPI;
                                     if (now.campaignKPITarget !== undefined) campaign.kpiTarget = now.campaignKPITarget;
                                     // Beacon Fields mapping
                                     if (now.beaconCampaignId !== undefined) campaign.beaconCampaignId = now.beaconCampaignId;
                                     if (now.beaconCampaignName !== undefined) campaign.beaconCampaignName = now.beaconCampaignName;
+                                    if (now.beaconTemplate !== undefined) campaign.beaconTemplate = now.beaconTemplate;
+                                    if (now.beaconDspImpressions !== undefined) campaign.beaconDspImpressions = now.beaconDspImpressions;
+                                    if (now.beaconTemplate !== undefined) campaign.template = now.beaconTemplate;
+                                    if (now.beaconDspImpressions !== undefined) campaign.dspImpressions = now.beaconDspImpressions;
                                     // Ad Server Fields - New 4 Field Structure
                                     if (now.adServerCampaignName !== undefined) campaign.adServerCampaignName = now.adServerCampaignName;
                                     if (now.adServerSchedule !== undefined) campaign.adServerSchedule = now.adServerSchedule;
@@ -1252,17 +1306,17 @@
       }
 
       // Simple toast function for compatibility
-      function showToast(options) {
-        const message = typeof options === 'string' ? options : options.message;
-        const type = options.type || 'info';
-        
-        if (window.toast && typeof window.toast.success === 'function') {
-          if (type === 'success') window.toast.success(message);
-          else if (type === 'error') window.toast.error(message);
-          else if (type === 'warning') window.toast.warning(message);
-          else window.toast.info(message);
+      function showToast(options, fallbackType = 'info') {
+        const isObject = typeof options === 'object' && options !== null;
+        const message = typeof options === 'string' ? options : (options && options.message) || 'Notification';
+        const type = isObject ? (options.type || fallbackType) : fallbackType;
+        const duration = isObject ? options.duration : undefined;
+        const title = isObject ? options.title : undefined;
+
+        if (typeof window.showToast === 'function') {
+          window.showToast({ message, type, duration, title });
         } else {
-          console.log('TOAST:', type.toUpperCase(), message);
+          console.log('TOAST:', String(type).toUpperCase(), message);
         }
       }
 
@@ -1598,20 +1652,17 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (!campaign) return;
 
-  // Generate and persist campaign Delivery/Reporting IDs if they don't exist
-  let needsUpdate = false;
-  if (!campaign.deliveryId) {
-    campaign.deliveryId = 'DLV-' + Math.random().toString(36).substr(2, 8).toUpperCase();
-    needsUpdate = true;
-  }
-  if (!campaign.reportingId) {
-    campaign.reportingId = 'RPT-' + Math.random().toString(36).substr(2, 8).toUpperCase();
-    needsUpdate = true;
-  }
-  
-  // Save back to localStorage if IDs were generated
-  if (needsUpdate) {
-    localStorage.setItem('campaign_tree_groups', JSON.stringify(data));
+  const extractConnectorValues = (rawValue) => {
+    if (Array.isArray(rawValue)) return rawValue.filter(Boolean);
+    if (typeof rawValue === 'string') {
+      return rawValue.split(',').map(v => v.trim()).filter(Boolean);
+    }
+    return [];
+  };
+  const hasGcmConnector = extractConnectorValues(campaign?.connectors?.adServer).includes('google-campaign-manager');
+  const campaignAdServerFieldsPanel = document.getElementById('campaignAdServerFieldsPanel');
+  if (campaignAdServerFieldsPanel) {
+    campaignAdServerFieldsPanel.classList.toggle('hidden', !hasGcmConnector);
   }
   
   // Display campaign IDs in header
@@ -1627,15 +1678,23 @@ window.addEventListener('DOMContentLoaded', () => {
     if (el) {
       if (format === 'currency') {
         el.textContent = `$${Number(value || 0).toLocaleString()}`;
-      } else if (format === 'number') {
-        if (value == null || String(value).trim() === '') {
-          el.textContent = 'N/A';
-        } else {
-          const n = Number(String(value).replace(/,/g, ''));
-          el.textContent = Number.isNaN(n) ? String(value) : Math.trunc(n).toLocaleString();
-        }
       } else if (format === 'percentage') {
         el.textContent = value ? `${value}%` : 'N/A';
+      } else if (format === 'date') {
+        // Format date as MM-DD-YYYY
+        if (value) {
+          const date = new Date(value);
+          if (!isNaN(date.getTime())) {
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const year = date.getFullYear();
+            el.textContent = `${month}-${day}-${year}`;
+          } else {
+            el.textContent = 'N/A';
+          }
+        } else {
+          el.textContent = 'N/A';
+        }
       } else {
         el.textContent = value || 'N/A';
       }
@@ -1653,7 +1712,10 @@ window.addEventListener('DOMContentLoaded', () => {
   // Beacon Fields
   safeSet('displayBeaconCampaignId', campaign.beaconCampaignId);
   safeSet('displayBeaconCampaignName', campaign.beaconCampaignName);
-  safeSet('displayCampaignImpressions', campaign.impressions, 'number');
+  safeSet('displayBeaconTemplate', campaign.beaconTemplate || campaign.template);
+  safeSet('displayBeaconDspImpressions', campaign.beaconDspImpressions || campaign.dspImpressions);
+  safeSet('displayBeaconStartDate', campaign.beaconStartDate, 'date');
+  safeSet('displayBeaconEndDate', campaign.beaconEndDate, 'date');
   // DSP Fields
   safeSet('displayCampaignSeed', campaign.seed);
   safeSet('displayCampaignOrganization', campaign.organization);
@@ -1676,7 +1738,10 @@ window.addEventListener('DOMContentLoaded', () => {
   // Beacon Fields
   safeInput('beaconCampaignId', campaign.beaconCampaignId);
   safeInput('beaconCampaignName', campaign.beaconCampaignName);
-  safeInput('campaignImpressions', campaign.impressions);
+  safeInput('beaconTemplate', campaign.beaconTemplate || campaign.template);
+  safeInput('beaconDspImpressions', campaign.beaconDspImpressions || campaign.dspImpressions);
+  safeInput('beaconStartDate', campaign.beaconStartDate);
+  safeInput('beaconEndDate', campaign.beaconEndDate);
   // DSP Fields
   safeInput('campaignSeed', campaign.seed);
   safeInput('campaignOrganization', campaign.organization);
@@ -1696,8 +1761,118 @@ window.addEventListener('DOMContentLoaded', () => {
   safeInput('adServerLandingPageURL', campaign.adServerLandingPageURL);
 });
 
+<!-- Entity Selection Modal Tree Modal--> 
+// <div id="entitySelectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+//   <div class="bg-white rounded-lg shadow-lg w-full max-w-xl mx-4 overflow-hidden">
+    
+//     <!-- Modal Header -->
+//     <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+//       <h2 class="text-lg font-semibold text-gray-900">Select Records to Include</h2>
+//       <button class="text-gray-400 hover:text-gray-600 transition-colors"
+//         onclick="document.getElementById('entitySelectModal').classList.add('hidden')" aria-label="Close">
+//         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+//         </svg>
+//       </button>
+//     </div>
+    
+//     <!-- Modal Body -->
+//     <div class="px-6 py-4 max-h-[60vh] overflow-y-auto">
+//       <p class="text-sm text-gray-500 mb-4">Choose which Campaigns and Ad Groups to include in this Change Order. The Advertiser is always included.</p>
+      
+//       <!-- Entity Tree -->
+//       <ul class="space-y-1">
+//         <!-- Advertiser (locked/always included) -->
+//         <li class="flex items-center gap-2 px-2 py-1.5 rounded-md opacity-60">
+//           <input type="checkbox" checked disabled class="w-4 h-4 accent-blue-600">
+//           <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-900">ADV</span>
+//           <span class="text-sm font-semibold text-gray-800">Goldmine Software Solutions</span>
+//           <span class="text-[10px] text-gray-400 ml-1">always included</span>
+//         </li>
+        
+//         <!-- Campaign 1 with Ad Groups (this campaign pre-selected) -->
+//         <li class="ml-5">
+//           <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+//             <input type="checkbox" checked class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="cam1-children">
+//             <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+//             <span class="text-sm text-gray-800">Tuscaloosa AL - Prog. Display</span>
+//           </div>
+//           <div id="cam1-children" class="ml-8 space-y-0.5">
+//             <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+//               <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+//               <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+//               <span class="text-xs text-gray-600">Local Consumers_Persona</span>
+//             </div>
+//             <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+//               <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+//               <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+//               <span class="text-xs text-gray-600">Local Site Visitors_Retargeting</span>
+//             </div>
+//             <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+//               <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+//               <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+//               <span class="text-xs text-gray-600">Local Consumers_Location Targeting</span>
+//             </div>
+//           </div>
+//         </li>
+        
+//         <!-- Campaign 2 with Ad Groups -->
+//         <li class="ml-5">
+//           <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+//             <input type="checkbox" class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="cam2-children">
+//             <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+//             <span class="text-sm text-gray-800">Tuscaloosa AL - Prog. Video</span>
+//           </div>
+//           <div id="cam2-children" class="ml-8 space-y-0.5">
+//             <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+//               <input type="checkbox" class="w-4 h-4 accent-blue-600">
+//               <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+//               <span class="text-xs text-gray-600">Video_Persona</span>
+//             </div>
+//             <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+//               <input type="checkbox" class="w-4 h-4 accent-blue-600">
+//               <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+//               <span class="text-xs text-gray-600">Video_Retargeting</span>
+//             </div>
+//           </div>
+//         </li>
+        
+//         <!-- Campaign 3 (no ad groups) -->
+//         <li class="ml-5">
+//           <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+//             <input type="checkbox" class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="cam3-children">
+//             <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+//             <span class="text-sm text-gray-800">Tuscaloosa AL - Audio</span>
+//           </div>
+//           <div id="cam3-children" class="ml-8">
+//             <div class="px-2 py-1 text-xs text-gray-400 italic">No ad groups</div>
+//           </div>
+//         </li>
+//       </ul>
+//     </div>
+    
+//     <!-- Modal Footer -->
+//     <div class="flex justify-end gap-2 px-6 py-3 bg-gray-50 border-t border-gray-200">
+//       <button class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+//         onclick="document.getElementById('entitySelectModal').classList.add('hidden')">Cancel</button>
+//       <button class="px-4 py-2 text-sm text-white bg-green-600 border border-green-600 rounded-md hover:bg-green-700"
+//         onclick="document.getElementById('entitySelectModal').classList.add('hidden'); window.location.href='./ChangeOrderDetails.html';">Create Change Order</button>
+//     </div>
+//   </div>
+// </div>
 
-  </script>
+// <script>
+// // Campaign checkbox toggles all child AG checkboxes
+// document.querySelectorAll('.entity-cam-check').forEach(cb => {
+//   cb.addEventListener('change', function() {
+//     const childrenId = this.getAttribute('data-children');
+//     if (childrenId) {
+//       document.querySelectorAll('#' + childrenId + ' input[type="checkbox"]').forEach(c => c.checked = this.checked);
+//     }
+//   });
+// });
+// </script>
+
   <script src="./assets/sidebar.js" defer></script>
 </body>
 </html>

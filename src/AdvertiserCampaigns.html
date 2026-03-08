@@ -186,8 +186,93 @@
       }
     }
 
+    /* COMMENTED OUT - Old connector card styles replaced by dropdown
     .connector-card {
       transition: all 0.2s ease;
+    }
+    */
+
+    /* Custom dropdown for Platform Connectors with chain link icons */
+    .platform-select-container {
+      position: relative;
+    }
+
+    .platform-select-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      background: white;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: #374151;
+    }
+
+    .platform-select-trigger:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+
+    .platform-select-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 0.25rem;
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      z-index: 50;
+      display: none;
+    }
+
+    .platform-select-menu.open {
+      display: block;
+    }
+
+    .platform-select-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: #374151;
+    }
+
+    .platform-select-option:first-child {
+      border-radius: 0.375rem 0.375rem 0 0;
+    }
+
+    .platform-select-option:last-child {
+      border-radius: 0 0 0.375rem 0.375rem;
+    }
+
+    .platform-select-option:hover {
+      background-color: #f3f4f6;
+    }
+
+    .platform-select-option.selected {
+      background-color: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    /* Chain link icon (connected) */
+    .chain-link-icon {
+      color: #6b7280;
+    }
+
+    .chain-link-icon.connected {
+      color: #3b82f6;
+    }
+
+    .chain-link-icon.disconnected {
+      color: #9ca3af;
     }
   </style>
 
@@ -354,7 +439,9 @@
           <li>
             <a href="./ChangeOrderList.html" data-nav-link
                class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/ChangeOrder.svg" alt="Change Orders" class="w-6 h-6 mr-2" />
+              <svg class="w-6 h-6 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
               <span data-link-label>Change Orders</span>
             </a>
           </li>
@@ -382,12 +469,12 @@
               <!-- Right Column: IDs -->
               <div class="text-right">
                 <div class="flex justify-end gap-2">
-                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
-                  <a href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.deliveryId">—</a>
+                  <!-- <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <a href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.deliveryId">—</a> -->
                 </div>
                 <div class="flex justify-end gap-2">
-                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
-                  <a href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.reportingId">—</a>
+                  <!-- <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <a href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.reportingId">—</a> -->
                 </div>
                 <div class="flex justify-end gap-2">
                   <span class="text-sm font-semibold text-gray-600">ID:</span>
@@ -496,10 +583,17 @@
                 </div>
 
                 <!-- New Change Order Button -->
-                <button id="newChangeOrderBtn" onclick="openCOPickerModal()" class="flex items-center gap-2 px-3 py-1 text-sm bg-green-600 text-white border border-green-600 rounded-md hover:bg-green-700 transition-colors ml-auto" title="New Change Order">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                  <span>New Change Order</span>
+                <div class="flex-1"></div>
+                <button id="newChangeOrderBtn"
+                  class="flex items-center gap-1.5 h-8 px-3 rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors"
+                  onclick="openCOPickerModal()"
+                  title="Create New Change Order">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  New Change Order
                 </button>
+                <div class="w-1"></div>
 
                 <!-- Universal Export Button -->
                 <button id="universalExportBtn" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors mr-2" title="Export all campaigns and ad groups">
@@ -516,6 +610,9 @@
              <table id="campaignTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
                <thead class="tbl-head">
                   <tr>
+                    <th class="w-10 px-3 py-2 text-center border-r border-gray-200">
+                      <input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 accent-blue-600 cursor-pointer" title="Select All">
+                    </th>
                     <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
                       <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="id">
                         <span>ID</span>
@@ -691,7 +788,7 @@
           <div class="wizard-content active" data-content="1">
             <div class="mb-6">
               <h3 class="text-xl font-semibold text-gray-900 mb-2">Campaign Details</h3>
-              <p class="text-sm text-gray-600">Enter the basic information for the new campaign</p>
+              <p class="text-sm text-gray-600">Beacon CAD fields are collected first, then platform-specific fields in Step 3.</p>
             </div>
 
             <div class="space-y-5">
@@ -712,7 +809,7 @@
               <!-- Campaign Name -->
               <div>
                 <label for="beaconCampaignName" class="block text-sm font-medium text-gray-700 mb-2">
-                  Name <span class="text-red-500">*</span>
+                  Campaign Name <span class="text-red-500">*</span>
                 </label>
                 <input 
                   type="text" 
@@ -724,11 +821,82 @@
                 <p class="mt-1 text-xs text-gray-500">Common identifier across all platforms</p>
               </div>
 
+              <div>
+                <label for="beaconTemplate" class="block text-sm font-medium text-gray-700 mb-2">
+                  Template <span class="text-red-500">*</span>
+                </label>
+                <select
+                  id="beaconTemplate"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                >
+                  <option value="">-- Select Template --</option>
+                  <option value="Programmatic Display">Programmatic Display</option>
+                  <option value="Programmatic Video">Programmatic Video</option>
+                  <option value="Programmatic Audio">Programmatic Audio</option>
+                  <option value="Connected TV">Connected TV</option>
+                  <option value="Paid Social">Paid Social</option>
+                  <option value="Paid Search">Paid Search</option>
+                  <option value="Event Targeting">Event Targeting</option>
+                  <option value="Native Video">Native Video</option>
+                  <option value="DOOH">DOOH</option>
+                  <option value="PLD Display">PLD Display</option>
+                  <option value="PLD Video">PLD Video</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="beaconDspImpressions" class="block text-sm font-medium text-gray-700 mb-2">
+                  DSP Impressions <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  id="beaconDspImpressions"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="1600000"
+                  required
+                />
+              </div>
+
+              <!-- Flight Dates -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="beaconStartDate" class="block text-sm font-medium text-gray-700 mb-2">
+                    Start Date <span class="text-red-500">*</span>
+                  </label>
+                  <input 
+                    type="date" 
+                    id="beaconStartDate" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                  <p class="mt-1 text-xs text-gray-500">Campaign start date</p>
+                </div>
+                <div>
+                  <label for="beaconEndDate" class="block text-sm font-medium text-gray-700 mb-2">
+                    End Date <span class="text-red-500">*</span>
+                  </label>
+                  <input 
+                    type="date" 
+                    id="beaconEndDate" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                  <p class="mt-1 text-xs text-gray-500">Campaign end date</p>
+                </div>
+              </div>
+
+              <div class="border-t border-gray-200 pt-4">
+                <p class="text-xs text-gray-500">Platform-specific fields for The Trade Desk, Google Campaign Manager, DV360, and Simpli.fi are configured in Step 3.</p>
+              </div>
+
             </div>
           </div>
 
           <!-- STEP 2: Platform Connectors -->
-          <div class="wizard-content" data-content="2">
+          <div class="wizard-content" data-content="2" style="min-height: 420px;">
             <div class="mb-6">
               <h3 class="text-xl font-semibold text-gray-900 mb-2">Platform Connectors</h3>
               <p class="text-sm text-gray-600">Select which DSPs and Ad Servers to connect</p>
@@ -736,7 +904,7 @@
 
             <div class="space-y-4">
               
-              <!-- Toggle All Connectors -->
+              <!-- Toggle All Connectors - COMMENTED OUT FOR DROPDOWN OVERHAUL
               <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div>
                   <p class="text-sm font-medium text-gray-900">Enable Platform Connectors</p>
@@ -746,11 +914,12 @@
                   <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
                 </button>
               </div>
+              -->
 
               <!-- Connectors Content -->
-              <div id="connectorsContent" class="space-y-4">
+              <div id="connectorsContent" class="space-y-6">
                 
-                <!-- DSP Section Header -->
+                <!-- DSP Section -->
                 <div class="pt-2">
                   <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
@@ -758,84 +927,54 @@
                     </svg>
                     DSP (Demand-Side Platform)
                   </h4>
-                </div>
 
-                <!-- The Trade Desk -->
-                <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="tradeDesk">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                      <input 
-                        type="checkbox" 
-                        id="dsp-trade-desk" 
-                        name="dsp" 
-                        value="trade-desk"
-                        class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                      <div>
-                        <p class="text-sm font-semibold text-gray-900">The Trade Desk</p>
-                        <p class="text-xs text-gray-500">Programmatic advertising platform</p>
+                  <!-- DSP Custom Dropdown -->
+                  <div class="platform-select-container" id="dspDropdownContainer">
+                    <input type="hidden" id="dspDropdown" name="dsp" value="" />
+                    <button type="button" class="platform-select-trigger" id="dspDropdownTrigger" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="platform-select-value text-gray-500">-- Select DSP --</span>
+                      <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                      </svg>
+                    </button>
+                    <div class="platform-select-menu" id="dspDropdownMenu" role="listbox">
+                      <div class="platform-select-option" data-value="" role="option">
+                        <span>-- Select DSP --</span>
+                      </div>
+                      <div class="platform-select-option" data-value="trade-desk" data-connected="true" role="option">
+                        <span>The Trade Desk</span>
+                        <!-- Connected chain link icon -->
+                        <svg class="w-5 h-5 chain-link-icon connected" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
+                      </div>
+                      <div class="platform-select-option" data-value="dv360" data-connected="false" role="option">
+                        <span>DV360</span>
+                        <!-- Disconnected/broken chain link icon -->
+                        <svg class="w-5 h-5 chain-link-icon disconnected" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1M6 18L18 6"/>
+                        </svg>
+                      </div>
+                      <div class="platform-select-option" data-value="simplifi" data-connected="false" role="option">
+                        <span>Simpli.fi</span>
+                        <!-- Disconnected/broken chain link icon -->
+                        <svg class="w-5 h-5 chain-link-icon disconnected" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1M6 18L18 6"/>
+                        </svg>
                       </div>
                     </div>
-                    <div class="flex items-center space-x-3">
-                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
-                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="tradeDesk">
-                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
-                      </button>
-                    </div>
+                  </div>
+
+                  <!-- Sync to platform checkbox (DSP) -->
+                  <div class="mt-3">
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="checkbox" id="dspSyncCheckbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                      <span class="ml-2 text-sm text-gray-700">Sync to platform on creation</span>
+                    </label>
                   </div>
                 </div>
 
-                <!-- DV360 -->
-                <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="dv360">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                      <input 
-                        type="checkbox" 
-                        id="dsp-dv360" 
-                        name="dsp" 
-                        value="dv360"
-                        class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                      <div>
-                        <p class="text-sm font-semibold text-gray-900">DV360</p>
-                        <p class="text-xs text-gray-500">Google Display & Video 360</p>
-                      </div>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
-                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="dv360">
-                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Simplifi -->
-                <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="simplifi">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                      <input 
-                        type="checkbox" 
-                        id="dsp-simplifi" 
-                        name="dsp" 
-                        value="simplifi"
-                        class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                      <div>
-                        <p class="text-sm font-semibold text-gray-900">Simplifi</p>
-                        <p class="text-xs text-gray-500">Local advertising platform</p>
-                      </div>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
-                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="simplifi">
-                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Ad Server Section Header -->
+                <!-- Ad Server Section -->
                 <div class="pt-4">
                   <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
@@ -843,30 +982,36 @@
                     </svg>
                     Ad Server
                   </h4>
-                </div>
 
-                <!-- Google Campaign Manager -->
-                <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="gcm">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                      <input 
-                        type="checkbox" 
-                        id="adserver-gcm" 
-                        name="adserver" 
-                        value="google-campaign-manager"
-                        class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                      <div>
-                        <p class="text-sm font-semibold text-gray-900">Google Campaign Manager</p>
-                        <p class="text-xs text-gray-500">Ad serving and campaign management</p>
+                  <!-- Ad Server Custom Dropdown -->
+                  <div class="platform-select-container" id="adServerDropdownContainer">
+                    <input type="hidden" id="adServerDropdown" name="adserver" value="" />
+                    <button type="button" class="platform-select-trigger" id="adServerDropdownTrigger" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="platform-select-value text-gray-500">-- Select Ad Server --</span>
+                      <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                      </svg>
+                    </button>
+                    <div class="platform-select-menu" id="adServerDropdownMenu" role="listbox">
+                      <div class="platform-select-option" data-value="" role="option">
+                        <span>-- Select Ad Server --</span>
+                      </div>
+                      <div class="platform-select-option" data-value="google-campaign-manager" data-connected="true" role="option">
+                        <span>Google Campaign Manager</span>
+                        <!-- Connected chain link icon -->
+                        <svg class="w-5 h-5 chain-link-icon connected" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
                       </div>
                     </div>
-                    <div class="flex items-center space-x-3">
-                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
-                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="gcm">
-                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
-                      </button>
-                    </div>
+                  </div>
+
+                  <!-- Sync to platform checkbox (Ad Server) -->
+                  <div class="mt-3">
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="checkbox" id="adServerSyncCheckbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                      <span class="ml-2 text-sm text-gray-700">Sync to platform</span>
+                    </label>
                   </div>
                 </div>
 
@@ -963,10 +1108,6 @@
                   <span class="absolute left-3 top-2 text-gray-500">$</span>
                   <input type="number" id="campaignBudget" class="w-full border border-gray-300 rounded-md pl-8 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" step="0.01" min="0">
                 </div>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Impressions</label>
-                <input type="number" id="campaignImpressions" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0" step="1" min="0" inputmode="numeric" aria-label="Enter Campaign Impressions" title="Enter Campaign Impressions">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Campaign KPI</label>
@@ -1124,7 +1265,7 @@
 
   <script>
     // === CONFIGURATION ===
-    const CONFIG = {
+    const PAGE_CONFIG = {
       STORAGE_KEYS: {
         DATA: 'campaign_tree_groups', // updated key for groups
         STATE_FILTER: 'campaign_state_filter',
@@ -1148,18 +1289,31 @@
         groups: [],
         ungroupedExpanded: true,  // Track expand/collapse state for ungrouped section
         currentPage: 1,
-        rowsPerPage: CONFIG.PAGINATION.DEFAULT_ROWS,
+        rowsPerPage: PAGE_CONFIG.PAGINATION.DEFAULT_ROWS,
         filters: { state: 'All', dsp: 'All' },
         searchQuery: '',
         elements: {},
         searchExpanded: false,
         editingGroupId: null,
 
+        getCurrentAdvertiserId: function() {
+          try {
+            const raw = localStorage.getItem('adv_selected_data') || localStorage.getItem('selectedAdvertiser');
+            if (!raw) return null;
+            const advertiser = JSON.parse(raw);
+            return advertiser && advertiser.id ? advertiser.id : null;
+          } catch (e) {
+            console.warn('Failed to load advertiser ID:', e);
+            return null;
+          }
+        },
+
         init: function() {
           this.loadGroups();
           this.loadUngroupedState();
           this.cacheElements();
           this.loadFilters();
+          this.revealRecentCampaign();
           this.initEventListeners();
           this.setupDragAndDrop();
           this.applyFiltersAndRender();
@@ -1179,7 +1333,7 @@
 
         loadGroups: function() {
           try {
-            const stored = localStorage.getItem(CONFIG.STORAGE_KEYS.DATA);
+            const stored = localStorage.getItem(PAGE_CONFIG.STORAGE_KEYS.DATA);
             if (stored) {
               const data = JSON.parse(stored);
               // Handle both old and new data structures
@@ -1220,7 +1374,7 @@
               campaigns: this.campaigns || [],
               groups: this.groups || []
             };
-            localStorage.setItem(CONFIG.STORAGE_KEYS.DATA, JSON.stringify(data));
+            localStorage.setItem(PAGE_CONFIG.STORAGE_KEYS.DATA, JSON.stringify(data));
           } catch (e) {
             console.warn('Failed to save data:', e);
           }
@@ -1303,6 +1457,21 @@ if (this.elements.createBtn) {
       const form = document.getElementById('createCampaignForm');
       if (form) form.reset();
       
+      // Set default dates after reset completes (using setTimeout to ensure reset is done)
+      setTimeout(() => {
+        const today = new Date();
+        const startDateInput = document.getElementById('beaconStartDate');
+        const endDateInput = document.getElementById('beaconEndDate');
+        if (startDateInput) {
+          startDateInput.value = today.toISOString().split('T')[0];
+        }
+        if (endDateInput) {
+          const tenYearsAhead = new Date(today);
+          tenYearsAhead.setFullYear(today.getFullYear() + 10);
+          endDateInput.value = tenYearsAhead.toISOString().split('T')[0];
+        }
+      }, 0);
+      
       // Reset connectors toggle and status badges
       const connectorsContent = document.getElementById('connectorsContent');
       const connectorsToggle = document.getElementById('connectorsToggle');
@@ -1371,7 +1540,7 @@ if (this.elements.manageCampaignGroupBtn) {
               const value = btn.dataset.value;
               if (self.elements.stateChipLabel) self.elements.stateChipLabel.textContent = value === 'All' ? 'All' : value;
               self.filters.state = value;
-              localStorage.setItem(CONFIG.STORAGE_KEYS.STATE_FILTER, value);
+              localStorage.setItem(PAGE_CONFIG.STORAGE_KEYS.STATE_FILTER, value);
               self.currentPage = 1;
               self.closeAllDropdowns();
               self.applyFiltersAndRender();
@@ -1392,7 +1561,7 @@ if (this.elements.manageCampaignGroupBtn) {
               const value = btn.dataset.value;
               if (self.elements.dspChipLabel) self.elements.dspChipLabel.textContent = value === 'All' ? 'All' : value;
               self.filters.dsp = value;
-              localStorage.setItem(CONFIG.STORAGE_KEYS.DSP_FILTER, value);
+              localStorage.setItem(PAGE_CONFIG.STORAGE_KEYS.DSP_FILTER, value);
               self.currentPage = 1;
               self.closeAllDropdowns();
               self.applyFiltersAndRender();
@@ -1501,8 +1670,67 @@ if (this.elements.manageCampaignGroupBtn) {
         },
 
         loadFilters: function() {
-          this.filters.state = localStorage.getItem(CONFIG.STORAGE_KEYS.STATE_FILTER) || 'All';
-          this.filters.dsp = localStorage.getItem(CONFIG.STORAGE_KEYS.DSP_FILTER) || 'All';
+          this.filters.state = localStorage.getItem(PAGE_CONFIG.STORAGE_KEYS.STATE_FILTER) || 'All';
+          this.filters.dsp = localStorage.getItem(PAGE_CONFIG.STORAGE_KEYS.DSP_FILTER) || 'All';
+        },
+
+        revealRecentCampaign: function() {
+          try {
+            const recentId = localStorage.getItem('campaign_recently_created_id');
+            if (!recentId) return;
+
+            let recentCampaign = this.campaigns.find(c => c.id === recentId) || null;
+            if (!recentCampaign) {
+              for (const g of this.groups) {
+                const found = (g.campaigns || []).find(c => c.id === recentId);
+                if (found) {
+                  recentCampaign = found;
+                  break;
+                }
+              }
+            }
+
+            if (!recentCampaign) {
+              localStorage.removeItem('campaign_recently_created_id');
+              return;
+            }
+
+            const currentAdvertiserId = this.getCurrentAdvertiserId();
+            if (
+              currentAdvertiserId &&
+              recentCampaign.advertiserId &&
+              String(recentCampaign.advertiserId) !== String(currentAdvertiserId)
+            ) {
+              localStorage.removeItem('campaign_recently_created_id');
+              return;
+            }
+
+            const isVisibleNow = this.getVisibleRows().some(
+              r => r.type === 'campaign' && r.campaign && r.campaign.id === recentId
+            );
+
+            if (!isVisibleNow) {
+              this.filters.state = 'All';
+              this.filters.dsp = 'All';
+              this.searchQuery = '';
+              this.ungroupedExpanded = true;
+
+              localStorage.setItem(PAGE_CONFIG.STORAGE_KEYS.STATE_FILTER, 'All');
+              localStorage.setItem(PAGE_CONFIG.STORAGE_KEYS.DSP_FILTER, 'All');
+              localStorage.setItem('ungrouped_expanded_state', JSON.stringify(true));
+
+              this.groups.forEach(g => {
+                if ((g.campaigns || []).some(c => c.id === recentId)) {
+                  g.expanded = true;
+                }
+              });
+              this.saveGroups();
+            }
+
+            localStorage.removeItem('campaign_recently_created_id');
+          } catch (e) {
+            console.warn('Failed to reveal recent campaign:', e);
+          }
         },
 
         closeAllDropdowns: function() {
@@ -1575,17 +1803,7 @@ if (this.elements.manageCampaignGroupBtn) {
         getVisibleRows: function() {
           const q = this.searchQuery.trim().toLowerCase();
           
-          // Get current advertiser ID
-          let currentAdvertiserId = null;
-          try {
-            const selectedData = localStorage.getItem('adv_selected_data');
-            if (selectedData) {
-              const advertiser = JSON.parse(selectedData);
-              currentAdvertiserId = advertiser.id;
-            }
-          } catch (e) {
-            console.warn('Failed to load advertiser ID:', e);
-          }
+          const currentAdvertiserId = this.getCurrentAdvertiserId();
           
           const filterBy = (c) => {
             // Filter by advertiser ID first
@@ -1649,17 +1867,7 @@ if (this.elements.manageCampaignGroupBtn) {
           const q = this.searchQuery.trim().toLowerCase();
           let total = 0;
           
-          // Get current advertiser ID
-          let currentAdvertiserId = null;
-          try {
-            const selectedData = localStorage.getItem('adv_selected_data');
-            if (selectedData) {
-              const advertiser = JSON.parse(selectedData);
-              currentAdvertiserId = advertiser.id;
-            }
-          } catch (e) {
-            console.warn('Failed to load advertiser ID:', e);
-          }
+          const currentAdvertiserId = this.getCurrentAdvertiserId();
           
           // Count individual campaigns
           if (this.campaigns) {
@@ -2021,7 +2229,7 @@ try {
 
           if (rows.length === 0) {
             const tr = document.createElement('tr');
-            tr.innerHTML = '<td colspan="6" class="px-6 py-4 text-center text-gray-500">No results</td>';
+            tr.innerHTML = '<td colspan="8" class="px-6 py-4 text-center text-gray-500">No results</td>';
             tbody.appendChild(tr);
             return;
           }
@@ -2031,6 +2239,9 @@ try {
 
             if (r.type === 'ungrouped-header') {
               tr.innerHTML = `
+  <td class="px-3 py-1 text-center bg-gray-100">
+    <input type="checkbox" class="w-4 h-4 accent-blue-600 cursor-pointer group-select-checkbox" data-group-id="ungrouped" title="Select All Ungrouped">
+  </td>
   <td class="px-3 py-1 text-sm font-semibold bg-gray-100">
     <button data-action="toggle-ungrouped" class="w-4 h-4 inline-flex items-center justify-center rounded border border-strong bg-white mr-2" title="${r.expanded ? 'Collapse' : 'Expand'}">
       ${r.expanded ? '&minus;' : '+'}
@@ -2047,6 +2258,9 @@ try {
               tr.dataset.groupId = 'ungrouped';
             } else if (r.type === 'group') {
              tr.innerHTML = `
+  <td class="px-3 py-1 text-center bg-gray-100">
+    <input type="checkbox" class="w-4 h-4 accent-blue-600 cursor-pointer group-select-checkbox" data-group-id="${r.groupId}" title="Select All in Group">
+  </td>
   <td class="px-3 py-1 text-sm font-semibold bg-gray-100">
     <button data-action="toggle-group" data-group-id="${r.groupId}" class="w-4 h-4 inline-flex items-center justify-center rounded border border-strong bg-white mr-2" title="${r.expanded ? 'Collapse' : 'Expand'}">
       ${r.expanded ? '&minus;' : '+'}
@@ -2071,6 +2285,9 @@ tr.draggable = true;
 tr.dataset.campaignId = c.id;
 tr.dataset.groupId = r.groupId || 'ungrouped';
 tr.innerHTML = `
+  <td class="px-3 py-1 text-center">
+    <input type="checkbox" class="w-4 h-4 accent-blue-600 cursor-pointer row-select-checkbox" data-campaign-id="${c.id}" data-group-id="${r.groupId || 'ungrouped'}">
+  </td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.beaconCampaignId || c.id || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm font-medium border-r border-default">
     <a href="./CampaignDetails.html?campaignId=${encodeURIComponent(c.id)}&campaignName=${encodeURIComponent(c.beaconCampaignName || c.name)}" class="text-blue-600 hover:underline">
@@ -2091,7 +2308,7 @@ exportLink.href = '#';
 exportLink.className = 'text-blue-600 hover:underline export-btn';
 exportLink.textContent = 'Export';
 
-const advData = JSON.parse(localStorage.getItem('adv_selected_data') || '{}');
+const advData = JSON.parse(localStorage.getItem('adv_selected_data') || localStorage.getItem('selectedAdvertiser') || '{}');
 exportLink.dataset.export = true;
 exportLink.dataset.campaignId = c.id;
 exportLink.dataset.advName = advData.name || 'Unknown Advertiser';
@@ -2159,7 +2376,7 @@ tr.appendChild(tdActions);
     document.addEventListener('DOMContentLoaded', function() {
       // Load advertiser data for the header
       try {
-        const selectedData = localStorage.getItem('adv_selected_data');
+        const selectedData = localStorage.getItem('adv_selected_data') || localStorage.getItem('selectedAdvertiser');
         if (selectedData) {
           const advertiser = JSON.parse(selectedData);
           
@@ -2215,19 +2432,160 @@ document.addEventListener('click', (e) => {
 
 // Show / hide modal handlers
 document.addEventListener('DOMContentLoaded', () => {
-  // Get connector elements
-  const connectorsToggle = document.getElementById('connectorsToggle');
+  // Get connector elements - UPDATED FOR DROPDOWN OVERHAUL
+  // const connectorsToggle = document.getElementById('connectorsToggle'); // Commented out - toggle removed
   const connectorsContent = document.getElementById('connectorsContent');
-  const dspCheckboxes = document.querySelectorAll('input[name="dsp"]');
-  const adServerCheckboxes = document.querySelectorAll('input[name="adserver"]');
   
   // Get field sections
   const dspFieldsSection = document.getElementById('dspFieldsSection');
   const adServerFieldsSection = document.getElementById('adServerFieldsSection');
 
-  // Connectors are always visible - no need to toggle visibility
-  // connectorsContent is always shown
+  // ============================================
+  // PLATFORM CONNECTOR DROPDOWN LOGIC
+  // ============================================
 
+  function initPlatformDropdowns() {
+    // Initialize both DSP and Ad Server dropdowns
+    initCustomDropdown('dsp');
+    initCustomDropdown('adServer');
+  }
+
+  function initCustomDropdown(type) {
+    const containerId = type === 'dsp' ? 'dspDropdownContainer' : 'adServerDropdownContainer';
+    const triggerId = type === 'dsp' ? 'dspDropdownTrigger' : 'adServerDropdownTrigger';
+    const menuId = type === 'dsp' ? 'dspDropdownMenu' : 'adServerDropdownMenu';
+    const hiddenInputId = type === 'dsp' ? 'dspDropdown' : 'adServerDropdown';
+    const syncCheckboxId = type === 'dsp' ? 'dspSyncCheckbox' : 'adServerSyncCheckbox';
+
+    const container = document.getElementById(containerId);
+    const trigger = document.getElementById(triggerId);
+    const menu = document.getElementById(menuId);
+    const hiddenInput = document.getElementById(hiddenInputId);
+    const syncCheckbox = document.getElementById(syncCheckboxId);
+
+    if (!container || !trigger || !menu || !hiddenInput) return;
+
+    // Toggle dropdown menu on trigger click
+    trigger.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Close any other open dropdown menus first
+      document.querySelectorAll('.platform-select-menu.open').forEach(m => {
+        if (m !== menu) m.classList.remove('open');
+      });
+      
+      menu.classList.toggle('open');
+      trigger.setAttribute('aria-expanded', menu.classList.contains('open'));
+    });
+
+    // Handle option selection
+    menu.querySelectorAll('.platform-select-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const value = this.dataset.value;
+        const isConnected = this.dataset.connected === 'true';
+        const label = this.querySelector('span').textContent;
+
+        // Update hidden input value
+        hiddenInput.value = value;
+
+        // Update trigger display text
+        const valueSpan = trigger.querySelector('.platform-select-value');
+        if (value === '') {
+          valueSpan.textContent = type === 'dsp' ? '-- Select DSP --' : '-- Select Ad Server --';
+          valueSpan.classList.add('text-gray-500');
+          valueSpan.classList.remove('text-gray-900');
+        } else {
+          valueSpan.textContent = label;
+          valueSpan.classList.remove('text-gray-500');
+          valueSpan.classList.add('text-gray-900');
+        }
+
+        // Update selected state on options
+        menu.querySelectorAll('.platform-select-option').forEach(opt => {
+          opt.classList.remove('selected');
+        });
+        if (value !== '') {
+          this.classList.add('selected');
+        }
+
+        // Close the menu
+        menu.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+
+        // Auto-check/uncheck the sync checkbox based on connected status
+        if (syncCheckbox) {
+          if (value === '') {
+            // No selection — uncheck
+            syncCheckbox.checked = false;
+          } else {
+            // Connected platforms (TTD, GCM) auto-check; others don't
+            syncCheckbox.checked = isConnected;
+          }
+        }
+
+        // Trigger field visibility update for Step 3 (Platform Configuration)
+        updateFieldsDisplay();
+      });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!container.contains(e.target)) {
+        menu.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  // Initialize platform dropdowns
+  initPlatformDropdowns();
+
+  // UPDATED: Read from dropdown hidden inputs instead of checkboxes
+  function updateFieldsDisplay() {
+    const dspValue = document.getElementById('dspDropdown')?.value || '';
+    const adServerValue = document.getElementById('adServerDropdown')?.value || '';
+    
+    const tradeDeskSelected = (dspValue === 'trade-desk');
+    const gcmSelected = (adServerValue === 'google-campaign-manager');
+    const anyConnectorSelected = Boolean(dspValue || adServerValue);
+    
+    const noPlatformsMessage = document.getElementById('noPlatformsMessage');
+    const noPlatformsTitle = noPlatformsMessage?.querySelector('h3');
+    const noPlatformsText = noPlatformsMessage?.querySelector('p');
+    const hasConfigSections = tradeDeskSelected || gcmSelected;
+
+    // Show/hide DSP fields (The Trade Desk has additional platform configuration in Step 3)
+    if (tradeDeskSelected) {
+      dspFieldsSection?.classList.remove('hidden');
+    } else {
+      dspFieldsSection?.classList.add('hidden');
+    }
+
+    // Show/hide Ad Server fields (only for Google Campaign Manager)
+    if (gcmSelected) {
+      adServerFieldsSection?.classList.remove('hidden');
+    } else {
+      adServerFieldsSection?.classList.add('hidden');
+    }
+    
+    // Show/hide "No platforms selected" message
+    if (noPlatformsMessage) {
+      if (!anyConnectorSelected) {
+        noPlatformsMessage.classList.remove('hidden');
+        if (noPlatformsTitle) noPlatformsTitle.textContent = 'No platforms selected';
+        if (noPlatformsText) noPlatformsText.textContent = 'Go back to step 2 to select at least one platform connector.';
+      } else if (!hasConfigSections) {
+        noPlatformsMessage.classList.remove('hidden');
+        if (noPlatformsTitle) noPlatformsTitle.textContent = 'No additional platform fields required';
+        if (noPlatformsText) noPlatformsText.textContent = 'DV360 and Simpli.fi use the Beacon CAD fields from Step 1.';
+      } else {
+        noPlatformsMessage.classList.add('hidden');
+      }
+    }
+  }
+
+  /* COMMENTED OUT - Old toggle functionality replaced by dropdown
   // Toggle functionality - only updates connection status
   function toggleConnectors() {
     const isEnabled = connectorsToggle.getAttribute('aria-checked') === 'true';
@@ -2283,7 +2641,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  */
 
+  /* COMMENTED OUT - Old checkbox-based updateFieldsDisplay
   function updateFieldsDisplay() {
     const tradeDeskSelected = document.getElementById('dsp-trade-desk')?.checked;
     const gcmSelected = document.getElementById('adserver-gcm')?.checked;
@@ -2314,7 +2674,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+  */
 
+  /* COMMENTED OUT - Old toggle event listeners
   // Event listeners for modal
   connectorsToggle?.addEventListener('click', toggleConnectors);
 
@@ -2354,6 +2716,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+  */
 
   // Simple event listeners for opening/closing modal (like ad groups)
   const createBtn = document.getElementById('createBtn');
@@ -2375,17 +2738,40 @@ document.addEventListener('DOMContentLoaded', () => {
           campaignIdField.value = 'CAM-' + Math.random().toString(36).substr(2, 6).toUpperCase();
         }
         
-        // Reset connectors toggle (but keep content visible)
-        if (connectorsToggle) {
-          connectorsToggle.classList.remove('bg-blue-600');
-          connectorsToggle.classList.add('bg-gray-200');
-          connectorsToggle.setAttribute('aria-checked', 'false');
-          const toggleSpan = connectorsToggle.querySelector('span');
-          if (toggleSpan) {
-            toggleSpan.classList.remove('translate-x-5');
-            toggleSpan.classList.add('translate-x-0');
+        // Reset platform dropdowns (NEW DROPDOWN OVERHAUL)
+        const dspHidden = document.getElementById('dspDropdown');
+        const adServerHidden = document.getElementById('adServerDropdown');
+        const dspTrigger = document.getElementById('dspDropdownTrigger');
+        const adServerTrigger = document.getElementById('adServerDropdownTrigger');
+
+        if (dspHidden) dspHidden.value = '';
+        if (adServerHidden) adServerHidden.value = '';
+
+        if (dspTrigger) {
+          const span = dspTrigger.querySelector('.platform-select-value');
+          if (span) {
+            span.textContent = '-- Select DSP --';
+            span.classList.add('text-gray-500');
+            span.classList.remove('text-gray-900');
           }
         }
+        if (adServerTrigger) {
+          const span = adServerTrigger.querySelector('.platform-select-value');
+          if (span) {
+            span.textContent = '-- Select Ad Server --';
+            span.classList.add('text-gray-500');
+            span.classList.remove('text-gray-900');
+          }
+        }
+
+        // Reset selected state on dropdown options
+        document.querySelectorAll('.platform-select-option').forEach(opt => opt.classList.remove('selected'));
+
+        // Reset sync checkboxes
+        const dspSync = document.getElementById('dspSyncCheckbox');
+        const adServerSync = document.getElementById('adServerSyncCheckbox');
+        if (dspSync) dspSync.checked = false;
+        if (adServerSync) adServerSync.checked = false;
         
         // Initialize wizard to step 1
         if (typeof campaignWizardGoToStep === 'function') {
@@ -2397,9 +2783,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const adServerFieldsSection = document.getElementById('adServerFieldsSection');
         if (dspFieldsSection) dspFieldsSection.classList.add('hidden');
         if (adServerFieldsSection) adServerFieldsSection.classList.add('hidden');
-        
-        // Clear checkboxes
-        document.querySelectorAll('#createCampaignModal input[type="checkbox"]').forEach(cb => cb.checked = false);
         
         // Update fields display
         updateFieldsDisplay();
@@ -2530,6 +2913,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* COMMENTED OUT - Old checkbox change listeners replaced by dropdown
   // Add event listeners for connector checkboxes
   dspCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', updateFieldsDisplay);
@@ -2538,6 +2922,7 @@ document.addEventListener('DOMContentLoaded', () => {
   adServerCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', updateFieldsDisplay);
   });
+  */
 
   // Initialize display state
   updateFieldsDisplay();
@@ -2594,32 +2979,28 @@ document.getElementById('createAndAddAdGroup')?.addEventListener('click', functi
 
 // Unified campaign creation handler
 function handleCampaignCreation(redirectToAdGroups) {
-  // Get selected platforms (checked checkboxes) and their connection status
+  // Get selected platforms from dropdowns and their sync status (NEW DROPDOWN OVERHAUL)
   const selectedDSP = [];
   const selectedAdServer = [];
   const connectionStatus = {}; // Track status for each platform
-  
-  // Check each connector card
-  document.querySelectorAll('.connector-card').forEach(card => {
-    const connectorToggle = card.querySelector('.connector-toggle');
-    const checkbox = card.querySelector('input[type="checkbox"]');
-    
-    if (checkbox && checkbox.checked) {
-      const connectorType = checkbox.name; // 'dsp' or 'adserver'
-      const connectorValue = checkbox.value;
-      const isConnected = connectorToggle && connectorToggle.getAttribute('aria-checked') === 'true';
-      
-      // Add to selected arrays
-      if (connectorType === 'dsp') {
-        selectedDSP.push(connectorValue);
-      } else if (connectorType === 'adserver') {
-        selectedAdServer.push(connectorValue);
-      }
-      
-      // Track connection status
-      connectionStatus[connectorValue] = isConnected ? 'Connected' : 'Disconnected';
-    }
-  });
+
+  // Read DSP dropdown
+  const dspValue = document.getElementById('dspDropdown')?.value || '';
+  const dspSynced = document.getElementById('dspSyncCheckbox')?.checked || false;
+
+  if (dspValue) {
+    selectedDSP.push(dspValue);
+    connectionStatus[dspValue] = dspSynced ? 'Connected' : 'Disconnected';
+  }
+
+  // Read Ad Server dropdown
+  const adServerValue = document.getElementById('adServerDropdown')?.value || '';
+  const adServerSynced = document.getElementById('adServerSyncCheckbox')?.checked || false;
+
+  if (adServerValue) {
+    selectedAdServer.push(adServerValue);
+    connectionStatus[adServerValue] = adServerSynced ? 'Connected' : 'Disconnected';
+  }
   
   // Debug: Log form field values
   console.log('🔍 Form field values during creation:');
@@ -2627,7 +3008,6 @@ function handleCampaignCreation(redirectToAdGroups) {
   console.log('campaignName:', document.getElementById('campaignName')?.value);
   console.log('campaignSeed:', document.getElementById('campaignSeed')?.value);
   console.log('campaignBudget:', document.getElementById('campaignBudget')?.value);
-  console.log('campaignImpressions:', document.getElementById('campaignImpressions')?.value);
   console.log('Selected DSPs:', selectedDSP);
   console.log('Selected Ad Servers:', selectedAdServer);
   console.log('Connection Status:', connectionStatus);
@@ -2636,7 +3016,7 @@ function handleCampaignCreation(redirectToAdGroups) {
   const dspLabels = {
     'trade-desk': 'Trade Desk',
     'dv360': 'DV360',
-    'simplifi': 'Simplifi'
+    'simplifi': 'Simpli.fi'
   };
   const adServerLabels = {
     'google-campaign-manager': 'Google Campaign Manager'
@@ -2660,13 +3040,13 @@ function handleCampaignCreation(redirectToAdGroups) {
   const adServerDisplay = adServerList.length > 0 ? adServerList.join(', ') : '';
   
   // Get current advertiser ID
-  const advData = JSON.parse(localStorage.getItem('adv_selected_data') || '{}');
+  const advData = JSON.parse(localStorage.getItem('adv_selected_data') || localStorage.getItem('selectedAdvertiser') || '{}');
   const advertiserId = advData.id || null;
   
   const campaign = {
     id: 'CAM-' + Date.now(),
     advertiserId: advertiserId, // Track which advertiser this campaign belongs to
-    name: document.getElementById('campaignName')?.value || '',
+    name: document.getElementById('campaignName')?.value || document.getElementById('beaconCampaignName')?.value || '',
     seed: document.getElementById('campaignSeed')?.value || '',
     organization: document.getElementById('campaignOrganization')?.value || '',
     pacing: document.getElementById('campaignPacing')?.value || '',
@@ -2675,7 +3055,6 @@ function handleCampaignCreation(redirectToAdGroups) {
     endDate: document.getElementById('campaignEndDate')?.value || '',
     channel: document.getElementById('campaignChannel')?.value || '',
     budget: document.getElementById('campaignBudget')?.value || '0',
-    impressions: document.getElementById('campaignImpressions')?.value || '',
     kpi: document.getElementById('campaignKPI')?.value || '',
     kpiTarget: document.getElementById('campaignKPITarget')?.value || '',
     state: 'Active',
@@ -2685,6 +3064,12 @@ function handleCampaignCreation(redirectToAdGroups) {
     // Beacon Fields mapped to Common Data
     beaconCampaignId: document.getElementById('beaconCampaignId')?.value || '',
     beaconCampaignName: document.getElementById('beaconCampaignName')?.value || '',
+    beaconTemplate: document.getElementById('beaconTemplate')?.value || '',
+    beaconDspImpressions: document.getElementById('beaconDspImpressions')?.value || '',
+    template: document.getElementById('beaconTemplate')?.value || '',
+    dspImpressions: document.getElementById('beaconDspImpressions')?.value || '',
+    beaconStartDate: document.getElementById('beaconStartDate')?.value || '',
+    beaconEndDate: document.getElementById('beaconEndDate')?.value || '',
     // New Ad Server fields
     adServerCampaignName: document.getElementById('adServerCampaignName')?.value || '',
     adServerSchedule: document.getElementById('adServerSchedule')?.value || '',
@@ -2712,46 +3097,58 @@ function handleCampaignCreation(redirectToAdGroups) {
 
   console.log('🔍 Updated campaigns data:', data.campaigns);
 
-  // Log creation to audit
-  audit.recordCreate({
-    campaignId: campaign.id,
-    entityType: 'campaign',
-    entityId: campaign.id,
-    data: {
-      beaconCampaignName: campaign.beaconCampaignName,
-      seed: campaign.seed,
-      organization: campaign.organization,
-      pacing: campaign.pacing,
-      timezone: campaign.timezone,
-      startDate: campaign.startDate,
-      endDate: campaign.endDate,
-      channel: campaign.channel,
-      campaignName: campaign.name,
-      budget: campaign.budget,
-      impressions: campaign.impressions,
-      kpi: campaign.kpi,
-      kpiTarget: campaign.kpiTarget,
-      campaignStartDate: campaign.startDate,
-      campaignEndDate: campaign.endDate,
-      campaignTotalBudget: campaign.totalBudget,
-      campaignDailyBudget: campaign.dailyBudget,
-      targetAudience: campaign.targetAudience,
-      geoTargeting: campaign.geoTargeting,
-      deviceTargeting: campaign.deviceTargeting,
-      // Beacon fields
-      beaconCampaignId: campaign.beaconCampaignId,
-      beaconCampaignName: campaign.beaconCampaignName,
-      // Ad Server fields in audit
-      adServerCampaignName: campaign.adServerCampaignName,
-      adServerSchedule: campaign.adServerSchedule,
-      adServerLandingPageName: campaign.adServerLandingPageName,
-      adServerLandingPageURL: campaign.adServerLandingPageURL,
-      connectors: campaign.connectors
-    }
-  });
-  console.log('✔️ Audit log created for:', campaign.id);
-
   localStorage.setItem('campaign_tree_groups', JSON.stringify(data));
+  localStorage.setItem('campaign_recently_created_id', campaign.id);
+
+  // Log creation to audit (non-blocking)
+  try {
+    if (window.audit && typeof window.audit.recordCreate === 'function') {
+      window.audit.recordCreate({
+        campaignId: campaign.id,
+        entityType: 'campaign',
+        entityId: campaign.id,
+        data: {
+          beaconCampaignName: campaign.beaconCampaignName,
+          beaconTemplate: campaign.beaconTemplate,
+          beaconDspImpressions: campaign.beaconDspImpressions,
+          beaconStartDate: campaign.beaconStartDate,
+          beaconEndDate: campaign.beaconEndDate,
+          seed: campaign.seed,
+          organization: campaign.organization,
+          pacing: campaign.pacing,
+          timezone: campaign.timezone,
+          startDate: campaign.startDate,
+          endDate: campaign.endDate,
+          channel: campaign.channel,
+          campaignName: campaign.name,
+          budget: campaign.budget,
+          kpi: campaign.kpi,
+          kpiTarget: campaign.kpiTarget,
+          campaignStartDate: campaign.startDate,
+          campaignEndDate: campaign.endDate,
+          campaignTotalBudget: campaign.totalBudget,
+          campaignDailyBudget: campaign.dailyBudget,
+          targetAudience: campaign.targetAudience,
+          geoTargeting: campaign.geoTargeting,
+          deviceTargeting: campaign.deviceTargeting,
+          // Beacon fields
+          beaconCampaignId: campaign.beaconCampaignId,
+          beaconCampaignName: campaign.beaconCampaignName,
+          beaconTemplate: campaign.beaconTemplate,
+          beaconDspImpressions: campaign.beaconDspImpressions,
+          // Ad Server fields in audit
+          adServerCampaignName: campaign.adServerCampaignName,
+          adServerSchedule: campaign.adServerSchedule,
+          adServerLandingPageName: campaign.adServerLandingPageName,
+          adServerLandingPageURL: campaign.adServerLandingPageURL,
+          connectors: campaign.connectors
+        }
+      });
+      console.log('✔️ Audit log created for:', campaign.id);
+    }
+  } catch (auditError) {
+    console.warn('Campaign created, but audit logging failed:', auditError);
+  }
 
   // Update app instance to reflect new data
   if (app) {
@@ -2770,7 +3167,8 @@ function handleCampaignCreation(redirectToAdGroups) {
 
   // If redirecting to ad groups
   if (redirectToAdGroups) {
-    window.location.href = `./AdvertiserAdGroup.html?newCampaign=${campaign.id}`;
+    const parentCampaignName = campaign.beaconCampaignName || campaign.name || campaign.id;
+    window.location.href = `./AdvertiserAdGroup.html?newCampaign=${encodeURIComponent(campaign.id)}&newCampaignName=${encodeURIComponent(parentCampaignName)}`;
   }
 }
 
@@ -2891,12 +3289,83 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 });
+</script>
 
+<script>
+// Checkbox selection logic with group support
+document.addEventListener('DOMContentLoaded', function() {
+  const tbody = document.getElementById('campaignTableBody');
+  const selectAllCb = document.getElementById('selectAllCheckbox');
 
+  // Handle checkbox changes
+  if (tbody) {
+    tbody.addEventListener('change', function(e) {
+      if (e.target.classList.contains('row-select-checkbox')) {
+        const groupId = e.target.dataset.groupId;
+        updateGroupCheckboxState(groupId);
+        updateSelectAllState();
+      } else if (e.target.classList.contains('group-select-checkbox')) {
+        const groupId = e.target.dataset.groupId;
+        const checked = e.target.checked;
+        const rowCheckboxes = tbody.querySelectorAll(`.row-select-checkbox[data-group-id="${groupId}"]`);
+        rowCheckboxes.forEach(cb => cb.checked = checked);
+        updateSelectAllState();
+      }
+    });
+  }
 
+  // Handle select all checkbox
+  if (selectAllCb) {
+    selectAllCb.addEventListener('change', function() {
+      const checked = this.checked;
+      const rowCheckboxes = tbody.querySelectorAll('.row-select-checkbox');
+      const groupCheckboxes = tbody.querySelectorAll('.group-select-checkbox');
+      rowCheckboxes.forEach(cb => cb.checked = checked);
+      groupCheckboxes.forEach(cb => {
+        cb.checked = checked;
+        cb.indeterminate = false;
+      });
+    });
+  }
 
+  function updateGroupCheckboxState(groupId) {
+    const groupCb = tbody.querySelector(`.group-select-checkbox[data-group-id="${groupId}"]`);
+    if (!groupCb) return;
 
+    const groupRows = tbody.querySelectorAll(`.row-select-checkbox[data-group-id="${groupId}"]`);
+    const totalRows = groupRows.length;
+    const checkedRows = Array.from(groupRows).filter(cb => cb.checked).length;
 
-  </script>
+    if (checkedRows === 0) {
+      groupCb.checked = false;
+      groupCb.indeterminate = false;
+    } else if (checkedRows === totalRows) {
+      groupCb.checked = true;
+      groupCb.indeterminate = false;
+    } else {
+      groupCb.checked = false;
+      groupCb.indeterminate = true;
+    }
+  }
+
+  function updateSelectAllState() {
+    const rowCheckboxes = tbody.querySelectorAll('.row-select-checkbox');
+    const totalRows = rowCheckboxes.length;
+    const checkedRows = Array.from(rowCheckboxes).filter(cb => cb.checked).length;
+
+    if (checkedRows === 0) {
+      selectAllCb.checked = false;
+      selectAllCb.indeterminate = false;
+    } else if (checkedRows === totalRows) {
+      selectAllCb.checked = true;
+      selectAllCb.indeterminate = false;
+    } else {
+      selectAllCb.checked = false;
+      selectAllCb.indeterminate = true;
+    }
+  }
+});
+</script>
+
 </body>
 </html>

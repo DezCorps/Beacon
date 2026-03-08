@@ -413,7 +413,10 @@
               <table id="campaignTable" class="min-w-full table-fixed divide-y divide-gray-200 rounded-md overflow-hidden tbl tbl-row-hover">
                 <thead class="tbl-head">
                   <tr>
-                    <th style="width:12%" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                    <th class="w-10 px-3 py-2 text-center border-r border-gray-200">
+                      <input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 accent-blue-600 cursor-pointer" title="Select All">
+                    </th>
+                    <th style="width:11%" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
                       <div class="px-6 py-2 whitespace-nowrap flex items-center">
                         <span aria-hidden="true" class="inline-block w-7"></span>
                         <span>Order Date</span>
@@ -856,7 +859,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (rows.length === 0) {
         const tr = document.createElement('tr');
-        tr.innerHTML = '<td colspan="6" class="px-6 py-4 text-center text-gray-500">No sales orders found</td>';
+        tr.innerHTML = '<td colspan="7" class="px-6 py-4 text-center text-gray-500">No sales orders found</td>';
         tbody.appendChild(tr);
         return;
       }
@@ -868,6 +871,9 @@ document.addEventListener('DOMContentLoaded', function() {
           const o = r.order;
           tr.className = 'hover:bg-gray-50 row-group';
           tr.innerHTML = `
+    <td class="px-3 py-1 text-center">
+      <input type="checkbox" class="w-4 h-4 accent-blue-600 cursor-pointer row-select-checkbox" data-order-id="${o.id}">
+    </td>
     <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-700 border-r border-[var(--divider)]">
       <button data-action="toggle" data-type="order" data-order-id="${o.id}" class="mr-3 w-4 h-4 inline-flex items-center justify-center rounded border border-[var(--border-strong)] bg-white" title="${o.expanded ? 'Collapse' : 'Expand'}">
         ${o.expanded ? '&minus;' : '+'}
@@ -884,6 +890,7 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (r.type === 'detailHeader') {
           tr.className = 'row-subhead';  // gray background applied to the whole row
           tr.innerHTML = `
+            <td class="px-3 py-1"></td> <!-- Empty cell for checkbox column -->
             <td colspan="6" class="px-6 py-0">  <!-- padding creates gray gutters -->
               <table class="min-w-full table-fixed border border-gray-200 rounded-md overflow-hidden">
                 <thead class="bg-gray-50">
@@ -905,6 +912,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const it = r.item;
           tr.className = '';
           tr.innerHTML = `
+            <td class="px-3 py-1 bg-[var(--tree-subhead-bg)]"></td> <!-- Empty cell for checkbox column -->
             <td colspan="6" class="px-6 py-0 bg-[var(--tree-subhead-bg)]"> <!-- gutters -->
               <table class="min-w-full table-fixed border-b border-[var(--divider)] rounded-md bg-white">
                 <tbody>
@@ -1012,6 +1020,50 @@ function fmtCurrency(n) {
       }
     });
   </script>
+
+  <script>
+  // Checkbox selection logic
+  document.addEventListener('DOMContentLoaded', function() {
+    const tbody = document.getElementById('campaignTableBody');
+    const selectAllCb = document.getElementById('selectAllCheckbox');
+
+    // Handle individual row checkbox changes
+    if (tbody) {
+      tbody.addEventListener('change', function(e) {
+        if (e.target.classList.contains('row-select-checkbox')) {
+          updateSelectAllState();
+        }
+      });
+    }
+
+    // Handle select all checkbox
+    if (selectAllCb) {
+      selectAllCb.addEventListener('change', function() {
+        const checked = this.checked;
+        const rowCheckboxes = tbody.querySelectorAll('.row-select-checkbox');
+        rowCheckboxes.forEach(cb => cb.checked = checked);
+      });
+    }
+
+    function updateSelectAllState() {
+      const rowCheckboxes = tbody.querySelectorAll('.row-select-checkbox');
+      const totalRows = rowCheckboxes.length;
+      const checkedRows = tbody.querySelectorAll('.row-select-checkbox:checked').length;
+
+      if (checkedRows === 0) {
+        selectAllCb.checked = false;
+        selectAllCb.indeterminate = false;
+      } else if (checkedRows === totalRows) {
+        selectAllCb.checked = true;
+        selectAllCb.indeterminate = false;
+      } else {
+        selectAllCb.checked = false;
+        selectAllCb.indeterminate = true;
+      }
+    }
+  });
+  </script>
+
   <script src="./assets/sidebar.js" defer></script>
 </body>
 </html>

@@ -267,6 +267,97 @@
       }
     }
 
+    /* Platform Dropdown Styles */
+    .platform-select-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .platform-select-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.625rem 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      background-color: white;
+      cursor: pointer;
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .platform-select-trigger:hover {
+      border-color: #9ca3af;
+    }
+
+    .platform-select-trigger:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .platform-select-trigger[aria-expanded="true"] {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .platform-select-value {
+      font-size: 0.875rem;
+      color: #111827;
+    }
+
+    .platform-select-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 0.25rem;
+      background-color: white;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      z-index: 50;
+      max-height: 15rem;
+      overflow-y: auto;
+    }
+
+    .platform-select-menu.open {
+      display: block;
+    }
+
+    .platform-select-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.625rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: #374151;
+      transition: background-color 0.15s ease-in-out;
+    }
+
+    .platform-select-option:hover {
+      background-color: #f3f4f6;
+    }
+
+    .platform-select-option.selected {
+      background-color: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .chain-link-icon {
+      flex-shrink: 0;
+    }
+
+    .chain-link-icon.connected {
+      color: #3b82f6;
+    }
+
+    .chain-link-icon.disconnected {
+      color: #9ca3af;
+    }
+
   </style>
 </head>
 
@@ -582,7 +673,7 @@
             <div class="wizard-content active" data-content="1">
               <div class="mb-6">
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Advertiser Details</h3>
-                <p class="text-sm text-gray-600">Enter the basic information for the new advertiser</p>
+                <p class="text-sm text-gray-600">Beacon CAD fields are collected first, then platform-specific fields in Step 3.</p>
               </div>
 
               <div class="space-y-5">
@@ -643,7 +734,7 @@
                 <!-- Advertiser Name -->
                 <div>
                   <label for="advertiserName" class="block text-sm font-medium text-gray-700 mb-2">
-                    Name <span class="text-red-500">*</span>
+                    Account Name <span class="text-red-500">*</span>
                   </label>
                   <input 
                     type="text" 
@@ -660,11 +751,43 @@
                   </div>
                 </div>
 
+                <div class="border-t border-gray-200 pt-4">
+                  <p class="text-sm font-medium text-gray-900">CAD Informational Fields (Optional)</p>
+                  <p class="text-xs text-gray-500 mt-1">These support Change Order output and Sebpo setup readiness.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label for="totalInvoiceBudget" class="block text-sm font-medium text-gray-700 mb-2">Total Invoice Budget</label>
+                    <input type="text" id="totalInvoiceBudget" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="N/A" />
+                  </div>
+                  <div>
+                    <label for="totalBudget" class="block text-sm font-medium text-gray-700 mb-2">Total Budget</label>
+                    <input type="text" id="totalBudget" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="N/A" />
+                  </div>
+                  <div>
+                    <label for="budgetRemaining" class="block text-sm font-medium text-gray-700 mb-2">Budget Remaining</label>
+                    <input type="text" id="budgetRemaining" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="N/A" />
+                  </div>
+                  <div>
+                    <label for="totalInvoiceImpressions" class="block text-sm font-medium text-gray-700 mb-2">Total Invoice Impressions</label>
+                    <input type="text" id="totalInvoiceImpressions" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="1600000" />
+                  </div>
+                  <div>
+                    <label for="totalImpressions" class="block text-sm font-medium text-gray-700 mb-2">Total Impressions</label>
+                    <input type="text" id="totalImpressions" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="1600000" />
+                  </div>
+                  <div>
+                    <label for="impressionsRemaining" class="block text-sm font-medium text-gray-700 mb-2">Impressions Remaining</label>
+                    <input type="text" id="impressionsRemaining" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="N/A" />
+                  </div>
+                </div>
+
               </div>
             </div>
 
             <!-- STEP 2: Platform Connectors -->
-            <div class="wizard-content" data-content="2">
+            <div class="wizard-content" data-content="2" style="min-height: 420px;">
               <div class="mb-6">
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Platform Connectors</h3>
                 <p class="text-sm text-gray-600">Select which DSPs and Ad Servers to connect</p>
@@ -672,7 +795,7 @@
 
               <div class="space-y-4">
                 
-                <!-- Toggle All Connectors -->
+                <!-- Toggle All Connectors - COMMENTED OUT FOR DROPDOWN OVERHAUL
                 <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <div>
                     <p class="text-sm font-medium text-gray-900">Enable Platform Connectors</p>
@@ -682,11 +805,12 @@
                     <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
                   </button>
                 </div>
+                -->
 
                 <!-- Connectors Content -->
-                <div id="connectorsContent" class="space-y-4">
+                <div id="connectorsContent" class="space-y-6">
                   
-                  <!-- DSP Section Header -->
+                  <!-- DSP Section -->
                   <div class="pt-2">
                     <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
                       <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
@@ -694,34 +818,51 @@
                       </svg>
                       DSP (Demand-Side Platform)
                     </h4>
-                  </div>
 
-                  <!-- The Trade Desk -->
-                  <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="tradeDesk">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center space-x-3">
-                        <input 
-                          type="checkbox" 
-                          id="dsp-trade-desk" 
-                          name="dsp" 
-                          value="trade-desk"
-                          class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <div>
-                          <p class="text-sm font-semibold text-gray-900">The Trade Desk</p>
-                          <p class="text-xs text-gray-500">Programmatic advertising platform</p>
+                    <!-- DSP Custom Dropdown -->
+                    <div class="platform-select-container" id="dspDropdownContainer">
+                      <input type="hidden" id="dspDropdown" name="dsp" value="" />
+                      <button type="button" class="platform-select-trigger" id="dspDropdownTrigger" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="platform-select-value text-gray-500">-- Select DSP --</span>
+                        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                      </button>
+                      <div class="platform-select-menu" id="dspDropdownMenu" role="listbox">
+                        <div class="platform-select-option" data-value="" role="option">
+                          <span>-- Select DSP --</span>
+                        </div>
+                        <div class="platform-select-option" data-value="trade-desk" data-connected="true" role="option">
+                          <span>The Trade Desk</span>
+                          <svg class="w-5 h-5 chain-link-icon connected" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                          </svg>
+                        </div>
+                        <div class="platform-select-option" data-value="dv360" data-connected="false" role="option">
+                          <span>DV360</span>
+                          <svg class="w-5 h-5 chain-link-icon disconnected" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1M6 18L18 6"/>
+                          </svg>
+                        </div>
+                        <div class="platform-select-option" data-value="simplifi" data-connected="false" role="option">
+                          <span>Simpli.fi</span>
+                          <svg class="w-5 h-5 chain-link-icon disconnected" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1M6 18L18 6"/>
+                          </svg>
                         </div>
                       </div>
-                      <div class="flex items-center space-x-3">
-                        <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
-                        <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="tradeDesk">
-                          <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
-                        </button>
-                      </div>
+                    </div>
+
+                    <!-- Sync to platform checkbox (DSP) -->
+                    <div class="mt-3">
+                      <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="dspSyncCheckbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                        <span class="ml-2 text-sm text-gray-700">Sync to platform on creation</span>
+                      </label>
                     </div>
                   </div>
 
-                  <!-- Ad Server Section Header -->
+                  <!-- Ad Server Section -->
                   <div class="pt-4">
                     <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
                       <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
@@ -729,30 +870,35 @@
                       </svg>
                       Ad Server
                     </h4>
-                  </div>
 
-                  <!-- Google Campaign Manager -->
-                  <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="gcm">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center space-x-3">
-                        <input 
-                          type="checkbox" 
-                          id="adserver-gcm" 
-                          name="adserver" 
-                          value="google-campaign-manager"
-                          class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <div>
-                          <p class="text-sm font-semibold text-gray-900">Google Campaign Manager</p>
-                          <p class="text-xs text-gray-500">Ad serving and campaign management</p>
+                    <!-- Ad Server Custom Dropdown -->
+                    <div class="platform-select-container" id="adServerDropdownContainer">
+                      <input type="hidden" id="adServerDropdown" name="adserver" value="" />
+                      <button type="button" class="platform-select-trigger" id="adServerDropdownTrigger" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="platform-select-value text-gray-500">-- Select Ad Server --</span>
+                        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                      </button>
+                      <div class="platform-select-menu" id="adServerDropdownMenu" role="listbox">
+                        <div class="platform-select-option" data-value="" role="option">
+                          <span>-- Select Ad Server --</span>
+                        </div>
+                        <div class="platform-select-option" data-value="google-campaign-manager" data-connected="true" role="option">
+                          <span>Google Campaign Manager</span>
+                          <svg class="w-5 h-5 chain-link-icon connected" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                          </svg>
                         </div>
                       </div>
-                      <div class="flex items-center space-x-3">
-                        <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
-                        <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="gcm">
-                          <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
-                        </button>
-                      </div>
+                    </div>
+
+                    <!-- Sync to platform checkbox (Ad Server) -->
+                    <div class="mt-3">
+                      <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="adServerSyncCheckbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                        <span class="ml-2 text-sm text-gray-700">Sync to platform</span>
+                      </label>
                     </div>
                   </div>
 
@@ -2012,24 +2158,21 @@ self.validateForm();
             if (this.elements.advertiserName) this.elements.advertiserName.value = '';
             if (this.elements.noCrmAccount) this.elements.noCrmAccount.checked = false;
             this.selectedAccount = null;
-            
-            // Reset connectors toggle
-            const connectorsToggle = document.getElementById('connectorsToggle');
-            const connectorsContent = document.getElementById('connectorsContent');
-            if (connectorsToggle) {
-              connectorsToggle.setAttribute('aria-checked', 'false');
-              connectorsToggle.classList.add('bg-gray-200');
-              connectorsToggle.classList.remove('bg-blue-600');
-              const slider = connectorsToggle.querySelector('span');
-              if (slider) slider.classList.remove('translate-x-5');
-            }
-            if (connectorsContent) connectorsContent.classList.add('hidden');
 
-            // Reset connector checkboxes
-            const dspCheckbox = document.getElementById('dsp-trade-desk');
-            const adServerCheckbox = document.getElementById('adserver-gcm');
-            if (dspCheckbox) dspCheckbox.checked = false;
-            if (adServerCheckbox) adServerCheckbox.checked = false;
+            [
+              'totalInvoiceBudget',
+              'totalBudget',
+              'budgetRemaining',
+              'totalInvoiceImpressions',
+              'totalImpressions',
+              'impressionsRemaining'
+            ].forEach((id) => {
+              const field = document.getElementById(id);
+              if (field) field.value = '';
+            });
+            
+            // Reset platform dropdowns
+            this.resetPlatformDropdowns();
 
             // Hide DSP and Ad Server sections
             const dspSection = document.getElementById('dspFieldsSection');
@@ -2074,6 +2217,51 @@ self.validateForm();
             if (dupError) dupError.classList.add('hidden');
             
             this.validateForm();
+          },
+
+          // Reset platform dropdowns to default state
+          resetPlatformDropdowns: function() {
+            // Reset DSP dropdown
+            const dspDropdown = document.getElementById('dspDropdown');
+            const dspTrigger = document.getElementById('dspDropdownTrigger');
+            const dspMenu = document.getElementById('dspDropdownMenu');
+            const dspSyncCheckbox = document.getElementById('dspSyncCheckbox');
+            
+            if (dspDropdown) dspDropdown.value = '';
+            if (dspTrigger) {
+              const valueSpan = dspTrigger.querySelector('.platform-select-value');
+              if (valueSpan) {
+                valueSpan.textContent = '-- Select DSP --';
+                valueSpan.classList.add('text-gray-500');
+              }
+              dspTrigger.setAttribute('aria-expanded', 'false');
+            }
+            if (dspMenu) {
+              dspMenu.classList.remove('open');
+              dspMenu.querySelectorAll('.platform-select-option').forEach(opt => opt.classList.remove('selected'));
+            }
+            if (dspSyncCheckbox) dspSyncCheckbox.checked = false;
+            
+            // Reset Ad Server dropdown
+            const adServerDropdown = document.getElementById('adServerDropdown');
+            const adServerTrigger = document.getElementById('adServerDropdownTrigger');
+            const adServerMenu = document.getElementById('adServerDropdownMenu');
+            const adServerSyncCheckbox = document.getElementById('adServerSyncCheckbox');
+            
+            if (adServerDropdown) adServerDropdown.value = '';
+            if (adServerTrigger) {
+              const valueSpan = adServerTrigger.querySelector('.platform-select-value');
+              if (valueSpan) {
+                valueSpan.textContent = '-- Select Ad Server --';
+                valueSpan.classList.add('text-gray-500');
+              }
+              adServerTrigger.setAttribute('aria-expanded', 'false');
+            }
+            if (adServerMenu) {
+              adServerMenu.classList.remove('open');
+              adServerMenu.querySelectorAll('.platform-select-option').forEach(opt => opt.classList.remove('selected'));
+            }
+            if (adServerSyncCheckbox) adServerSyncCheckbox.checked = false;
           },
 
           handleNoCrmAccountChange: function(checked) {
@@ -2200,35 +2388,29 @@ return false;
             const advIdField = document.getElementById('advertiserId');
             const advertiserId = advIdField ? advIdField.value : ('ADV' + String(Date.now()).slice(-6));
 
-            // Get platform selections (checked checkboxes) and their connection status
-            const selectedDSP = [];
-            const selectedAdServer = [];
-            const connectionStatus = {}; // Track status for each platform
+            // Get platform selections from dropdowns and sync checkbox states
+            const dspDropdownValue = document.getElementById('dspDropdown')?.value || '';
+            const adServerDropdownValue = document.getElementById('adServerDropdown')?.value || '';
+            const dspSyncChecked = document.getElementById('dspSyncCheckbox')?.checked || false;
+            const adServerSyncChecked = document.getElementById('adServerSyncCheckbox')?.checked || false;
             
-          // Check each connector card
-          document.querySelectorAll('.connector-card').forEach(card => {
-            const connectorToggle = card.querySelector('.connector-toggle');
-            const checkbox = card.querySelector('input[type="checkbox"]');
+            // Store raw dropdown keys in connectors arrays (not display names)
+            // This matches how AdvertiserCampaigns.html and AdvertiserAdGroup.html store them
+            const selectedDSP = dspDropdownValue ? [dspDropdownValue] : [];
+            const selectedAdServer = adServerDropdownValue ? [adServerDropdownValue] : [];
             
-            if (checkbox && checkbox.checked) {
-              const connectorType = checkbox.name; // 'dsp' or 'adserver'
-              const connectorValue = checkbox.value;
-              const isConnected = connectorToggle && connectorToggle.getAttribute('aria-checked') === 'true';                // Add to selected arrays
-                if (connectorType === 'dsp') {
-                  selectedDSP.push(connectorValue);
-                } else if (connectorType === 'adserver') {
-                  selectedAdServer.push(connectorValue);
-                }
-                
-                // Track connection status
-                connectionStatus[connectorValue] = isConnected ? 'Connected' : 'Disconnected';
-              }
-            });
+            // Build connector status based on sync checkbox state
+            const connectionStatus = {};
+            if (dspDropdownValue) {
+              connectionStatus[dspDropdownValue] = dspSyncChecked ? 'Connected' : 'Disconnected';
+            }
+            if (adServerDropdownValue) {
+              connectionStatus[adServerDropdownValue] = adServerSyncChecked ? 'Connected' : 'Disconnected';
+            }
 
             // Collect DSP fields
             const dspData = {};
-            const dspCheckbox = document.getElementById('dsp-trade-desk');
-            if (dspCheckbox && dspCheckbox.checked) {
+            if (dspDropdownValue === 'trade-desk') {
               dspData.name = document.getElementById('dspName')?.value || '';
               dspData.partner = document.getElementById('dspPartner')?.value || '';
               dspData.domain = document.getElementById('dspDomain')?.value || '';
@@ -2254,8 +2436,7 @@ return false;
 
             // Collect Ad Server fields
             const adServerData = {};
-            const adServerCheckbox = document.getElementById('adserver-gcm');
-            if (adServerCheckbox && adServerCheckbox.checked) {
+            if (adServerDropdownValue === 'google-campaign-manager') {
               adServerData.advertiserName = document.getElementById('adServerAdvertiserName')?.value || '';
               adServerData.vertical = document.getElementById('adServerVertical')?.value || '';
               adServerData.declarations = {
@@ -2269,6 +2450,12 @@ return false;
               name: this.elements.advertiserName ? this.elements.advertiserName.value.trim() : '',
               account: this.selectedAccount ? this.selectedAccount.accountNumber : 
                       (noCrm ? '' : (this.elements.accountNumber ? this.elements.accountNumber.value.trim() : '')),
+              totalInvoiceBudget: document.getElementById('totalInvoiceBudget')?.value?.trim() || '',
+              totalBudget: document.getElementById('totalBudget')?.value?.trim() || '',
+              budgetRemaining: document.getElementById('budgetRemaining')?.value?.trim() || '',
+              totalInvoiceImpressions: document.getElementById('totalInvoiceImpressions')?.value?.trim() || '',
+              totalImpressions: document.getElementById('totalImpressions')?.value?.trim() || '',
+              impressionsRemaining: document.getElementById('impressionsRemaining')?.value?.trim() || '',
               status: 'Active',
               state: 'Active',
               campaign: '0',
@@ -2407,137 +2594,128 @@ init: function() {
               });
             });
 
-            // Platform checkboxes
-            document.getElementById('dsp-trade-desk')?.addEventListener('change', (e) => {
-              self.updatePlatformConfigVisibility();
-            });
+            // Initialize platform dropdowns
+            self.initPlatformDropdowns();
+          },
+          
+          // Initialize custom dropdowns for platform selection
+          initPlatformDropdowns: function() {
+            const self = this;
+            this.initCustomDropdown('dspDropdownContainer', 'dspDropdownTrigger', 'dspDropdownMenu', 'dspDropdown', 'dspSyncCheckbox');
+            this.initCustomDropdown('adServerDropdownContainer', 'adServerDropdownTrigger', 'adServerDropdownMenu', 'adServerDropdown', 'adServerSyncCheckbox');
             
-            document.getElementById('adserver-gcm')?.addEventListener('change', (e) => {
-              self.updatePlatformConfigVisibility();
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', (e) => {
+              if (!e.target.closest('.platform-select-container')) {
+                document.querySelectorAll('.platform-select-menu.open').forEach(menu => {
+                  menu.classList.remove('open');
+                  menu.previousElementSibling?.setAttribute('aria-expanded', 'false');
+                });
+              }
             });
+          },
 
-            // Connector cards - toggle checkbox on card click
-            document.querySelectorAll('.connector-card').forEach(card => {
-              card.addEventListener('click', function(e) {
-                if (e.target.type !== 'checkbox') {
-                  const checkbox = this.querySelector('input[type="checkbox"]');
-                  if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    checkbox.dispatchEvent(new Event('change'));
-                  }
+          initCustomDropdown: function(containerId, triggerId, menuId, hiddenInputId, syncCheckboxId) {
+            const self = this;
+            const container = document.getElementById(containerId);
+            const trigger = document.getElementById(triggerId);
+            const menu = document.getElementById(menuId);
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const syncCheckbox = document.getElementById(syncCheckboxId);
+            
+            if (!container || !trigger || !menu || !hiddenInput) return;
+
+            // Toggle menu on trigger click
+            trigger.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const isOpen = menu.classList.contains('open');
+              
+              // Close all other dropdowns first
+              document.querySelectorAll('.platform-select-menu.open').forEach(m => {
+                if (m !== menu) {
+                  m.classList.remove('open');
+                  m.previousElementSibling?.setAttribute('aria-expanded', 'false');
                 }
               });
+              
+              menu.classList.toggle('open');
+              trigger.setAttribute('aria-expanded', !isOpen);
             });
 
-            // Connectors toggle
-            const connectorsToggle = document.getElementById('connectorsToggle');
-            if (connectorsToggle) {
-              connectorsToggle.addEventListener('click', function() {
-                const isEnabled = this.getAttribute('aria-checked') === 'true';
-                const newState = !isEnabled;
+            // Handle option selection
+            menu.querySelectorAll('.platform-select-option').forEach(option => {
+              option.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 
-                this.setAttribute('aria-checked', newState);
-                if (newState) {
-                  this.classList.add('bg-blue-600');
-                  this.classList.remove('bg-gray-200');
-                  this.querySelector('span').classList.add('translate-x-5');
-                  this.querySelector('span').classList.remove('translate-x-0');
-                } else {
-                  this.classList.remove('bg-blue-600');
-                  this.classList.add('bg-gray-200');
-                  this.querySelector('span').classList.remove('translate-x-5');
-                  this.querySelector('span').classList.add('translate-x-0');
+                const value = option.dataset.value;
+                const text = option.querySelector('span').textContent;
+                const isConnected = option.dataset.connected === 'true';
+                
+                // Update hidden input
+                hiddenInput.value = value;
+                
+                // Update trigger text
+                const valueSpan = trigger.querySelector('.platform-select-value');
+                valueSpan.textContent = text;
+                valueSpan.classList.toggle('text-gray-500', !value);
+                
+                // Update selected state
+                menu.querySelectorAll('.platform-select-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                
+                // Close menu
+                menu.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+                
+                // Auto-check sync checkbox if connected platform selected
+                if (syncCheckbox) {
+                  if (value && isConnected) {
+                    syncCheckbox.checked = true;
+                  } else if (!value) {
+                    syncCheckbox.checked = false;
+                  }
+                  // For disconnected platforms, leave checkbox as-is (user can manually check)
                 }
-
-                // Update connection status for all connector toggles and labels
-                document.querySelectorAll('.connector-toggle').forEach(toggle => {
-                  const label = toggle.parentElement.querySelector('.connector-status-label');
-                  const toggleSwitch = toggle.querySelector('span');
-                  
-                  if (newState) {
-                    // Set all to Synced
-                    toggle.setAttribute('aria-checked', 'true');
-                    toggle.classList.remove('bg-gray-200');
-                    toggle.classList.add('bg-green-500');
-                    if (toggleSwitch) {
-                      toggleSwitch.classList.remove('translate-x-0');
-                      toggleSwitch.classList.add('translate-x-5');
-                    }
-                    if (label) {
-                      label.textContent = 'Synced';
-                      label.classList.remove('text-gray-600');
-                      label.classList.add('text-green-700');
-                    }
-                  } else {
-                    // Set all to Not Synced
-                    toggle.setAttribute('aria-checked', 'false');
-                    toggle.classList.remove('bg-green-500');
-                    toggle.classList.add('bg-gray-200');
-                    if (toggleSwitch) {
-                      toggleSwitch.classList.remove('translate-x-5');
-                      toggleSwitch.classList.add('translate-x-0');
-                    }
-                    if (label) {
-                      label.textContent = 'Not Synced';
-                      label.classList.remove('text-green-700');
-                      label.classList.add('text-gray-600');
-                    }
-                  }
-                });
+                
+                // Update field visibility
+                self.updatePlatformConfigVisibility();
               });
-
-              // Add individual toggle functionality for each connector
-              document.querySelectorAll('.connector-toggle').forEach(toggle => {
-                toggle.addEventListener('click', function(e) {
-                  e.stopPropagation(); // Prevent card click event
-                  
-                  const isConnected = this.getAttribute('aria-checked') === 'true';
-                  const label = this.parentElement.querySelector('.connector-status-label');
-                  const toggleSwitch = this.querySelector('span');
-                  
-                  if (isConnected) {
-                    // Change to Not Synced
-                    this.setAttribute('aria-checked', 'false');
-                    this.classList.remove('bg-green-500');
-                    this.classList.add('bg-gray-200');
-                    toggleSwitch.classList.remove('translate-x-5');
-                    toggleSwitch.classList.add('translate-x-0');
-                    if (label) {
-                      label.textContent = 'Not Synced';
-                      label.classList.remove('text-green-700');
-                      label.classList.add('text-gray-600');
-                    }
-                  } else {
-                    // Change to Synced
-                    this.setAttribute('aria-checked', 'true');
-                    this.classList.remove('bg-gray-200');
-                    this.classList.add('bg-green-500');
-                    toggleSwitch.classList.remove('translate-x-0');
-                    toggleSwitch.classList.add('translate-x-5');
-                    if (label) {
-                      label.textContent = 'Synced';
-                      label.classList.remove('text-gray-600');
-                      label.classList.add('text-green-700');
-                    }
-                  }
-                });
-              });
-            }
+            });
           },
 
           updatePlatformConfigVisibility: function() {
-            const dspChecked = document.getElementById('dsp-trade-desk')?.checked;
-            const adServerChecked = document.getElementById('adserver-gcm')?.checked;
+            const dspDropdownValue = document.getElementById('dspDropdown')?.value || '';
+            const adServerDropdownValue = document.getElementById('adServerDropdown')?.value || '';
+            
+            const dspSelected = dspDropdownValue === 'trade-desk';
+            const adServerSelected = adServerDropdownValue === 'google-campaign-manager';
+            const anyConnectorSelected = Boolean(dspDropdownValue || adServerDropdownValue);
 
             const dspSection = document.getElementById('dspFieldsSection');
             const adServerSection = document.getElementById('adServerFieldsSection');
             const noPlat = document.getElementById('noPlatformsMessage');
+            const noPlatTitle = noPlat?.querySelector('h3');
+            const noPlatText = noPlat?.querySelector('p');
 
-            if (dspSection) dspSection.classList.toggle('hidden', !dspChecked);
-            if (adServerSection) adServerSection.classList.toggle('hidden', !adServerChecked);
-            
-            const anySelected = dspChecked || adServerChecked;
-            if (noPlat) noPlat.style.display = anySelected ? 'none' : 'block';
+            if (dspSection) dspSection.classList.toggle('hidden', !dspSelected);
+            if (adServerSection) adServerSection.classList.toggle('hidden', !adServerSelected);
+
+            const hasStep3Config = dspSelected || adServerSelected;
+            if (noPlat) {
+              if (!anyConnectorSelected) {
+                noPlat.style.display = 'block';
+                if (noPlatTitle) noPlatTitle.textContent = 'No platforms selected';
+                if (noPlatText) noPlatText.textContent = 'Go back to step 2 to select at least one platform connector.';
+              } else if (!hasStep3Config) {
+                noPlat.style.display = 'block';
+                if (noPlatTitle) noPlatTitle.textContent = 'No additional platform fields required';
+                if (noPlatText) noPlatText.textContent = 'DV360 and Simpli.fi use the Beacon CAD fields from Step 1.';
+              } else {
+                noPlat.style.display = 'none';
+              }
+            }
           },
 
 nextStep: function() {
