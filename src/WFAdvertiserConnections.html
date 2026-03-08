@@ -2038,18 +2038,6 @@
               <input id="newBeaconAccountName" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Account name">
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Total Invoice Budget</label>
-              <input id="newBeaconTotalInvoiceBudget" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Total Budget</label>
-              <input id="newBeaconTotalBudget" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Budget Remaining</label>
-              <input id="newBeaconBudgetRemaining" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2">
-            </div>
-            <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Total Invoice Impressions</label>
               <input id="newBeaconTotalInvoiceImpressions" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2">
             </div>
@@ -2058,8 +2046,12 @@
               <input id="newBeaconTotalImpressions" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2">
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Impressions Remaining</label>
-              <input id="newBeaconImpressionsRemaining" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Total Invoice Budget</label>
+              <input id="newBeaconTotalInvoiceBudget" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Total Budget</label>
+              <input id="newBeaconTotalBudget" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2">
             </div>
           </div>
         </div>
@@ -2074,7 +2066,13 @@
           <h4 class="text-sm font-semibold text-blue-900 mb-3">The Trade Desk Fields</h4>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Name <span class="text-red-500">*</span></label><input id="ncDspName" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Partner <span class="text-red-500">*</span></label><input id="ncDspPartner" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2"></div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Partner <span class="text-red-500">*</span></label>
+              <select id="ncDspPartner" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-white">
+                <option value="">Select partner</option>
+                <option value="Multiview">Multiview</option>
+              </select>
+            </div>
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Domain <span class="text-red-500">*</span></label><input id="ncDspDomain" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2"></div>
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Country</label><input id="ncDspCountry" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2"></div>
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Targeting EU?</label><input id="ncDspEu" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2"></div>
@@ -2094,6 +2092,44 @@
       newConnectionWizardReady = true;
     }
 
+    function buildAdvertiserPlatformDefaultName() {
+      const account = document.getElementById('newBeaconAccountNumber')?.value?.trim();
+      const name = document.getElementById('newBeaconAccountName')?.value?.trim();
+      if (!account && !name) return '';
+      return [account, name].filter(Boolean).join('_');
+    }
+
+    function applyAdvertiserStepThreeDefaults(modal) {
+      if (!modal) return;
+      const selected = getSelectedNewConnectors(modal);
+      const hasTradeDesk = selected.some(s => s.connectorValue === 'trade-desk');
+      const hasGcm = selected.some(s => s.connectorValue === 'google-campaign-manager');
+
+      const defaultName = buildAdvertiserPlatformDefaultName();
+      if (defaultName) {
+        const ttdName = document.getElementById('ncDspName');
+        if (hasTradeDesk && ttdName && !ttdName.value.trim()) {
+          ttdName.value = defaultName;
+        }
+        const gcmName = document.getElementById('ncAdServerAdvertiserName');
+        if (hasGcm && gcmName && !gcmName.value.trim()) {
+          gcmName.value = defaultName;
+        }
+      }
+
+      const ttdPartner = document.getElementById('ncDspPartner');
+      if (hasTradeDesk && ttdPartner && !ttdPartner.value) {
+        ttdPartner.value = 'Multiview';
+      }
+
+      const context = getAdvertiserContext();
+      const website = context?.advertiser?.website?.trim();
+      const ttdDomain = document.getElementById('ncDspDomain');
+      if (hasTradeDesk && ttdDomain && !ttdDomain.value.trim() && website) {
+        ttdDomain.value = website;
+      }
+    }
+
     function updateAdvertiserStepThreeVisibility(modal) {
       const selected = getSelectedNewConnectors(modal);
       const hasTradeDesk = selected.some(s => s.connectorValue === 'trade-desk');
@@ -2102,6 +2138,7 @@
       document.getElementById('newAdvertiserTtdFields')?.classList.toggle('hidden', !hasTradeDesk);
       document.getElementById('newAdvertiserGcmFields')?.classList.toggle('hidden', !hasGcm);
       document.getElementById('newAdvertiserNoPlatformFields')?.classList.toggle('hidden', hasTradeDesk || hasGcm);
+      applyAdvertiserStepThreeDefaults(modal);
     }
 
     function setNewConnectionStep(step, modal) {
@@ -2132,6 +2169,10 @@
           titleEl.textContent = 'Platform Configuration';
           subtitleEl.textContent = 'Fill The Trade Desk and/or Google Campaign Manager fields';
         }
+      }
+
+      if (newConnectionWizardStep === 3) {
+        applyAdvertiserStepThreeDefaults(modal);
       }
     }
 
@@ -2192,10 +2233,8 @@
       setValue('newBeaconAccountName', advertiser.name);
       setValue('newBeaconTotalInvoiceBudget', advertiser.totalInvoiceBudget);
       setValue('newBeaconTotalBudget', advertiser.totalBudget);
-      setValue('newBeaconBudgetRemaining', advertiser.budgetRemaining);
       setValue('newBeaconTotalInvoiceImpressions', advertiser.totalInvoiceImpressions);
       setValue('newBeaconTotalImpressions', advertiser.totalImpressions);
-      setValue('newBeaconImpressionsRemaining', advertiser.impressionsRemaining);
 
       setValue('ncDspName', advertiser.dsp?.name);
       setValue('ncDspPartner', advertiser.dsp?.partner);
@@ -2349,10 +2388,8 @@
         setIfValue(advertiser, 'name', document.getElementById('newBeaconAccountName')?.value);
         setIfValue(advertiser, 'totalInvoiceBudget', document.getElementById('newBeaconTotalInvoiceBudget')?.value);
         setIfValue(advertiser, 'totalBudget', document.getElementById('newBeaconTotalBudget')?.value);
-        setIfValue(advertiser, 'budgetRemaining', document.getElementById('newBeaconBudgetRemaining')?.value);
         setIfValue(advertiser, 'totalInvoiceImpressions', document.getElementById('newBeaconTotalInvoiceImpressions')?.value);
         setIfValue(advertiser, 'totalImpressions', document.getElementById('newBeaconTotalImpressions')?.value);
-        setIfValue(advertiser, 'impressionsRemaining', document.getElementById('newBeaconImpressionsRemaining')?.value);
 
         if (selected.some(selection => selection.connectorValue === 'trade-desk')) {
           advertiser.dsp = advertiser.dsp || {};
@@ -2470,6 +2507,12 @@
           updateAdvertiserStepThreeVisibility(modal);
         });
       });
+
+      const applyDefaultsOnAccountInput = () => {
+        applyAdvertiserStepThreeDefaults(modal);
+      };
+      document.getElementById('newBeaconAccountNumber')?.addEventListener('input', applyDefaultsOnAccountInput);
+      document.getElementById('newBeaconAccountName')?.addEventListener('input', applyDefaultsOnAccountInput);
 
       modal.querySelectorAll('.new-connector-toggle').forEach(toggle => {
         toggle.addEventListener('click', (e) => {
