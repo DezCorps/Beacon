@@ -678,42 +678,58 @@
     }
 
     function buildEntityBody(entity) {
+      function firstDefined() {
+        for (let i = 0; i < arguments.length; i++) {
+          const value = arguments[i];
+          if (value !== undefined && value !== null && value !== '') return value;
+        }
+        return '';
+      }
+
       if (entity.type === 'advertiser') {
         const fields = entity.fields || {};
-        const safeAdvAccount = escapeHtml(adv ? (adv.account || adv.accountNumber || '—') : '—');
-        const safeAdvName = escapeHtml(entity.name || '—');
+        const accountNumber = firstDefined(
+          fields.accountNumber,
+          fields.crmAccountNumber,
+          adv ? (adv.accountNumber || adv.account) : ''
+        );
+        const accountName = firstDefined(fields.accountName, adv ? adv.name : '', entity.name);
+        const totalInvoiceImpressions = firstDefined(fields.totalInvoiceImpressions, adv ? adv.totalInvoiceImpressions : '');
+        const totalInvoiceBudget = firstDefined(fields.totalInvoiceBudget, adv ? adv.totalInvoiceBudget : '');
+        const totalImpressions = firstDefined(fields.totalImpressions, adv ? adv.totalImpressions : '');
+        const totalBudget = firstDefined(fields.totalBudget, adv ? adv.totalBudget : '');
+
         return `
-          <div class="flex gap-8 text-sm text-gray-600 mb-4">
-            <span><strong>Account #:</strong> ${safeAdvAccount}</span>
-            <span><strong>Name:</strong> ${safeAdvName}</span>
-          </div>
           <div class="co-fields-grid">
             <div class="co-field-group">
-              <label>Contact Name</label>
-              <input type="text" value="${escapeAttr(fields.contactName || '')}" placeholder="Primary contact" data-adv-field="contactName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              <label>Account Number</label>
+              <input type="text" value="${escapeAttr(accountNumber)}" placeholder="CRM Account Number" data-adv-field="accountNumber" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
             <div class="co-field-group">
-              <label>Contact Email</label>
-              <input type="email" value="${escapeAttr(fields.contactEmail || '')}" placeholder="email@example.com" data-adv-field="contactEmail" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              <label>Account Name</label>
+              <input type="text" value="${escapeAttr(accountName)}" placeholder="CRM Account Name" data-adv-field="accountName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
             <div class="co-field-group">
-              <label>Billing Address</label>
-              <input type="text" value="${escapeAttr(fields.billingAddress || '')}" placeholder="Street address" data-adv-field="billingAddress" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              <label>Total Invoice Impressions</label>
+              <input type="text" value="${escapeAttr(totalInvoiceImpressions)}" placeholder="e.g. 1,600,000" data-adv-field="totalInvoiceImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
             <div class="co-field-group">
-              <label>Industry/Vertical</label>
-              <input type="text" value="${escapeAttr(fields.industry || '')}" placeholder="e.g. Healthcare, Retail" data-adv-field="industry" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              <label>Total Invoice Budget</label>
+              <input type="text" value="${escapeAttr(totalInvoiceBudget)}" placeholder="Enter total invoice budget" data-adv-field="totalInvoiceBudget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
-            <div class="co-field-group" style="grid-column: 1 / -1;">
-              <label>Advertiser Notes</label>
-              <textarea data-adv-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="2" placeholder="Special instructions or notes about this advertiser...">${escapeHtml(fields.notes || '')}</textarea>
+            <div class="co-field-group">
+              <label>Total Impressions</label>
+              <input type="text" value="${escapeAttr(totalImpressions)}" placeholder="Enter total impressions" data-adv-field="totalImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+            </div>
+            <div class="co-field-group">
+              <label>Total Budget</label>
+              <input type="text" value="${escapeAttr(totalBudget)}" placeholder="Enter total budget" data-adv-field="totalBudget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
           </div>
         `;
       }
 
       if (entity.type === 'campaign') {
-        // Look up campaign data  
         let camData = {};
         try {
           const tree = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
@@ -721,99 +737,124 @@
           if (tree.campaigns) allCams = allCams.concat(tree.campaigns);
           if (tree.groups) tree.groups.forEach(g => { if (g.campaigns) allCams = allCams.concat(g.campaigns); });
           camData = allCams.find(c => c.id === entity.id) || {};
-        } catch {}
+        } catch (e) {}
 
         const fields = entity.fields || {};
         const safeCamId = escapeAttr(entity.id);
-        const safeCamIdText = escapeHtml(entity.id);
-        const safeCamDsp = escapeHtml(camData.dsp || '—');
-        const safeCamStatus = escapeHtml(camData.status || '—');
+        const campaignName = firstDefined(fields.campaignName, fields.name, camData.beaconCampaignName, camData.name);
+        const template = firstDefined(fields.template, fields.beaconTemplate, camData.beaconTemplate, camData.template);
+        const dspImpressions = firstDefined(fields.dspImpressions, fields.beaconDspImpressions, camData.beaconDspImpressions, camData.dspImpressions);
 
         return `
-          <div class="flex gap-8 text-sm text-gray-600 mb-4">
-            <span><strong>ID:</strong> ${safeCamIdText}</span>
-            <span><strong>DSP:</strong> ${safeCamDsp}</span>
-            <span><strong>Status:</strong> ${safeCamStatus}</span>
-          </div>
           <div class="co-fields-grid">
             <div class="co-field-group">
               <label>Campaign Name</label>
-              <input type="text" value="${escapeAttr(fields.name || camData.beaconCampaignName || camData.name || '')}" placeholder="Campaign name" data-cam-id="${safeCamId}" data-cam-field="name" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              <input type="text" value="${escapeAttr(campaignName)}" placeholder="Campaign name" data-cam-id="${safeCamId}" data-cam-field="campaignName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
             <div class="co-field-group">
-              <label>Flight Start Date</label>
-              <input type="date" value="${escapeAttr(fields.startDate || '')}" data-cam-id="${safeCamId}" data-cam-field="startDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group">
-              <label>Flight End Date</label>
-              <input type="date" value="${escapeAttr(fields.endDate || '')}" data-cam-id="${safeCamId}" data-cam-field="endDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group">
-              <label>Budget</label>
-              <input type="text" value="${escapeAttr(fields.budget || '')}" placeholder="e.g. $10,000" data-cam-id="${safeCamId}" data-cam-field="budget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group">
-              <label>Pacing</label>
-              <select data-cam-id="${safeCamId}" data-cam-field="pacing" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
-                <option value="" ${!fields.pacing ? 'selected' : ''}>Select pacing...</option>
-                <option value="even" ${fields.pacing === 'even' ? 'selected' : ''}>Even</option>
-                <option value="asap" ${fields.pacing === 'asap' ? 'selected' : ''}>ASAP</option>
-                <option value="frontloaded" ${fields.pacing === 'frontloaded' ? 'selected' : ''}>Frontloaded</option>
-                <option value="backloaded" ${fields.pacing === 'backloaded' ? 'selected' : ''}>Backloaded</option>
+              <label>Template</label>
+              <select data-cam-id="${safeCamId}" data-cam-field="template" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                <option value="" ${!template ? 'selected' : ''}>-- Select Template --</option>
+                <option value="Programmatic Display" ${template === 'Programmatic Display' ? 'selected' : ''}>Programmatic Display</option>
+                <option value="Programmatic Video" ${template === 'Programmatic Video' ? 'selected' : ''}>Programmatic Video</option>
+                <option value="Programmatic Audio" ${template === 'Programmatic Audio' ? 'selected' : ''}>Programmatic Audio</option>
+                <option value="Connected TV" ${template === 'Connected TV' ? 'selected' : ''}>Connected TV</option>
+                <option value="Paid Social" ${template === 'Paid Social' ? 'selected' : ''}>Paid Social</option>
+                <option value="Paid Search" ${template === 'Paid Search' ? 'selected' : ''}>Paid Search</option>
+                <option value="Event Targeting" ${template === 'Event Targeting' ? 'selected' : ''}>Event Targeting</option>
+                <option value="Native Video" ${template === 'Native Video' ? 'selected' : ''}>Native Video</option>
+                <option value="DOOH" ${template === 'DOOH' ? 'selected' : ''}>DOOH</option>
+                <option value="PLD Display" ${template === 'PLD Display' ? 'selected' : ''}>PLD Display</option>
+                <option value="PLD Video" ${template === 'PLD Video' ? 'selected' : ''}>PLD Video</option>
               </select>
             </div>
             <div class="co-field-group">
-              <label>Frequency Cap</label>
-              <input type="text" value="${escapeAttr(fields.frequencyCap || '')}" placeholder="e.g. 3 per day" data-cam-id="${safeCamId}" data-cam-field="frequencyCap" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group" style="grid-column: 1 / -1;">
-              <label>Campaign Notes / Instructions</label>
-              <textarea data-cam-id="${safeCamId}" data-cam-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="2" placeholder="Targeting instructions, creative notes, special requests...">${escapeHtml(fields.notes || '')}</textarea>
+              <label>DSP Impressions</label>
+              <input type="text" value="${escapeAttr(dspImpressions)}" placeholder="e.g. 1,600,000" data-cam-id="${safeCamId}" data-cam-field="dspImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
           </div>
         `;
       }
 
       if (entity.type === 'adgroup') {
-        // Look up ad group data
         let agData = {};
         try {
           const all = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
           agData = all.find(a => a.id === entity.id) || {};
-        } catch {}
+        } catch (e) {}
 
         const fields = entity.fields || {};
         const safeAgId = escapeAttr(entity.id);
-        const safeAgIdText = escapeHtml(entity.id);
-        const safeClassification = escapeHtml(agData.classification || agData.multiviewClassification || '—');
-        const safeTactic = escapeHtml(agData.multiviewTactic || '—');
+        const adGroupName = firstDefined(fields.adGroupName, fields.name, agData.name);
+        const tactic = firstDefined(fields.tactic, fields.multiviewTactic, agData.multiviewTactic);
+        const contentCategory = firstDefined(fields.contentCategory, agData.contentCategory);
+        const multiviewClassification = firstDefined(fields.multiviewClassification, agData.multiviewClassification, agData.template);
+        const audience = firstDefined(fields.audience, fields.beaconAudience, agData.beaconAudience, agData.audience);
+        const geoTarget = firstDefined(fields.geoTarget, fields.beaconGeoTarget, agData.geoTarget, agData.beaconGeoTarget, agData.geos);
+        const startDate = firstDefined(fields.startDate, agData.startDate);
+        const endDate = firstDefined(fields.endDate, agData.endDate);
+        const impressions = firstDefined(fields.impressions, agData.impressions);
+        const landingPage = firstDefined(fields.landingPage, agData.landingPage);
+        const utmCode = firstDefined(fields.utmCode, agData.utmCode);
 
         return `
-          <div class="flex gap-8 text-sm text-gray-600 mb-4">
-            <span><strong>ID:</strong> ${safeAgIdText}</span>
-            <span><strong>Classification:</strong> ${safeClassification}</span>
-            <span><strong>Tactic:</strong> ${safeTactic}</span>
-          </div>
           <div class="co-fields-grid">
             <div class="co-field-group">
-              <label>Start Date <span class="text-red-500 font-bold">*</span></label>
-              <input type="date" value="${escapeAttr(fields.startDate || '')}" data-ag-id="${safeAgId}" data-ag-field="startDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+              <label>Ad Group Name</label>
+              <input type="text" value="${escapeAttr(adGroupName)}" placeholder="Ad group name" data-ag-id="${safeAgId}" data-ag-field="adGroupName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
             <div class="co-field-group">
-              <label>End Date <span class="text-red-500 font-bold">*</span></label>
-              <input type="date" value="${escapeAttr(fields.endDate || '')}" data-ag-id="${safeAgId}" data-ag-field="endDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+              <label>Tactic</label>
+              <select data-ag-id="${safeAgId}" data-ag-field="tactic" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                <option value="" ${!tactic ? 'selected' : ''}>-- Select --</option>
+                <option value="Persona" ${tactic === 'Persona' ? 'selected' : ''}>Persona</option>
+                <option value="Retargeting" ${tactic === 'Retargeting' ? 'selected' : ''}>Retargeting</option>
+                <option value="Data Onboarding" ${tactic === 'Data Onboarding' ? 'selected' : ''}>Data Onboarding</option>
+                <option value="Company Targeting" ${tactic === 'Company Targeting' ? 'selected' : ''}>Company Targeting</option>
+                <option value="IP Targeting" ${tactic === 'IP Targeting' ? 'selected' : ''}>IP Targeting</option>
+                <option value="Addressable" ${tactic === 'Addressable' ? 'selected' : ''}>Addressable</option>
+                <option value="Location Targeting" ${tactic === 'Location Targeting' ? 'selected' : ''}>Location Targeting</option>
+                <option value="Frequency Fencing" ${tactic === 'Frequency Fencing' ? 'selected' : ''}>Frequency Fencing</option>
+                <option value="Contextual" ${tactic === 'Contextual' ? 'selected' : ''}>Contextual</option>
+                <option value="Advanced ABM" ${tactic === 'Advanced ABM' ? 'selected' : ''}>Advanced ABM</option>
+                <option value="Sector" ${tactic === 'Sector' ? 'selected' : ''}>Sector</option>
+              </select>
             </div>
             <div class="co-field-group">
-              <label>Impressions <span class="text-red-500 font-bold">*</span></label>
-              <input type="text" value="${escapeAttr(fields.impressions || '')}" placeholder="e.g. 500,000" data-ag-id="${safeAgId}" data-ag-field="impressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+              <label>Content Category</label>
+              <input type="text" value="${escapeAttr(contentCategory)}" placeholder="Content category" data-ag-id="${safeAgId}" data-ag-field="contentCategory" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
             <div class="co-field-group">
-              <label>Monthly Impressions</label>
-              <input type="text" value="${escapeAttr(fields.monthlyImpressions || '')}" placeholder="Optional" data-ag-id="${safeAgId}" data-ag-field="monthlyImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              <label>MV Classification</label>
+              <input type="text" value="${escapeAttr(multiviewClassification)}" placeholder="MV classification" data-ag-id="${safeAgId}" data-ag-field="multiviewClassification" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+            </div>
+            <div class="co-field-group">
+              <label>Audience</label>
+              <input type="text" value="${escapeAttr(audience)}" placeholder="Audience" data-ag-id="${safeAgId}" data-ag-field="audience" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+            </div>
+            <div class="co-field-group">
+              <label>Geo Target</label>
+              <input type="text" value="${escapeAttr(geoTarget)}" placeholder="Geo target" data-ag-id="${safeAgId}" data-ag-field="geoTarget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+            </div>
+            <div class="co-field-group">
+              <label>Start Date</label>
+              <input type="date" value="${escapeAttr(startDate)}" data-ag-id="${safeAgId}" data-ag-field="startDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+            </div>
+            <div class="co-field-group">
+              <label>End Date</label>
+              <input type="date" value="${escapeAttr(endDate)}" data-ag-id="${safeAgId}" data-ag-field="endDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+            </div>
+            <div class="co-field-group">
+              <label>Impressions</label>
+              <input type="text" value="${escapeAttr(impressions)}" placeholder="e.g. 500,000" data-ag-id="${safeAgId}" data-ag-field="impressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+            </div>
+            <div class="co-field-group">
+              <label>Landing Page</label>
+              <input type="text" value="${escapeAttr(landingPage)}" placeholder="https://landingpage.com" data-ag-id="${safeAgId}" data-ag-field="landingPage" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
             <div class="co-field-group" style="grid-column: 1 / -1;">
-              <label>Additional Notes / Instructions</label>
-              <textarea data-ag-id="${safeAgId}" data-ag-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Targeting instructions, day parting, special requests...">${escapeHtml(fields.notes || '')}</textarea>
+              <label>UTM Code</label>
+              <input type="text" value="${escapeAttr(utmCode)}" placeholder="UTM URL" data-ag-id="${safeAgId}" data-ag-field="utmCode" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
           </div>
         `;
