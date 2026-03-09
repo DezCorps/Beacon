@@ -346,6 +346,32 @@
   border-color: #3b82f6;
 }
 
+/* Platform-specific sections on CO detail */
+.co-platform-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  padding: 0.75rem;
+}
+
+.co-platform-card-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.co-platform-note {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.625rem;
+}
+
 /* Required field styling */
 .required-field {
   border-color: #fca5a5 !important;
