@@ -698,6 +698,7 @@
         const totalInvoiceBudget = firstDefined(fields.totalInvoiceBudget, adv ? adv.totalInvoiceBudget : '');
         const totalImpressions = firstDefined(fields.totalImpressions, adv ? adv.totalImpressions : '');
         const totalBudget = firstDefined(fields.totalBudget, adv ? adv.totalBudget : '');
+        const advertiserNotes = firstDefined(fields.notes, fields.advertiserNotes, adv ? adv.notes : '');
 
         return `
           <div class="co-fields-grid">
@@ -725,6 +726,10 @@
               <label>Total Budget</label>
               <input type="text" value="${escapeAttr(totalBudget)}" placeholder="Enter total budget" data-adv-field="totalBudget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
+            <div class="co-field-group" style="grid-column: 1 / -1;">
+              <label>Advertiser Notes</label>
+              <textarea data-adv-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add advertiser notes...">${escapeHtml(advertiserNotes)}</textarea>
+            </div>
           </div>
         `;
       }
@@ -744,6 +749,7 @@
         const campaignName = firstDefined(fields.campaignName, fields.name, camData.beaconCampaignName, camData.name);
         const template = firstDefined(fields.template, fields.beaconTemplate, camData.beaconTemplate, camData.template);
         const dspImpressions = firstDefined(fields.dspImpressions, fields.beaconDspImpressions, camData.beaconDspImpressions, camData.dspImpressions);
+        const campaignNotes = firstDefined(fields.notes, fields.campaignNotes);
 
         return `
           <div class="co-fields-grid">
@@ -772,6 +778,10 @@
               <label>DSP Impressions</label>
               <input type="text" value="${escapeAttr(dspImpressions)}" placeholder="e.g. 1,600,000" data-cam-id="${safeCamId}" data-cam-field="dspImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
             </div>
+            <div class="co-field-group" style="grid-column: 1 / -1;">
+              <label>Campaign Notes</label>
+              <textarea data-cam-id="${safeCamId}" data-cam-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add campaign notes...">${escapeHtml(campaignNotes)}</textarea>
+            </div>
           </div>
         `;
       }
@@ -796,6 +806,7 @@
         const impressions = firstDefined(fields.impressions, agData.impressions);
         const landingPage = firstDefined(fields.landingPage, agData.landingPage);
         const utmCode = firstDefined(fields.utmCode, agData.utmCode);
+        const adGroupNotes = firstDefined(fields.notes, fields.adGroupNotes, fields.adgroupNotes);
 
         return `
           <div class="co-fields-grid">
@@ -855,6 +866,10 @@
             <div class="co-field-group" style="grid-column: 1 / -1;">
               <label>UTM Code</label>
               <input type="text" value="${escapeAttr(utmCode)}" placeholder="UTM URL" data-ag-id="${safeAgId}" data-ag-field="utmCode" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+            </div>
+            <div class="co-field-group" style="grid-column: 1 / -1;">
+              <label>Ad Group Notes</label>
+              <textarea data-ag-id="${safeAgId}" data-ag-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add ad group notes...">${escapeHtml(adGroupNotes)}</textarea>
             </div>
           </div>
         `;
