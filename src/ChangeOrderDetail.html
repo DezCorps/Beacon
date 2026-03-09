@@ -833,10 +833,6 @@
                 <label>Total Budget</label>
                 <input type="text" value="${escapeAttr(totalBudget)}" placeholder="Enter total budget" data-adv-field="totalBudget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
               </div>
-              <div class="co-field-group" style="grid-column: 1 / -1;">
-                <label>Advertiser Notes</label>
-                <textarea data-adv-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add advertiser notes...">${escapeHtml(advertiserNotes)}</textarea>
-              </div>
             </div>
 
             <div class="co-platform-card">
@@ -916,6 +912,13 @@
             <div class="co-platform-note hidden" data-platform-note="noPlatformFields">
               Additional platform-specific fields are not required for the selected connector(s) yet.
             </div>
+
+            <div class="co-platform-card">
+              <div class="co-field-group">
+                <label>Advertiser Notes</label>
+                <textarea data-adv-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add advertiser notes...">${escapeHtml(advertiserNotes)}</textarea>
+              </div>
+            </div>
           </div>
         `;
       }
@@ -962,6 +965,24 @@
 
         return `
           <div class="co-platform-config space-y-4">
+            <div class="co-platform-card">
+              <div class="co-platform-card-title">Connection Targets</div>
+              <div class="co-fields-grid">
+                <div class="co-field-group">
+                  <label>DSP Selected</label>
+                  <select data-platform-toggle="dsp" data-cam-id="${safeCamId}" data-cam-field="dspSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    ${renderSelectOptions(DSP_PLATFORM_OPTIONS, selectedDsp)}
+                  </select>
+                </div>
+                <div class="co-field-group">
+                  <label>Ad Server Selected</label>
+                  <select data-platform-toggle="adServer" data-cam-id="${safeCamId}" data-cam-field="adServerSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    ${renderSelectOptions(AD_SERVER_PLATFORM_OPTIONS, selectedAdServer)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div class="co-fields-grid">
               <div class="co-field-group">
                 <label>Campaign Name</label>
@@ -987,28 +1008,6 @@
               <div class="co-field-group">
                 <label>DSP Impressions</label>
                 <input type="text" value="${escapeAttr(dspImpressions)}" placeholder="e.g. 1,600,000" data-cam-id="${safeCamId}" data-cam-field="dspImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-              </div>
-              <div class="co-field-group" style="grid-column: 1 / -1;">
-                <label>Campaign Notes</label>
-                <textarea data-cam-id="${safeCamId}" data-cam-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add campaign notes...">${escapeHtml(campaignNotes)}</textarea>
-              </div>
-            </div>
-
-            <div class="co-platform-card">
-              <div class="co-platform-card-title">Connection Targets</div>
-              <div class="co-fields-grid">
-                <div class="co-field-group">
-                  <label>DSP Selected</label>
-                  <select data-platform-toggle="dsp" data-cam-id="${safeCamId}" data-cam-field="dspSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
-                    ${renderSelectOptions(DSP_PLATFORM_OPTIONS, selectedDsp)}
-                  </select>
-                </div>
-                <div class="co-field-group">
-                  <label>Ad Server Selected</label>
-                  <select data-platform-toggle="adServer" data-cam-id="${safeCamId}" data-cam-field="adServerSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
-                    ${renderSelectOptions(AD_SERVER_PLATFORM_OPTIONS, selectedAdServer)}
-                  </select>
-                </div>
               </div>
             </div>
 
@@ -1087,6 +1086,13 @@
             <div class="co-platform-note hidden" data-platform-note="noPlatformFields">
               Additional platform-specific fields are not required for the selected connector(s) yet.
             </div>
+
+            <div class="co-platform-card">
+              <div class="co-field-group">
+                <label>Campaign Notes</label>
+                <textarea data-cam-id="${safeCamId}" data-cam-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add campaign notes...">${escapeHtml(campaignNotes)}</textarea>
+              </div>
+            </div>
           </div>
         `;
       }
@@ -1144,6 +1150,24 @@
 
         return `
           <div class="co-platform-config space-y-4">
+            <div class="co-platform-card">
+              <div class="co-platform-card-title">Connection Targets</div>
+              <div class="co-fields-grid">
+                <div class="co-field-group">
+                  <label>DSP Selected</label>
+                  <select data-platform-toggle="dsp" data-ag-id="${safeAgId}" data-ag-field="dspSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    ${renderSelectOptions(DSP_PLATFORM_OPTIONS, selectedDsp)}
+                  </select>
+                </div>
+                <div class="co-field-group">
+                  <label>Ad Server Selected</label>
+                  <select data-platform-toggle="adServer" data-ag-id="${safeAgId}" data-ag-field="adServerSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    ${renderSelectOptions(AD_SERVER_PLATFORM_OPTIONS, selectedAdServer)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div class="co-fields-grid">
               <div class="co-field-group">
                 <label>Ad Group Name</label>
@@ -1201,28 +1225,6 @@
               <div class="co-field-group" style="grid-column: 1 / -1;">
                 <label>UTM Code</label>
                 <input type="text" value="${escapeAttr(utmCode)}" placeholder="UTM URL" data-ag-id="${safeAgId}" data-ag-field="utmCode" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-              </div>
-              <div class="co-field-group" style="grid-column: 1 / -1;">
-                <label>Ad Group Notes</label>
-                <textarea data-ag-id="${safeAgId}" data-ag-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add ad group notes...">${escapeHtml(adGroupNotes)}</textarea>
-              </div>
-            </div>
-
-            <div class="co-platform-card">
-              <div class="co-platform-card-title">Connection Targets</div>
-              <div class="co-fields-grid">
-                <div class="co-field-group">
-                  <label>DSP Selected</label>
-                  <select data-platform-toggle="dsp" data-ag-id="${safeAgId}" data-ag-field="dspSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
-                    ${renderSelectOptions(DSP_PLATFORM_OPTIONS, selectedDsp)}
-                  </select>
-                </div>
-                <div class="co-field-group">
-                  <label>Ad Server Selected</label>
-                  <select data-platform-toggle="adServer" data-ag-id="${safeAgId}" data-ag-field="adServerSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
-                    ${renderSelectOptions(AD_SERVER_PLATFORM_OPTIONS, selectedAdServer)}
-                  </select>
-                </div>
               </div>
             </div>
 
@@ -1324,6 +1326,13 @@
 
             <div class="co-platform-note hidden" data-platform-note="noPlatformFields">
               Additional platform-specific fields are not required for the selected connector(s) yet.
+            </div>
+
+            <div class="co-platform-card">
+              <div class="co-field-group">
+                <label>Ad Group Notes</label>
+                <textarea data-ag-id="${safeAgId}" data-ag-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add ad group notes...">${escapeHtml(adGroupNotes)}</textarea>
+              </div>
             </div>
           </div>
         `;
