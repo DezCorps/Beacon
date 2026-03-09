@@ -455,9 +455,6 @@
     badgeEl.className = `co-badge co-badge-${s}`;
     badgeEl.textContent = s.charAt(0).toUpperCase() + s.slice(1);
 
-    // Build entity sections
-    buildEntitySections(co);
-
     // Wire up buttons
     document.getElementById('saveCOBtn').addEventListener('click', () => {
       co.name = document.getElementById('coNameInput').value.trim() || co.name;
@@ -577,6 +574,94 @@
       return map[type] || '';
     }
 
+    const DSP_PLATFORM_OPTIONS = [
+      { value: '', label: '-- None --' },
+      { value: 'trade-desk', label: 'The Trade Desk' },
+      { value: 'dv360', label: 'DV360' },
+      { value: 'simplifi', label: 'Simpli.fi' }
+    ];
+
+    const AD_SERVER_PLATFORM_OPTIONS = [
+      { value: '', label: '-- None --' },
+      { value: 'google-campaign-manager', label: 'Google Campaign Manager' }
+    ];
+
+    function normalizeConnectorValue(value) {
+      const normalized = String(value || '').trim().toLowerCase();
+      if (!normalized) return '';
+      if (['trade-desk', 'trade desk', 'the trade desk', 'ttd'].includes(normalized)) return 'trade-desk';
+      if (['dv360', 'display & video 360', 'display and video 360'].includes(normalized)) return 'dv360';
+      if (['simpli.fi', 'simplifi'].includes(normalized)) return 'simplifi';
+      if (['google-campaign-manager', 'google campaign manager', 'gcm', 'cm360', 'campaign manager'].includes(normalized)) return 'google-campaign-manager';
+      return normalized;
+    }
+
+    function parseConnectorValues(rawValue) {
+      if (Array.isArray(rawValue)) {
+        return rawValue.flatMap(value => parseConnectorValues(value));
+      }
+      if (typeof rawValue === 'string') {
+        return rawValue
+          .split(',')
+          .map(value => normalizeConnectorValue(value))
+          .filter(Boolean);
+      }
+      return [];
+    }
+
+    function firstConnectorSelection() {
+      for (let i = 0; i < arguments.length; i++) {
+        const values = parseConnectorValues(arguments[i]);
+        if (values.length) return values[0];
+      }
+      return '';
+    }
+
+    function renderSelectOptions(options, selectedValue) {
+      const normalizedSelected = normalizeConnectorValue(selectedValue);
+      const baseOptions = options.slice();
+      const hasSelected = baseOptions.some(option => option.value === normalizedSelected);
+      if (normalizedSelected && !hasSelected) {
+        baseOptions.push({ value: normalizedSelected, label: selectedValue });
+      }
+      return baseOptions.map(option => `
+        <option value="${escapeAttr(option.value)}" ${option.value === normalizedSelected ? 'selected' : ''}>
+          ${escapeHtml(option.label)}
+        </option>
+      `).join('');
+    }
+
+    function bindPlatformConfigVisibility(root = document) {
+      root.querySelectorAll('.co-platform-config').forEach(config => {
+        const updateVisibility = () => {
+          const dspValue = normalizeConnectorValue(config.querySelector('select[data-platform-toggle="dsp"]')?.value || '');
+          const adServerValue = normalizeConnectorValue(config.querySelector('select[data-platform-toggle="adServer"]')?.value || '');
+          const showTradeDeskFields = dspValue === 'trade-desk';
+          const showGcmFields = adServerValue === 'google-campaign-manager';
+          const showNoPlatformFieldsNote = (Boolean(dspValue) && !showTradeDeskFields) || (Boolean(adServerValue) && !showGcmFields);
+
+          config.querySelectorAll('[data-platform-section="ttd"]').forEach(section => {
+            section.classList.toggle('hidden', !showTradeDeskFields);
+          });
+          config.querySelectorAll('[data-platform-section="gcm"]').forEach(section => {
+            section.classList.toggle('hidden', !showGcmFields);
+          });
+          config.querySelectorAll('[data-platform-note="noPlatformFields"]').forEach(note => {
+            note.classList.toggle('hidden', !showNoPlatformFieldsNote);
+          });
+        };
+
+        if (config.dataset.platformBound !== '1') {
+          config.querySelectorAll('select[data-platform-toggle]').forEach(select => {
+            select.addEventListener('change', updateVisibility);
+          });
+          config.dataset.platformBound = '1';
+        }
+
+        updateVisibility();
+      });
+    }
+
     function buildEntitySections(co) {
       const container = document.getElementById('entitySections');
       if (!co.entities || co.entities.length === 0) {
@@ -627,6 +712,8 @@
           container.appendChild(renderEntitySection(ag, 1, renderIndex++, true));
         });
       }
+
+      bindPlatformConfigVisibility(container);
     }
 
     function renderEntitySection(entity, depth, idx, isOrphan = false) {
@@ -699,36 +786,135 @@
         const totalImpressions = firstDefined(fields.totalImpressions, adv ? adv.totalImpressions : '');
         const totalBudget = firstDefined(fields.totalBudget, adv ? adv.totalBudget : '');
         const advertiserNotes = firstDefined(fields.notes, fields.advertiserNotes, adv ? adv.notes : '');
+        const selectedDsp = firstDefined(
+          normalizeConnectorValue(fields.dspSelected),
+          firstConnectorSelection(adv ? adv.connectors?.dsp : ''),
+          adv && adv.dsp ? 'trade-desk' : ''
+        );
+        const selectedAdServer = firstDefined(
+          normalizeConnectorValue(fields.adServerSelected),
+          firstConnectorSelection(adv ? adv.connectors?.adServer : ''),
+          adv && adv.adServer ? 'google-campaign-manager' : ''
+        );
+        const ttdName = firstDefined(fields.ttdName, adv ? adv.dsp?.name : '');
+        const ttdPartner = firstDefined(fields.ttdPartner, adv ? adv.dsp?.partner : '');
+        const ttdDomain = firstDefined(fields.ttdDomain, adv ? adv.dsp?.domain : '');
+        const ttdCountry = firstDefined(fields.ttdCountry, adv ? adv.dsp?.country : '');
+        const ttdEu = firstDefined(fields.ttdEu, adv ? adv.dsp?.euTargeting : '');
+        const ttdIndustry = firstDefined(fields.ttdIndustry, adv ? adv.dsp?.industry : '');
+        const gcmAdvertiserName = firstDefined(fields.gcmAdvertiserName, adv ? adv.adServer?.advertiserName : '');
+        const gcmVertical = firstDefined(fields.gcmVertical, adv ? adv.adServer?.vertical : '');
+        const gcmEuPoliticalAds = firstDefined(fields.gcmEuPoliticalAds, adv ? adv.adServer?.declarations?.euPoliticalAds : '');
 
         return `
-          <div class="co-fields-grid">
-            <div class="co-field-group">
-              <label>Account Number</label>
-              <input type="text" value="${escapeAttr(accountNumber)}" placeholder="CRM Account Number" data-adv-field="accountNumber" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+          <div class="co-platform-config space-y-4">
+            <div class="co-fields-grid">
+              <div class="co-field-group">
+                <label>Account Number</label>
+                <input type="text" value="${escapeAttr(accountNumber)}" placeholder="CRM Account Number" data-adv-field="accountNumber" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Account Name</label>
+                <input type="text" value="${escapeAttr(accountName)}" placeholder="CRM Account Name" data-adv-field="accountName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Total Invoice Impressions</label>
+                <input type="text" value="${escapeAttr(totalInvoiceImpressions)}" placeholder="e.g. 1,600,000" data-adv-field="totalInvoiceImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Total Invoice Budget</label>
+                <input type="text" value="${escapeAttr(totalInvoiceBudget)}" placeholder="Enter total invoice budget" data-adv-field="totalInvoiceBudget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Total Impressions</label>
+                <input type="text" value="${escapeAttr(totalImpressions)}" placeholder="Enter total impressions" data-adv-field="totalImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Total Budget</label>
+                <input type="text" value="${escapeAttr(totalBudget)}" placeholder="Enter total budget" data-adv-field="totalBudget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group" style="grid-column: 1 / -1;">
+                <label>Advertiser Notes</label>
+                <textarea data-adv-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add advertiser notes...">${escapeHtml(advertiserNotes)}</textarea>
+              </div>
             </div>
-            <div class="co-field-group">
-              <label>Account Name</label>
-              <input type="text" value="${escapeAttr(accountName)}" placeholder="CRM Account Name" data-adv-field="accountName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+
+            <div class="co-platform-card">
+              <div class="co-platform-card-title">Connection Targets</div>
+              <div class="co-fields-grid">
+                <div class="co-field-group">
+                  <label>DSP Selected</label>
+                  <select data-platform-toggle="dsp" data-adv-field="dspSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    ${renderSelectOptions(DSP_PLATFORM_OPTIONS, selectedDsp)}
+                  </select>
+                </div>
+                <div class="co-field-group">
+                  <label>Ad Server Selected</label>
+                  <select data-platform-toggle="adServer" data-adv-field="adServerSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    ${renderSelectOptions(AD_SERVER_PLATFORM_OPTIONS, selectedAdServer)}
+                  </select>
+                </div>
+              </div>
             </div>
-            <div class="co-field-group">
-              <label>Total Invoice Impressions</label>
-              <input type="text" value="${escapeAttr(totalInvoiceImpressions)}" placeholder="e.g. 1,600,000" data-adv-field="totalInvoiceImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+
+            <div class="co-platform-card hidden" data-platform-section="ttd">
+              <div class="co-platform-card-title">DSP Fields - The Trade Desk</div>
+              <div class="co-fields-grid">
+                <div class="co-field-group">
+                  <label>Name</label>
+                  <input type="text" value="${escapeAttr(ttdName)}" placeholder="Advertiser Name (TTD)" data-adv-field="ttdName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Partner</label>
+                  <input type="text" value="${escapeAttr(ttdPartner)}" placeholder="Partner" data-adv-field="ttdPartner" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Domain</label>
+                  <input type="text" value="${escapeAttr(ttdDomain)}" placeholder="Domain" data-adv-field="ttdDomain" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Advertiser Country</label>
+                  <input type="text" value="${escapeAttr(ttdCountry)}" placeholder="Country" data-adv-field="ttdCountry" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>EU Political Advertising</label>
+                  <select data-adv-field="ttdEu" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    <option value="" ${!ttdEu ? 'selected' : ''}>-- Select --</option>
+                    <option value="No" ${ttdEu === 'No' ? 'selected' : ''}>No</option>
+                    <option value="Yes" ${ttdEu === 'Yes' ? 'selected' : ''}>Yes</option>
+                  </select>
+                </div>
+                <div class="co-field-group">
+                  <label>Industry</label>
+                  <input type="text" value="${escapeAttr(ttdIndustry)}" placeholder="Industry" data-adv-field="ttdIndustry" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+              </div>
             </div>
-            <div class="co-field-group">
-              <label>Total Invoice Budget</label>
-              <input type="text" value="${escapeAttr(totalInvoiceBudget)}" placeholder="Enter total invoice budget" data-adv-field="totalInvoiceBudget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+
+            <div class="co-platform-card hidden" data-platform-section="gcm">
+              <div class="co-platform-card-title">Ad Server Fields - Google Campaign Manager</div>
+              <div class="co-fields-grid">
+                <div class="co-field-group">
+                  <label>Name</label>
+                  <input type="text" value="${escapeAttr(gcmAdvertiserName)}" placeholder="Advertiser Name (GCM)" data-adv-field="gcmAdvertiserName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Vertical</label>
+                  <input type="text" value="${escapeAttr(gcmVertical)}" placeholder="Vertical" data-adv-field="gcmVertical" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>EU Political Ads</label>
+                  <select data-adv-field="gcmEuPoliticalAds" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    <option value="" ${!gcmEuPoliticalAds ? 'selected' : ''}>-- Select --</option>
+                    <option value="No" ${gcmEuPoliticalAds === 'No' ? 'selected' : ''}>No</option>
+                    <option value="Yes" ${gcmEuPoliticalAds === 'Yes' ? 'selected' : ''}>Yes</option>
+                  </select>
+                </div>
+              </div>
             </div>
-            <div class="co-field-group">
-              <label>Total Impressions</label>
-              <input type="text" value="${escapeAttr(totalImpressions)}" placeholder="Enter total impressions" data-adv-field="totalImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group">
-              <label>Total Budget</label>
-              <input type="text" value="${escapeAttr(totalBudget)}" placeholder="Enter total budget" data-adv-field="totalBudget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group" style="grid-column: 1 / -1;">
-              <label>Advertiser Notes</label>
-              <textarea data-adv-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add advertiser notes...">${escapeHtml(advertiserNotes)}</textarea>
+
+            <div class="co-platform-note hidden" data-platform-note="noPlatformFields">
+              Additional platform-specific fields are not required for the selected connector(s) yet.
             </div>
           </div>
         `;
@@ -750,37 +936,156 @@
         const template = firstDefined(fields.template, fields.beaconTemplate, camData.beaconTemplate, camData.template);
         const dspImpressions = firstDefined(fields.dspImpressions, fields.beaconDspImpressions, camData.beaconDspImpressions, camData.dspImpressions);
         const campaignNotes = firstDefined(fields.notes, fields.campaignNotes);
+        const selectedDsp = firstDefined(
+          normalizeConnectorValue(fields.dspSelected),
+          firstConnectorSelection(entity.connectors?.dsp, camData.connectors?.dsp, camData.dsp)
+        );
+        const selectedAdServer = firstDefined(
+          normalizeConnectorValue(fields.adServerSelected),
+          firstConnectorSelection(entity.connectors?.adServer, camData.connectors?.adServer, camData.adServer)
+        );
+        const ttdSeed = firstDefined(fields.ttdSeed, camData.seed);
+        const ttdOrganization = firstDefined(fields.ttdOrganization, camData.organization);
+        const ttdPacing = firstDefined(fields.ttdPacing, camData.pacing);
+        const ttdTimezone = firstDefined(fields.ttdTimezone, camData.timezone);
+        const ttdStartDate = firstDefined(fields.ttdStartDate, camData.startDate, camData.beaconStartDate);
+        const ttdEndDate = firstDefined(fields.ttdEndDate, camData.endDate, camData.beaconEndDate);
+        const ttdChannel = firstDefined(fields.ttdChannel, camData.channel);
+        const ttdCampaignName = firstDefined(fields.ttdCampaignName, camData.name, camData.beaconCampaignName);
+        const ttdBudget = firstDefined(fields.ttdBudget, camData.budget);
+        const ttdKpi = firstDefined(fields.ttdKpi, camData.kpi);
+        const ttdKpiTarget = firstDefined(fields.ttdKpiTarget, camData.kpiTarget);
+        const gcmCampaignName = firstDefined(fields.gcmCampaignName, camData.adServerCampaignName, camData.beaconCampaignName, camData.name);
+        const gcmSchedule = firstDefined(fields.gcmSchedule, camData.adServerSchedule);
+        const gcmLandingPageName = firstDefined(fields.gcmLandingPageName, camData.adServerLandingPageName);
+        const gcmLandingPageURL = firstDefined(fields.gcmLandingPageURL, camData.adServerLandingPageURL);
 
         return `
-          <div class="co-fields-grid">
-            <div class="co-field-group">
-              <label>Campaign Name</label>
-              <input type="text" value="${escapeAttr(campaignName)}" placeholder="Campaign name" data-cam-id="${safeCamId}" data-cam-field="campaignName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+          <div class="co-platform-config space-y-4">
+            <div class="co-fields-grid">
+              <div class="co-field-group">
+                <label>Campaign Name</label>
+                <input type="text" value="${escapeAttr(campaignName)}" placeholder="Campaign name" data-cam-id="${safeCamId}" data-cam-field="campaignName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Template</label>
+                <select data-cam-id="${safeCamId}" data-cam-field="template" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                  <option value="" ${!template ? 'selected' : ''}>-- Select Template --</option>
+                  <option value="Programmatic Display" ${template === 'Programmatic Display' ? 'selected' : ''}>Programmatic Display</option>
+                  <option value="Programmatic Video" ${template === 'Programmatic Video' ? 'selected' : ''}>Programmatic Video</option>
+                  <option value="Programmatic Audio" ${template === 'Programmatic Audio' ? 'selected' : ''}>Programmatic Audio</option>
+                  <option value="Connected TV" ${template === 'Connected TV' ? 'selected' : ''}>Connected TV</option>
+                  <option value="Paid Social" ${template === 'Paid Social' ? 'selected' : ''}>Paid Social</option>
+                  <option value="Paid Search" ${template === 'Paid Search' ? 'selected' : ''}>Paid Search</option>
+                  <option value="Event Targeting" ${template === 'Event Targeting' ? 'selected' : ''}>Event Targeting</option>
+                  <option value="Native Video" ${template === 'Native Video' ? 'selected' : ''}>Native Video</option>
+                  <option value="DOOH" ${template === 'DOOH' ? 'selected' : ''}>DOOH</option>
+                  <option value="PLD Display" ${template === 'PLD Display' ? 'selected' : ''}>PLD Display</option>
+                  <option value="PLD Video" ${template === 'PLD Video' ? 'selected' : ''}>PLD Video</option>
+                </select>
+              </div>
+              <div class="co-field-group">
+                <label>DSP Impressions</label>
+                <input type="text" value="${escapeAttr(dspImpressions)}" placeholder="e.g. 1,600,000" data-cam-id="${safeCamId}" data-cam-field="dspImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group" style="grid-column: 1 / -1;">
+                <label>Campaign Notes</label>
+                <textarea data-cam-id="${safeCamId}" data-cam-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add campaign notes...">${escapeHtml(campaignNotes)}</textarea>
+              </div>
             </div>
-            <div class="co-field-group">
-              <label>Template</label>
-              <select data-cam-id="${safeCamId}" data-cam-field="template" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
-                <option value="" ${!template ? 'selected' : ''}>-- Select Template --</option>
-                <option value="Programmatic Display" ${template === 'Programmatic Display' ? 'selected' : ''}>Programmatic Display</option>
-                <option value="Programmatic Video" ${template === 'Programmatic Video' ? 'selected' : ''}>Programmatic Video</option>
-                <option value="Programmatic Audio" ${template === 'Programmatic Audio' ? 'selected' : ''}>Programmatic Audio</option>
-                <option value="Connected TV" ${template === 'Connected TV' ? 'selected' : ''}>Connected TV</option>
-                <option value="Paid Social" ${template === 'Paid Social' ? 'selected' : ''}>Paid Social</option>
-                <option value="Paid Search" ${template === 'Paid Search' ? 'selected' : ''}>Paid Search</option>
-                <option value="Event Targeting" ${template === 'Event Targeting' ? 'selected' : ''}>Event Targeting</option>
-                <option value="Native Video" ${template === 'Native Video' ? 'selected' : ''}>Native Video</option>
-                <option value="DOOH" ${template === 'DOOH' ? 'selected' : ''}>DOOH</option>
-                <option value="PLD Display" ${template === 'PLD Display' ? 'selected' : ''}>PLD Display</option>
-                <option value="PLD Video" ${template === 'PLD Video' ? 'selected' : ''}>PLD Video</option>
-              </select>
+
+            <div class="co-platform-card">
+              <div class="co-platform-card-title">Connection Targets</div>
+              <div class="co-fields-grid">
+                <div class="co-field-group">
+                  <label>DSP Selected</label>
+                  <select data-platform-toggle="dsp" data-cam-id="${safeCamId}" data-cam-field="dspSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    ${renderSelectOptions(DSP_PLATFORM_OPTIONS, selectedDsp)}
+                  </select>
+                </div>
+                <div class="co-field-group">
+                  <label>Ad Server Selected</label>
+                  <select data-platform-toggle="adServer" data-cam-id="${safeCamId}" data-cam-field="adServerSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    ${renderSelectOptions(AD_SERVER_PLATFORM_OPTIONS, selectedAdServer)}
+                  </select>
+                </div>
+              </div>
             </div>
-            <div class="co-field-group">
-              <label>DSP Impressions</label>
-              <input type="text" value="${escapeAttr(dspImpressions)}" placeholder="e.g. 1,600,000" data-cam-id="${safeCamId}" data-cam-field="dspImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+
+            <div class="co-platform-card hidden" data-platform-section="ttd">
+              <div class="co-platform-card-title">DSP Fields - The Trade Desk</div>
+              <div class="co-fields-grid">
+                <div class="co-field-group">
+                  <label>Seed</label>
+                  <input type="text" value="${escapeAttr(ttdSeed)}" placeholder="Seed list" data-cam-id="${safeCamId}" data-cam-field="ttdSeed" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Campaign Organization</label>
+                  <input type="text" value="${escapeAttr(ttdOrganization)}" placeholder="Campaign organization" data-cam-id="${safeCamId}" data-cam-field="ttdOrganization" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Pacing</label>
+                  <input type="text" value="${escapeAttr(ttdPacing)}" placeholder="Pacing" data-cam-id="${safeCamId}" data-cam-field="ttdPacing" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Timezone</label>
+                  <input type="text" value="${escapeAttr(ttdTimezone)}" placeholder="Timezone" data-cam-id="${safeCamId}" data-cam-field="ttdTimezone" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Start Date (UTC)</label>
+                  <input type="date" value="${escapeAttr(ttdStartDate)}" data-cam-id="${safeCamId}" data-cam-field="ttdStartDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>End Date (UTC)</label>
+                  <input type="date" value="${escapeAttr(ttdEndDate)}" data-cam-id="${safeCamId}" data-cam-field="ttdEndDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Campaign Channel</label>
+                  <input type="text" value="${escapeAttr(ttdChannel)}" placeholder="Channel" data-cam-id="${safeCamId}" data-cam-field="ttdChannel" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Campaign Name (TTD)</label>
+                  <input type="text" value="${escapeAttr(ttdCampaignName)}" placeholder="TTD campaign name" data-cam-id="${safeCamId}" data-cam-field="ttdCampaignName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Campaign Budget</label>
+                  <input type="text" value="${escapeAttr(ttdBudget)}" placeholder="Budget" data-cam-id="${safeCamId}" data-cam-field="ttdBudget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Campaign KPI</label>
+                  <input type="text" value="${escapeAttr(ttdKpi)}" placeholder="KPI" data-cam-id="${safeCamId}" data-cam-field="ttdKpi" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>KPI Target</label>
+                  <input type="text" value="${escapeAttr(ttdKpiTarget)}" placeholder="KPI target" data-cam-id="${safeCamId}" data-cam-field="ttdKpiTarget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+              </div>
             </div>
-            <div class="co-field-group" style="grid-column: 1 / -1;">
-              <label>Campaign Notes</label>
-              <textarea data-cam-id="${safeCamId}" data-cam-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add campaign notes...">${escapeHtml(campaignNotes)}</textarea>
+
+            <div class="co-platform-card hidden" data-platform-section="gcm">
+              <div class="co-platform-card-title">Ad Server Fields - Google Campaign Manager</div>
+              <div class="co-fields-grid">
+                <div class="co-field-group">
+                  <label>Campaign Name</label>
+                  <input type="text" value="${escapeAttr(gcmCampaignName)}" placeholder="GCM campaign name" data-cam-id="${safeCamId}" data-cam-field="gcmCampaignName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Schedule</label>
+                  <input type="date" value="${escapeAttr(gcmSchedule)}" data-cam-id="${safeCamId}" data-cam-field="gcmSchedule" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Landing Page Name</label>
+                  <input type="text" value="${escapeAttr(gcmLandingPageName)}" placeholder="Landing page name" data-cam-id="${safeCamId}" data-cam-field="gcmLandingPageName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Landing Page URL</label>
+                  <input type="text" value="${escapeAttr(gcmLandingPageURL)}" placeholder="https://example.com" data-cam-id="${safeCamId}" data-cam-field="gcmLandingPageURL" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+              </div>
+            </div>
+
+            <div class="co-platform-note hidden" data-platform-note="noPlatformFields">
+              Additional platform-specific fields are not required for the selected connector(s) yet.
             </div>
           </div>
         `;
@@ -807,69 +1112,218 @@
         const landingPage = firstDefined(fields.landingPage, agData.landingPage);
         const utmCode = firstDefined(fields.utmCode, agData.utmCode);
         const adGroupNotes = firstDefined(fields.notes, fields.adGroupNotes, fields.adgroupNotes);
+        const selectedDsp = firstDefined(
+          normalizeConnectorValue(fields.dspSelected),
+          firstConnectorSelection(entity.connectors?.dsp, agData.connectors?.dsp, agData.dsp)
+        );
+        const selectedAdServer = firstDefined(
+          normalizeConnectorValue(fields.adServerSelected),
+          firstConnectorSelection(entity.connectors?.adServer, agData.connectors?.adServer, agData.adServer)
+        );
+        const ttdName = firstDefined(fields.ttdName, agData.dspName, agData.name);
+        const ttdFunnelLocation = firstDefined(fields.ttdFunnelLocation, agData.funnelLocation);
+        const ttdChannel = firstDefined(fields.ttdChannel, agData.channel);
+        const ttdDeviceTypes = firstDefined(fields.ttdDeviceTypes, Array.isArray(agData.deviceTypes) ? agData.deviceTypes.join(', ') : agData.deviceTypes);
+        const ttdAdEnvironments = firstDefined(fields.ttdAdEnvironments, Array.isArray(agData.adEnvironments) ? agData.adEnvironments.join(', ') : agData.adEnvironments);
+        const ttdPrimaryGoal = firstDefined(fields.ttdPrimaryGoal, agData.primaryGoal);
+        const ttdTarget = firstDefined(fields.ttdTarget, agData.target);
+        const ttdAudience = firstDefined(fields.ttdAudience, agData.dspAudience);
+        const ttdFrequency = firstDefined(fields.ttdFrequency, agData.frequency);
+        const ttdGeos = firstDefined(fields.ttdGeos, agData.geos, agData.geoTarget, agData.beaconGeoTarget);
+        const ttdBaseBid = firstDefined(fields.ttdBaseBid, agData.baseBid);
+        const ttdMaxBid = firstDefined(fields.ttdMaxBid, agData.maxBid);
+        const gcmName = firstDefined(fields.gcmName, agData.adServerName);
+        const gcmStatus = firstDefined(fields.gcmStatus, agData.adServerStatus);
+        const gcmCompatibility = firstDefined(fields.gcmCompatibility, agData.adServerCompatibility);
+        const gcmDimensions = firstDefined(fields.gcmDimensions, Array.isArray(agData.adServerDimensions) ? agData.adServerDimensions.join(', ') : agData.adServerDimensions);
+        const gcmTestingStarts = firstDefined(fields.gcmTestingStarts, agData.adServerTestingStarts);
+        const gcmStartDate = firstDefined(fields.gcmStartDate, agData.adServerStartDate);
+        const gcmEndDate = firstDefined(fields.gcmEndDate, agData.adServerEndDate);
+        const gcmCostStructure = firstDefined(fields.gcmCostStructure, agData.adServerCostStructure);
+        const gcmCapCost = firstDefined(fields.gcmCapCost, agData.adServerCapCost);
 
         return `
-          <div class="co-fields-grid">
-            <div class="co-field-group">
-              <label>Ad Group Name</label>
-              <input type="text" value="${escapeAttr(adGroupName)}" placeholder="Ad group name" data-ag-id="${safeAgId}" data-ag-field="adGroupName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+          <div class="co-platform-config space-y-4">
+            <div class="co-fields-grid">
+              <div class="co-field-group">
+                <label>Ad Group Name</label>
+                <input type="text" value="${escapeAttr(adGroupName)}" placeholder="Ad group name" data-ag-id="${safeAgId}" data-ag-field="adGroupName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Tactic</label>
+                <select data-ag-id="${safeAgId}" data-ag-field="tactic" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                  <option value="" ${!tactic ? 'selected' : ''}>-- Select --</option>
+                  <option value="Persona" ${tactic === 'Persona' ? 'selected' : ''}>Persona</option>
+                  <option value="Retargeting" ${tactic === 'Retargeting' ? 'selected' : ''}>Retargeting</option>
+                  <option value="Data Onboarding" ${tactic === 'Data Onboarding' ? 'selected' : ''}>Data Onboarding</option>
+                  <option value="Company Targeting" ${tactic === 'Company Targeting' ? 'selected' : ''}>Company Targeting</option>
+                  <option value="IP Targeting" ${tactic === 'IP Targeting' ? 'selected' : ''}>IP Targeting</option>
+                  <option value="Addressable" ${tactic === 'Addressable' ? 'selected' : ''}>Addressable</option>
+                  <option value="Location Targeting" ${tactic === 'Location Targeting' ? 'selected' : ''}>Location Targeting</option>
+                  <option value="Frequency Fencing" ${tactic === 'Frequency Fencing' ? 'selected' : ''}>Frequency Fencing</option>
+                  <option value="Contextual" ${tactic === 'Contextual' ? 'selected' : ''}>Contextual</option>
+                  <option value="Advanced ABM" ${tactic === 'Advanced ABM' ? 'selected' : ''}>Advanced ABM</option>
+                  <option value="Sector" ${tactic === 'Sector' ? 'selected' : ''}>Sector</option>
+                </select>
+              </div>
+              <div class="co-field-group">
+                <label>Content Category</label>
+                <input type="text" value="${escapeAttr(contentCategory)}" placeholder="Content category" data-ag-id="${safeAgId}" data-ag-field="contentCategory" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>MV Classification</label>
+                <input type="text" value="${escapeAttr(multiviewClassification)}" placeholder="MV classification" data-ag-id="${safeAgId}" data-ag-field="multiviewClassification" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Audience</label>
+                <input type="text" value="${escapeAttr(audience)}" placeholder="Audience" data-ag-id="${safeAgId}" data-ag-field="audience" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Geo Target</label>
+                <input type="text" value="${escapeAttr(geoTarget)}" placeholder="Geo target" data-ag-id="${safeAgId}" data-ag-field="geoTarget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Start Date</label>
+                <input type="date" value="${escapeAttr(startDate)}" data-ag-id="${safeAgId}" data-ag-field="startDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>End Date</label>
+                <input type="date" value="${escapeAttr(endDate)}" data-ag-id="${safeAgId}" data-ag-field="endDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Impressions</label>
+                <input type="text" value="${escapeAttr(impressions)}" placeholder="e.g. 500,000" data-ag-id="${safeAgId}" data-ag-field="impressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group">
+                <label>Landing Page</label>
+                <input type="text" value="${escapeAttr(landingPage)}" placeholder="https://landingpage.com" data-ag-id="${safeAgId}" data-ag-field="landingPage" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group" style="grid-column: 1 / -1;">
+                <label>UTM Code</label>
+                <input type="text" value="${escapeAttr(utmCode)}" placeholder="UTM URL" data-ag-id="${safeAgId}" data-ag-field="utmCode" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+              </div>
+              <div class="co-field-group" style="grid-column: 1 / -1;">
+                <label>Ad Group Notes</label>
+                <textarea data-ag-id="${safeAgId}" data-ag-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add ad group notes...">${escapeHtml(adGroupNotes)}</textarea>
+              </div>
             </div>
-            <div class="co-field-group">
-              <label>Tactic</label>
-              <select data-ag-id="${safeAgId}" data-ag-field="tactic" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
-                <option value="" ${!tactic ? 'selected' : ''}>-- Select --</option>
-                <option value="Persona" ${tactic === 'Persona' ? 'selected' : ''}>Persona</option>
-                <option value="Retargeting" ${tactic === 'Retargeting' ? 'selected' : ''}>Retargeting</option>
-                <option value="Data Onboarding" ${tactic === 'Data Onboarding' ? 'selected' : ''}>Data Onboarding</option>
-                <option value="Company Targeting" ${tactic === 'Company Targeting' ? 'selected' : ''}>Company Targeting</option>
-                <option value="IP Targeting" ${tactic === 'IP Targeting' ? 'selected' : ''}>IP Targeting</option>
-                <option value="Addressable" ${tactic === 'Addressable' ? 'selected' : ''}>Addressable</option>
-                <option value="Location Targeting" ${tactic === 'Location Targeting' ? 'selected' : ''}>Location Targeting</option>
-                <option value="Frequency Fencing" ${tactic === 'Frequency Fencing' ? 'selected' : ''}>Frequency Fencing</option>
-                <option value="Contextual" ${tactic === 'Contextual' ? 'selected' : ''}>Contextual</option>
-                <option value="Advanced ABM" ${tactic === 'Advanced ABM' ? 'selected' : ''}>Advanced ABM</option>
-                <option value="Sector" ${tactic === 'Sector' ? 'selected' : ''}>Sector</option>
-              </select>
+
+            <div class="co-platform-card">
+              <div class="co-platform-card-title">Connection Targets</div>
+              <div class="co-fields-grid">
+                <div class="co-field-group">
+                  <label>DSP Selected</label>
+                  <select data-platform-toggle="dsp" data-ag-id="${safeAgId}" data-ag-field="dspSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    ${renderSelectOptions(DSP_PLATFORM_OPTIONS, selectedDsp)}
+                  </select>
+                </div>
+                <div class="co-field-group">
+                  <label>Ad Server Selected</label>
+                  <select data-platform-toggle="adServer" data-ag-id="${safeAgId}" data-ag-field="adServerSelected" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm">
+                    ${renderSelectOptions(AD_SERVER_PLATFORM_OPTIONS, selectedAdServer)}
+                  </select>
+                </div>
+              </div>
             </div>
-            <div class="co-field-group">
-              <label>Content Category</label>
-              <input type="text" value="${escapeAttr(contentCategory)}" placeholder="Content category" data-ag-id="${safeAgId}" data-ag-field="contentCategory" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+
+            <div class="co-platform-card hidden" data-platform-section="ttd">
+              <div class="co-platform-card-title">DSP Fields - The Trade Desk</div>
+              <div class="co-fields-grid">
+                <div class="co-field-group">
+                  <label>Name</label>
+                  <input type="text" value="${escapeAttr(ttdName)}" placeholder="Ad group name (TTD)" data-ag-id="${safeAgId}" data-ag-field="ttdName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Funnel Location</label>
+                  <input type="text" value="${escapeAttr(ttdFunnelLocation)}" placeholder="Funnel location" data-ag-id="${safeAgId}" data-ag-field="ttdFunnelLocation" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Channel</label>
+                  <input type="text" value="${escapeAttr(ttdChannel)}" placeholder="Channel" data-ag-id="${safeAgId}" data-ag-field="ttdChannel" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Device Types</label>
+                  <input type="text" value="${escapeAttr(ttdDeviceTypes)}" placeholder="Comma-separated values" data-ag-id="${safeAgId}" data-ag-field="ttdDeviceTypes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Ad Environments</label>
+                  <input type="text" value="${escapeAttr(ttdAdEnvironments)}" placeholder="Comma-separated values" data-ag-id="${safeAgId}" data-ag-field="ttdAdEnvironments" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Primary Goal</label>
+                  <input type="text" value="${escapeAttr(ttdPrimaryGoal)}" placeholder="Primary goal" data-ag-id="${safeAgId}" data-ag-field="ttdPrimaryGoal" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Target</label>
+                  <input type="text" value="${escapeAttr(ttdTarget)}" placeholder="Target" data-ag-id="${safeAgId}" data-ag-field="ttdTarget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Audience</label>
+                  <input type="text" value="${escapeAttr(ttdAudience)}" placeholder="Audience" data-ag-id="${safeAgId}" data-ag-field="ttdAudience" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Frequency</label>
+                  <input type="text" value="${escapeAttr(ttdFrequency)}" placeholder="e.g. 4 ads per 1 day" data-ag-id="${safeAgId}" data-ag-field="ttdFrequency" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Geos</label>
+                  <input type="text" value="${escapeAttr(ttdGeos)}" placeholder="Geos" data-ag-id="${safeAgId}" data-ag-field="ttdGeos" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Base Bid</label>
+                  <input type="text" value="${escapeAttr(ttdBaseBid)}" placeholder="Base bid" data-ag-id="${safeAgId}" data-ag-field="ttdBaseBid" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Max Bid</label>
+                  <input type="text" value="${escapeAttr(ttdMaxBid)}" placeholder="Max bid" data-ag-id="${safeAgId}" data-ag-field="ttdMaxBid" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+              </div>
             </div>
-            <div class="co-field-group">
-              <label>MV Classification</label>
-              <input type="text" value="${escapeAttr(multiviewClassification)}" placeholder="MV classification" data-ag-id="${safeAgId}" data-ag-field="multiviewClassification" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+
+            <div class="co-platform-card hidden" data-platform-section="gcm">
+              <div class="co-platform-card-title">Ad Server Fields - Google Campaign Manager</div>
+              <div class="co-fields-grid">
+                <div class="co-field-group">
+                  <label>Name</label>
+                  <input type="text" value="${escapeAttr(gcmName)}" placeholder="Placement name" data-ag-id="${safeAgId}" data-ag-field="gcmName" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Status</label>
+                  <input type="text" value="${escapeAttr(gcmStatus)}" placeholder="Status" data-ag-id="${safeAgId}" data-ag-field="gcmStatus" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Compatibility</label>
+                  <input type="text" value="${escapeAttr(gcmCompatibility)}" placeholder="Compatibility" data-ag-id="${safeAgId}" data-ag-field="gcmCompatibility" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Dimensions</label>
+                  <input type="text" value="${escapeAttr(gcmDimensions)}" placeholder="Comma-separated dimensions" data-ag-id="${safeAgId}" data-ag-field="gcmDimensions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Testing Starts</label>
+                  <input type="date" value="${escapeAttr(gcmTestingStarts)}" data-ag-id="${safeAgId}" data-ag-field="gcmTestingStarts" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Start Date</label>
+                  <input type="date" value="${escapeAttr(gcmStartDate)}" data-ag-id="${safeAgId}" data-ag-field="gcmStartDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>End Date</label>
+                  <input type="date" value="${escapeAttr(gcmEndDate)}" data-ag-id="${safeAgId}" data-ag-field="gcmEndDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Cost Structure</label>
+                  <input type="text" value="${escapeAttr(gcmCostStructure)}" placeholder="Cost structure" data-ag-id="${safeAgId}" data-ag-field="gcmCostStructure" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+                <div class="co-field-group">
+                  <label>Cap Cost</label>
+                  <input type="text" value="${escapeAttr(gcmCapCost)}" placeholder="Cap cost" data-ag-id="${safeAgId}" data-ag-field="gcmCapCost" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                </div>
+              </div>
             </div>
-            <div class="co-field-group">
-              <label>Audience</label>
-              <input type="text" value="${escapeAttr(audience)}" placeholder="Audience" data-ag-id="${safeAgId}" data-ag-field="audience" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group">
-              <label>Geo Target</label>
-              <input type="text" value="${escapeAttr(geoTarget)}" placeholder="Geo target" data-ag-id="${safeAgId}" data-ag-field="geoTarget" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group">
-              <label>Start Date</label>
-              <input type="date" value="${escapeAttr(startDate)}" data-ag-id="${safeAgId}" data-ag-field="startDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group">
-              <label>End Date</label>
-              <input type="date" value="${escapeAttr(endDate)}" data-ag-id="${safeAgId}" data-ag-field="endDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group">
-              <label>Impressions</label>
-              <input type="text" value="${escapeAttr(impressions)}" placeholder="e.g. 500,000" data-ag-id="${safeAgId}" data-ag-field="impressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group">
-              <label>Landing Page</label>
-              <input type="text" value="${escapeAttr(landingPage)}" placeholder="https://landingpage.com" data-ag-id="${safeAgId}" data-ag-field="landingPage" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group" style="grid-column: 1 / -1;">
-              <label>UTM Code</label>
-              <input type="text" value="${escapeAttr(utmCode)}" placeholder="UTM URL" data-ag-id="${safeAgId}" data-ag-field="utmCode" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
-            </div>
-            <div class="co-field-group" style="grid-column: 1 / -1;">
-              <label>Ad Group Notes</label>
-              <textarea data-ag-id="${safeAgId}" data-ag-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Add ad group notes...">${escapeHtml(adGroupNotes)}</textarea>
+
+            <div class="co-platform-note hidden" data-platform-note="noPlatformFields">
+              Additional platform-specific fields are not required for the selected connector(s) yet.
             </div>
           </div>
         `;
@@ -877,6 +1331,9 @@
 
       return '';
     }
+
+    // Build entity sections after helper constants/functions are initialized.
+    buildEntitySections(co);
 
     // Remove entity from CO
     window.removeEntity = function(type, id) {
