@@ -2410,12 +2410,20 @@ return false;
               if (dspDomain && !dspDomain.value.trim() && website) {
                 dspDomain.value = website;
               }
+              const dspEu = document.getElementById('dspEu');
+              if (dspEu && !dspEu.value) {
+                dspEu.value = 'No';
+              }
             }
 
             if (adServerValue === 'google-campaign-manager') {
               const adServerName = document.getElementById('adServerAdvertiserName');
               if (adServerName && !adServerName.value.trim() && defaultName) {
                 adServerName.value = defaultName;
+              }
+              const adServerEu = document.getElementById('adServerEuPolitical');
+              if (adServerEu && !adServerEu.value) {
+                adServerEu.value = 'No';
               }
             }
           },

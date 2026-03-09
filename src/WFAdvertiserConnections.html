@@ -2238,12 +2238,21 @@
       if (hasTradeDesk && ttdPartner && !ttdPartner.value) {
         ttdPartner.value = 'Multiview';
       }
+      const ttdEu = document.getElementById('ncDspEu');
+      if (hasTradeDesk && ttdEu && !ttdEu.value) {
+        ttdEu.value = 'No';
+      }
 
       const context = getAdvertiserContext();
       const website = context?.advertiser?.website?.trim();
       const ttdDomain = document.getElementById('ncDspDomain');
       if (hasTradeDesk && ttdDomain && !ttdDomain.value.trim() && website) {
         ttdDomain.value = website;
+      }
+
+      const gcmEu = document.getElementById('ncAdServerEuPolitical');
+      if (hasGcm && gcmEu && !gcmEu.value) {
+        gcmEu.value = 'No';
       }
     }
 
