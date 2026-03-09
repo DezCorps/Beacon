@@ -3221,11 +3221,27 @@ function handleCampaignCreation(redirectToAdGroups) {
   }
 
   // If redirecting to ad groups
-  if (redirectToAdGroups) {
+  const shouldReturnToAdGroups = new URLSearchParams(window.location.search).get('returnToAdGroup') === '1';
+  if (redirectToAdGroups || shouldReturnToAdGroups) {
     const parentCampaignName = campaign.beaconCampaignName || campaign.name || campaign.id;
     window.location.href = `./AdvertiserAdGroup.html?newCampaign=${encodeURIComponent(campaign.id)}&newCampaignName=${encodeURIComponent(parentCampaignName)}`;
   }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('openCreateCampaign') !== '1') return;
+
+  // Ensure the modal opens exactly like a user-initiated "New Campaign" click.
+  setTimeout(() => {
+    document.getElementById('createBtn')?.click();
+  }, 0);
+
+  urlParams.delete('openCreateCampaign');
+  const query = urlParams.toString();
+  const cleanUrl = query ? `./AdvertiserCampaigns.html?${query}` : './AdvertiserCampaigns.html';
+  window.history.replaceState({}, '', cleanUrl);
+});
 
 document.addEventListener('DOMContentLoaded', function () {
   // Individual campaign export

@@ -776,6 +776,7 @@
                   required
                 >
                   <option value="">Select campaign</option>
+                  <option value="__create_campaign__">+ Create Campaign</option>
                 </select>
                 <p class="mt-1 text-xs text-gray-500">Campaign to tie this ad group to</p>
               </div>
@@ -2219,6 +2220,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  const CREATE_CAMPAIGN_OPTION_VALUE = '__create_campaign__';
+
+  function redirectToCampaignCreateFromAdGroup() {
+    window.location.href = './AdvertiserCampaigns.html?openCreateCampaign=1&returnToAdGroup=1';
+  }
+
   function prefillAdGroupFromCampaign(campaignId) {
     const campaign = getCampaignById(campaignId);
     applyCampaignScopedDspOptions(campaign);
@@ -2700,6 +2707,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('beaconCampaign')?.addEventListener('change', (event) => {
     const selectedCampaignId = event.target.value;
+    if (selectedCampaignId === CREATE_CAMPAIGN_OPTION_VALUE) {
+      event.target.value = '';
+      redirectToCampaignCreateFromAdGroup();
+      return;
+    }
     prefillAdGroupFromCampaign(selectedCampaignId);
   });
 
@@ -3096,6 +3108,7 @@ function getQueryParam(key) {
 document.addEventListener('DOMContentLoaded', () => {
   const campaignSelect = document.getElementById('adGroupCampaign');
   const beaconCampaignSelect = document.getElementById('beaconCampaign');
+  const createCampaignOptionValue = '__create_campaign__';
   
   // Need at least one campaign select to populate
   if (!campaignSelect && !beaconCampaignSelect) return;
@@ -3125,6 +3138,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // Ensure data structure has both arrays
   if (!data.campaigns) data.campaigns = [];
   if (!data.groups) data.groups = [];
+
+  const ensureCreateCampaignOption = (selectElement) => {
+    if (!selectElement) return;
+    const exists = Array.from(selectElement.options).some(opt => opt.value === createCampaignOptionValue);
+    if (exists) return;
+    const createOption = document.createElement('option');
+    createOption.value = createCampaignOptionValue;
+    createOption.textContent = '+ Create Campaign';
+    if (selectElement.options.length > 1) {
+      selectElement.insertBefore(createOption, selectElement.options[1]);
+    } else {
+      selectElement.appendChild(createOption);
+    }
+  };
 
   // Function to add campaign options to a select element
   const populateSelect = (selectElement) => {
@@ -3158,6 +3185,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Populate both campaign dropdowns
+  ensureCreateCampaignOption(campaignSelect);
+  ensureCreateCampaignOption(beaconCampaignSelect);
   populateSelect(campaignSelect);
   populateSelect(beaconCampaignSelect);
 
