@@ -10,6 +10,13 @@
   <script src="./assets/toast.js" defer></script>
   <script src="./assets/admin-config.js" defer></script>
   <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
 
     .card-shell {
@@ -25,6 +32,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
+      flex-wrap: wrap;
       padding: 0.625rem 0.875rem;
       border-bottom: 1px solid #e5e7eb;
       background: #f8fafc;
@@ -69,6 +77,7 @@
     .compact-select,
     .compact-textarea {
       width: 100%;
+      min-width: 0;
       border: 1px solid #d1d5db;
       border-radius: 0.4rem;
       padding: 0.4rem 0.55rem;
@@ -109,7 +118,7 @@
     .dense-table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 1080px;
+      table-layout: fixed;
       font-size: 0.78rem;
     }
 
@@ -126,7 +135,8 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.03em;
-      white-space: nowrap;
+      line-height: 1.1;
+      white-space: normal;
     }
 
     .dense-table td {
@@ -134,6 +144,7 @@
       padding: 0.33rem;
       vertical-align: top;
       background: white;
+      overflow-wrap: anywhere;
     }
 
     .dense-table tbody tr:nth-child(even) td {
@@ -171,6 +182,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 0.65rem;
+      flex-wrap: wrap;
       padding: 0.45rem 0.65rem;
       border-bottom: 1px solid #e5e7eb;
       background: #f8fafc;
@@ -191,8 +203,87 @@
     }
 
     .table-scroll {
+      width: 100%;
+      max-width: 100%;
       overflow-x: auto;
       overflow-y: hidden;
+    }
+
+    .campaign-table-view,
+    .adgroup-table-view {
+      display: block;
+    }
+
+    .campaign-list-view,
+    .adgroup-list-view {
+      display: none;
+    }
+
+    .campaign-list-view {
+      padding: 0.55rem;
+    }
+
+    .campaign-list-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.55rem;
+    }
+
+    .campaign-card {
+      border: 1px solid #d1d5db;
+      border-radius: 0.45rem;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .campaign-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.45rem 0.6rem;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f8fafc;
+    }
+
+    .campaign-card-title {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #1f2937;
+      line-height: 1.2;
+    }
+
+    .campaign-card-body {
+      padding: 0.55rem;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.45rem;
+    }
+
+    .adgroup-row-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 0.45rem;
+      background: #fff;
+      padding: 0.5rem;
+    }
+
+    .adgroup-row-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .adgroup-row-title {
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: #334155;
+      line-height: 1.2;
     }
 
     .icon-btn {
@@ -272,7 +363,7 @@
     }
 
     .footer-inner {
-      max-width: 1460px;
+      width: 100%;
       margin: 0 auto;
       padding: 0.52rem 0.85rem;
       display: flex;
@@ -351,8 +442,35 @@
       background: #fff5f5;
     }
 
+    @media (max-width: 1120px) {
+      .dense-table {
+        font-size: 0.74rem;
+      }
+      .dense-table th,
+      .dense-table td {
+        padding: 0.3rem 0.26rem;
+      }
+    }
+
+    @media (max-width: 1199px) {
+      .campaign-table-view,
+      .adgroup-table-view {
+        display: none;
+      }
+      .campaign-list-view,
+      .adgroup-list-view {
+        display: block;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .campaign-list-grid,
+      .form-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 960px) {
-      .dense-table { min-width: 900px; }
       .footer-inner { padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)); }
     }
   </style>
@@ -386,8 +504,8 @@
       </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto pb-24">
-      <div class="max-w-[1460px] mx-auto px-3 py-3 space-y-3">
+    <main class="flex-1 overflow-y-auto overflow-x-hidden pb-24">
+      <div class="w-full px-2 md:px-3 lg:px-4 py-3 space-y-3">
         <section class="card-shell">
           <div class="card-head">
             <div class="flex items-center gap-2">
@@ -449,23 +567,24 @@
             </div>
           </div>
 
-          <div class="table-scroll">
+          <div class="table-scroll campaign-table-view">
             <table class="dense-table" id="campaignTable">
               <thead>
                 <tr>
-                  <th style="width: 42px;">#</th>
-                  <th style="min-width: 210px;">Campaign Name</th>
-                  <th style="min-width: 190px;">Template</th>
-                  <th style="min-width: 170px;">DSP Selected</th>
-                  <th style="min-width: 190px;">Ad Server Selected</th>
-                  <th style="width: 94px;">Ad Groups</th>
-                  <th style="width: 135px;">DSP Impressions</th>
-                  <th style="width: 56px;">Del</th>
+                  <th style="width: 4%;">#</th>
+                  <th style="width: 24%;">Campaign Name</th>
+                  <th style="width: 16%;">Template</th>
+                  <th style="width: 14%;">DSP Selected</th>
+                  <th style="width: 16%;">Ad Server Selected</th>
+                  <th style="width: 10%;">Ad Groups</th>
+                  <th style="width: 12%;">DSP Impressions</th>
+                  <th style="width: 4%;">Del</th>
                 </tr>
               </thead>
               <tbody id="campaignBody"></tbody>
             </table>
           </div>
+          <div id="campaignListView" class="campaign-list-view"></div>
         </section>
 
         <section class="card-shell">
@@ -477,7 +596,8 @@
             <span class="text-[11px] text-gray-600 font-semibold">All campaigns shown, grouped by parent campaign</span>
           </div>
 
-          <div id="adGroupBlocks" class="p-2"></div>
+          <div id="adGroupBlocks" class="p-2 adgroup-table-view"></div>
+          <div id="adGroupList" class="p-2 adgroup-list-view"></div>
         </section>
       </div>
     </main>
@@ -577,7 +697,9 @@
         totalBudget: document.getElementById('totalBudget'),
         advertiserNotes: document.getElementById('advertiserNotes'),
         campaignBody: document.getElementById('campaignBody'),
+        campaignListView: document.getElementById('campaignListView'),
         adGroupBlocks: document.getElementById('adGroupBlocks'),
+        adGroupList: document.getElementById('adGroupList'),
         campaignCountChip: document.getElementById('campaignCountChip'),
         adGroupCountChip: document.getElementById('adGroupCountChip'),
         advStatusChip: document.getElementById('advStatusChip'),
@@ -833,6 +955,37 @@
         elements.campaignBody.innerHTML = rows;
       }
 
+      function renderCampaignCards() {
+        var cards = state.campaigns.map(function (campaign, idx) {
+          return [
+            '<section class="campaign-card" data-campaign-id="', escapeHtml(campaign.tempId), '">',
+            '<header class="campaign-card-head">',
+            '<h3 class="campaign-card-title">', String(idx + 1), '. ', escapeHtml(campaign.name || ('Campaign ' + (idx + 1))), '</h3>',
+            '<button class="icon-btn" type="button" title="Remove campaign" data-action="remove-campaign" data-campaign-id="', escapeHtml(campaign.tempId), '">x</button>',
+            '</header>',
+            '<div class="campaign-card-body">',
+            '<div class="form-grid-2">',
+            '<div><label class="field-label required">Campaign Name</label><input class="compact-input" data-entity="campaign" data-key="name" data-campaign-id="', escapeHtml(campaign.tempId), '" value="', escapeHtml(campaign.name), '" /></div>',
+            '<div><label class="field-label required">Template</label><select class="compact-select" data-entity="campaign" data-key="template" data-campaign-id="', escapeHtml(campaign.tempId), '">',
+            buildOptions(state.config.templates, campaign.template, true),
+            '</select></div>',
+            '<div><label class="field-label required">DSP Selected</label><select class="compact-select" data-entity="campaign" data-key="dspSelected" data-campaign-id="', escapeHtml(campaign.tempId), '">',
+            buildOptions(state.config.dspPlatforms, campaign.dspSelected, true),
+            '</select></div>',
+            '<div><label class="field-label required">Ad Server Selected</label><select class="compact-select" data-entity="campaign" data-key="adServerSelected" data-campaign-id="', escapeHtml(campaign.tempId), '">',
+            buildOptions(state.config.adServerPlatforms, campaign.adServerSelected, true),
+            '</select></div>',
+            '<div><label class="field-label required">Ad Groups</label><input class="compact-input" type="number" min="1" step="1" data-entity="campaign" data-key="adGroupCount" data-campaign-id="', escapeHtml(campaign.tempId), '" value="', String(campaign.adGroupCount || 1), '" /></div>',
+            '<div><label class="field-label">DSP Impressions</label><input class="compact-input" type="number" min="0" step="1" data-entity="campaign" data-key="dspImpressions" data-campaign-id="', escapeHtml(campaign.tempId), '" value="', String(parsePositiveInt(campaign.dspImpressions)), '" /></div>',
+            '</div>',
+            '</div>',
+            '</section>'
+          ].join('');
+        }).join('');
+
+        elements.campaignListView.innerHTML = '<div class="campaign-list-grid">' + cards + '</div>';
+      }
+
       function renderAdGroupBlocks() {
         var html = state.campaigns.map(function (campaign, idx) {
           ensureCampaignAdGroups(campaign);
@@ -874,21 +1027,21 @@
             '</div>',
             '</header>',
             '<div class="table-scroll ', collapsedClass, '" data-campaign-content="', escapeHtml(campaign.tempId), '">',
-            '<table class="dense-table" style="min-width: 1420px;">',
+            '<table class="dense-table">',
             '<thead><tr>',
-            '<th style="width:42px;">#</th>',
-            '<th style="min-width:180px;">Ad Group Name</th>',
-            '<th style="min-width:150px;">Tactic</th>',
-            '<th style="min-width:150px;">Content Category</th>',
-            '<th style="min-width:160px;">MV Classification</th>',
-            '<th style="min-width:160px;">Audience</th>',
-            '<th style="min-width:96px;">Geo</th>',
-            '<th style="min-width:136px;">Start Date</th>',
-            '<th style="min-width:136px;">End Date</th>',
-            '<th style="min-width:122px;">Impressions</th>',
-            '<th style="min-width:190px;">Landing Page</th>',
-            '<th style="min-width:210px;">UTM Code</th>',
-            '<th style="width:56px;">Del</th>',
+            '<th style="width:4%;">#</th>',
+            '<th style="width:13%;">Ad Group Name</th>',
+            '<th style="width:8%;">Tactic</th>',
+            '<th style="width:8%;">Content Category</th>',
+            '<th style="width:8%;">MV Classification</th>',
+            '<th style="width:7%;">Audience</th>',
+            '<th style="width:6%;">Geo</th>',
+            '<th style="width:8%;">Start Date</th>',
+            '<th style="width:8%;">End Date</th>',
+            '<th style="width:7%;">Impressions</th>',
+            '<th style="width:9%;">Landing Page</th>',
+            '<th style="width:10%;">UTM Code</th>',
+            '<th style="width:4%;">Del</th>',
             '</tr></thead>',
             '<tbody>', rows, '</tbody>',
             '</table>',
@@ -898,6 +1051,60 @@
         }).join('');
 
         elements.adGroupBlocks.innerHTML = html;
+      }
+
+      function renderAdGroupListBlocks() {
+        var html = state.campaigns.map(function (campaign, idx) {
+          ensureCampaignAdGroups(campaign);
+          var collapsedClass = campaign.collapsed ? 'hidden' : '';
+
+          var cards = campaign.adGroups.map(function (adGroup, rowIdx) {
+            return [
+              '<article class="adgroup-row-card" data-campaign-id="', escapeHtml(campaign.tempId), '" data-adgroup-id="', escapeHtml(adGroup.tempId), '">',
+              '<div class="adgroup-row-head">',
+              '<span class="adgroup-row-title">', String(idx + 1), '.', String(rowIdx + 1), ' ', escapeHtml(adGroup.name || 'Ad Group'), '</span>',
+              '<button class="icon-btn" type="button" title="Remove ad group" data-action="remove-adgroup" data-campaign-id="', escapeHtml(campaign.tempId), '" data-adgroup-id="', escapeHtml(adGroup.tempId), '">x</button>',
+              '</div>',
+              '<div class="form-grid-2">',
+              '<div><label class="field-label required">Ad Group Name</label><input class="compact-input" data-entity="adgroup" data-key="name" data-campaign-id="', escapeHtml(campaign.tempId), '" data-adgroup-id="', escapeHtml(adGroup.tempId), '" value="', escapeHtml(adGroup.name), '" /></div>',
+              '<div><label class="field-label required">Tactic</label><select class="compact-select" data-entity="adgroup" data-key="tactic" data-campaign-id="', escapeHtml(campaign.tempId), '" data-adgroup-id="', escapeHtml(adGroup.tempId), '">',
+              buildOptions(state.config.tactics, adGroup.tactic, true),
+              '</select></div>',
+              '<div><label class="field-label">Content Category</label><span class="readonly-pill">', escapeHtml(adGroup.contentCategory), '</span></div>',
+              '<div><label class="field-label">MV Classification</label><span class="readonly-pill">', escapeHtml(adGroup.mvClassification), '</span></div>',
+              '<div><label class="field-label">Audience</label><input class="compact-input" data-entity="adgroup" data-key="audience" data-campaign-id="', escapeHtml(campaign.tempId), '" data-adgroup-id="', escapeHtml(adGroup.tempId), '" value="', escapeHtml(adGroup.audience), '" /></div>',
+              '<div><label class="field-label">Geo</label><input class="compact-input" data-entity="adgroup" data-key="geo" data-campaign-id="', escapeHtml(campaign.tempId), '" data-adgroup-id="', escapeHtml(adGroup.tempId), '" value="', escapeHtml(adGroup.geo), '" /></div>',
+              '<div><label class="field-label required">Start Date</label><input class="compact-input" type="date" data-entity="adgroup" data-key="startDate" data-campaign-id="', escapeHtml(campaign.tempId), '" data-adgroup-id="', escapeHtml(adGroup.tempId), '" value="', escapeHtml(adGroup.startDate), '" /></div>',
+              '<div><label class="field-label required">End Date</label><input class="compact-input" type="date" data-entity="adgroup" data-key="endDate" data-campaign-id="', escapeHtml(campaign.tempId), '" data-adgroup-id="', escapeHtml(adGroup.tempId), '" value="', escapeHtml(adGroup.endDate), '" /></div>',
+              '<div><label class="field-label">Impressions</label><input class="compact-input" type="number" min="0" step="1" data-entity="adgroup" data-key="impressions" data-campaign-id="', escapeHtml(campaign.tempId), '" data-adgroup-id="', escapeHtml(adGroup.tempId), '" value="', String(parsePositiveInt(adGroup.impressions)), '" /></div>',
+              '<div><label class="field-label">Landing Page</label><input class="compact-input" data-entity="adgroup" data-key="landingPage" data-campaign-id="', escapeHtml(campaign.tempId), '" data-adgroup-id="', escapeHtml(adGroup.tempId), '" value="', escapeHtml(adGroup.landingPage), '" /></div>',
+              '<div><label class="field-label">UTM Code</label><input class="compact-input" data-entity="adgroup" data-key="utmCode" data-campaign-id="', escapeHtml(campaign.tempId), '" data-adgroup-id="', escapeHtml(adGroup.tempId), '" value="', escapeHtml(adGroup.utmCode), '" /></div>',
+              '</div>',
+              '</article>'
+            ].join('');
+          }).join('');
+
+          return [
+            '<section class="campaign-block" data-campaign-block="', escapeHtml(campaign.tempId), '">',
+            '<header class="campaign-block-head">',
+            '<div>',
+            '<h3>', String(idx + 1), '. ', escapeHtml(campaign.name || ('Campaign ' + (idx + 1))), '</h3>',
+            '<small>Template: ', escapeHtml(campaign.template || '—'), ' | DSP: ', escapeHtml(campaign.dspSelected || '—'), ' | Ad Server: ', escapeHtml(campaign.adServerSelected || '—'), '</small>',
+            '</div>',
+            '<div class="flex items-center gap-2">',
+            '<span class="chip">', String(campaign.adGroups.length), ' ad group rows</span>',
+            '<button class="text-btn" type="button" data-action="add-adgroup-row" data-campaign-id="', escapeHtml(campaign.tempId), '">+ Row</button>',
+            '<button class="text-btn muted" type="button" data-action="toggle-campaign" data-campaign-id="', escapeHtml(campaign.tempId), '">', campaign.collapsed ? 'Expand' : 'Collapse', '</button>',
+            '</div>',
+            '</header>',
+            '<div class="space-y-2 p-2 ', collapsedClass, '" data-campaign-content="', escapeHtml(campaign.tempId), '">',
+            cards,
+            '</div>',
+            '</section>'
+          ].join('');
+        }).join('');
+
+        elements.adGroupList.innerHTML = html;
       }
 
       function countAdGroups() {
@@ -963,7 +1170,9 @@
         normalizeCampaigns();
         syncAutoAdGroupNamesAllCampaigns();
         renderCampaignRows();
+        renderCampaignCards();
         renderAdGroupBlocks();
+        renderAdGroupListBlocks();
         updateChips();
       }
 
@@ -996,6 +1205,8 @@
       }
 
       function wireCampaignTableEvents() {
+        var campaignEventRoots = [elements.campaignBody, elements.campaignListView].filter(Boolean);
+
         function applyCampaignDraftFromTarget(target) {
           if (!target || target.dataset.entity !== 'campaign') return null;
 
@@ -1026,53 +1237,57 @@
           return { campaign: campaign, key: key };
         }
 
-        elements.campaignBody.addEventListener('input', function (event) {
-          var target = event.target;
-          var result = applyCampaignDraftFromTarget(target);
-          if (!result) return;
-          updateChips();
-        });
-
-        elements.campaignBody.addEventListener('change', function (event) {
-          var target = event.target;
-          var result = applyCampaignDraftFromTarget(target);
-          if (!result) return;
-
-          if (result.key === 'adGroupCount') {
-            result.campaign.adGroupCount = Math.max(1, parsePositiveInt(result.campaign.adGroupCount));
-            ensureCampaignAdGroups(result.campaign);
-            distributeWithinCampaign(result.campaign);
-            renderAll();
-            return;
-          }
-
-          if (result.key === 'dspImpressions') {
-            distributeWithinCampaign(result.campaign);
-            renderAll();
-            return;
-          }
-
-          renderAll();
-        });
-
-        elements.campaignBody.addEventListener('click', function (event) {
-          var button = event.target.closest('button[data-action="remove-campaign"]');
-          if (!button) return;
-
-          if (state.campaigns.length <= 1) {
-            toast('At least one campaign row is required.', 'warning', 2200);
-            return;
-          }
-
-          var campaignId = button.dataset.campaignId;
-          state.campaigns = state.campaigns.filter(function (campaign) {
-            return campaign.tempId !== campaignId;
+        campaignEventRoots.forEach(function (root) {
+          root.addEventListener('input', function (event) {
+            var target = event.target;
+            var result = applyCampaignDraftFromTarget(target);
+            if (!result) return;
+            updateChips();
           });
-          renderAll();
+
+          root.addEventListener('change', function (event) {
+            var target = event.target;
+            var result = applyCampaignDraftFromTarget(target);
+            if (!result) return;
+
+            if (result.key === 'adGroupCount') {
+              result.campaign.adGroupCount = Math.max(1, parsePositiveInt(result.campaign.adGroupCount));
+              ensureCampaignAdGroups(result.campaign);
+              distributeWithinCampaign(result.campaign);
+              renderAll();
+              return;
+            }
+
+            if (result.key === 'dspImpressions') {
+              distributeWithinCampaign(result.campaign);
+              renderAll();
+              return;
+            }
+
+            renderAll();
+          });
+
+          root.addEventListener('click', function (event) {
+            var button = event.target.closest('button[data-action="remove-campaign"]');
+            if (!button) return;
+
+            if (state.campaigns.length <= 1) {
+              toast('At least one campaign row is required.', 'warning', 2200);
+              return;
+            }
+
+            var campaignId = button.dataset.campaignId;
+            state.campaigns = state.campaigns.filter(function (campaign) {
+              return campaign.tempId !== campaignId;
+            });
+            renderAll();
+          });
         });
       }
 
       function wireAdGroupEvents() {
+        var adGroupEventRoots = [elements.adGroupBlocks, elements.adGroupList].filter(Boolean);
+
         function applyAdGroupDraftFromTarget(target) {
           if (!target || target.dataset.entity !== 'adgroup') return null;
 
@@ -1106,57 +1321,59 @@
           return { campaign: campaign, adGroup: adGroup, key: key };
         }
 
-        elements.adGroupBlocks.addEventListener('click', function (event) {
-          var toggleBtn = event.target.closest('button[data-action="toggle-campaign"]');
-          if (toggleBtn) {
-            var toggledCampaign = findCampaignByTempId(toggleBtn.dataset.campaignId);
-            if (!toggledCampaign) return;
-            toggledCampaign.collapsed = !toggledCampaign.collapsed;
-            renderAll();
-            return;
-          }
-
-          var addBtn = event.target.closest('button[data-action="add-adgroup-row"]');
-          if (addBtn) {
-            var campaignToAdd = findCampaignByTempId(addBtn.dataset.campaignId);
-            if (!campaignToAdd) return;
-            campaignToAdd.adGroupCount = parsePositiveInt(campaignToAdd.adGroupCount) + 1;
-            ensureCampaignAdGroups(campaignToAdd);
-            distributeWithinCampaign(campaignToAdd);
-            renderAll();
-            return;
-          }
-
-          var removeBtn = event.target.closest('button[data-action="remove-adgroup"]');
-          if (removeBtn) {
-            var campaignToRemove = findCampaignByTempId(removeBtn.dataset.campaignId);
-            if (!campaignToRemove) return;
-            if ((campaignToRemove.adGroups || []).length <= 1) {
-              toast('Each campaign requires at least one ad group row.', 'warning', 2200);
+        adGroupEventRoots.forEach(function (root) {
+          root.addEventListener('click', function (event) {
+            var toggleBtn = event.target.closest('button[data-action="toggle-campaign"]');
+            if (toggleBtn) {
+              var toggledCampaign = findCampaignByTempId(toggleBtn.dataset.campaignId);
+              if (!toggledCampaign) return;
+              toggledCampaign.collapsed = !toggledCampaign.collapsed;
+              renderAll();
               return;
             }
 
-            campaignToRemove.adGroups = campaignToRemove.adGroups.filter(function (row) {
-              return row.tempId !== removeBtn.dataset.adgroupId;
-            });
-            campaignToRemove.adGroupCount = campaignToRemove.adGroups.length;
-            distributeWithinCampaign(campaignToRemove);
+            var addBtn = event.target.closest('button[data-action="add-adgroup-row"]');
+            if (addBtn) {
+              var campaignToAdd = findCampaignByTempId(addBtn.dataset.campaignId);
+              if (!campaignToAdd) return;
+              campaignToAdd.adGroupCount = parsePositiveInt(campaignToAdd.adGroupCount) + 1;
+              ensureCampaignAdGroups(campaignToAdd);
+              distributeWithinCampaign(campaignToAdd);
+              renderAll();
+              return;
+            }
+
+            var removeBtn = event.target.closest('button[data-action="remove-adgroup"]');
+            if (removeBtn) {
+              var campaignToRemove = findCampaignByTempId(removeBtn.dataset.campaignId);
+              if (!campaignToRemove) return;
+              if ((campaignToRemove.adGroups || []).length <= 1) {
+                toast('Each campaign requires at least one ad group row.', 'warning', 2200);
+                return;
+              }
+
+              campaignToRemove.adGroups = campaignToRemove.adGroups.filter(function (row) {
+                return row.tempId !== removeBtn.dataset.adgroupId;
+              });
+              campaignToRemove.adGroupCount = campaignToRemove.adGroups.length;
+              distributeWithinCampaign(campaignToRemove);
+              renderAll();
+            }
+          });
+
+          root.addEventListener('input', function (event) {
+            var target = event.target;
+            var result = applyAdGroupDraftFromTarget(target);
+            if (!result) return;
+            updateChips();
+          });
+
+          root.addEventListener('change', function (event) {
+            var target = event.target;
+            var result = applyAdGroupDraftFromTarget(target);
+            if (!result) return;
             renderAll();
-          }
-        });
-
-        elements.adGroupBlocks.addEventListener('input', function (event) {
-          var target = event.target;
-          var result = applyAdGroupDraftFromTarget(target);
-          if (!result) return;
-          updateChips();
-        });
-
-        elements.adGroupBlocks.addEventListener('change', function (event) {
-          var target = event.target;
-          var result = applyAdGroupDraftFromTarget(target);
-          if (!result) return;
-          renderAll();
+          });
         });
       }
 
