@@ -71,30 +71,6 @@
     });
   }
 
-  function applyBlockedPageRedirects() {
-    const redirects = {
-      'WFAdvertiserConnections.html': './WFAdvertiserDetails.html',
-      'CampaignsConnections.html': './CampaignDetails.html',
-      'AdGroupsConnections.html': './AdGroupDetails.html',
-      'AdvertiserSalesOrder.html': './WFAdvertiserDetails.html',
-      'CAD.html': './index.html',
-      'CADv1.html': './index.html',
-      'CAD-mockup.html': './index.html',
-      'AdvertiserChangeOrders.html': './WFAdvertiserDetails.html',
-      'ChangeOrderList.html': './index.html',
-      'ChangeOrderDetail.html': './index.html',
-      'ChangeOrderDetails.html': './index.html'
-    };
-
-    const page = currentPage();
-    if (!redirects[page]) return;
-
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('allowLegacy') === '1') return;
-
-    window.location.replace(redirects[page]);
-  }
-
   function cloneNodeWithoutListeners(node) {
     if (!node || !node.parentNode) return node;
     const clone = node.cloneNode(true);
@@ -143,6 +119,181 @@
     ].join('');
   }
 
+  function validateRequiredFields(fieldIds) {
+    for (let i = 0; i < fieldIds.length; i++) {
+      const field = document.getElementById(fieldIds[i]);
+      if (!field) continue;
+
+      if (field.disabled) continue;
+
+      const value = String(field.value || '').trim();
+      if (!value) {
+        field.focus();
+        if (typeof field.reportValidity === 'function') field.reportValidity();
+        return false;
+      }
+
+      if (field.id === 'beaconCampaign' && value === '__create_campaign__') {
+        field.focus();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function removeFilterChipById(chipId) {
+    const chip = document.getElementById(chipId);
+    if (!chip) return;
+
+    const wrapper = chip.closest('.relative') || chip;
+    const prev = wrapper.previousElementSibling;
+    const next = wrapper.nextElementSibling;
+
+    if (prev && prev.classList.contains('h-6') && prev.classList.contains('border-l')) {
+      prev.remove();
+    }
+    if (next && next.classList.contains('h-6') && next.classList.contains('border-l')) {
+      next.remove();
+    }
+
+    wrapper.remove();
+  }
+
+  function getColumnIndicesBySortKeys(table, sortKeys) {
+    if (!table) return [];
+    const indices = [];
+
+    sortKeys.forEach(function (sortKey) {
+      const button = table.querySelector('thead button[data-sort-key="' + sortKey + '"]');
+      const header = button ? button.closest('th') : null;
+      if (!header || !header.parentElement) return;
+      const idx = Array.prototype.indexOf.call(header.parentElement.children, header);
+      if (idx >= 0) indices.push(idx);
+    });
+
+    return Array.from(new Set(indices)).sort(function (a, b) { return b - a; });
+  }
+
+  function stripColumnsFromRow(row, columnIndices) {
+    if (!row || !row.children || !columnIndices.length) return;
+    columnIndices.forEach(function (idx) {
+      if (idx >= 0 && idx < row.children.length) {
+        row.children[idx].remove();
+      }
+    });
+  }
+
+  function normalizeColspans(table, removedCount) {
+    if (!table || !removedCount) return;
+    table.querySelectorAll('td[colspan]').forEach(function (cell) {
+      const current = parseInt(cell.getAttribute('colspan'), 10);
+      if (!Number.isFinite(current) || current <= 1) return;
+
+      if (!cell.dataset.phase1OriginalColspan) {
+        cell.dataset.phase1OriginalColspan = String(current);
+      }
+
+      const base = parseInt(cell.dataset.phase1OriginalColspan, 10);
+      if (!Number.isFinite(base)) return;
+      cell.setAttribute('colspan', String(Math.max(1, base - removedCount)));
+    });
+  }
+
+  function removeConnectionColumnsFromTable(tableId, sortKeys) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+
+    const indices = getColumnIndicesBySortKeys(table, sortKeys);
+    if (!indices.length) return;
+
+    table.querySelectorAll('tr').forEach(function (row) {
+      stripColumnsFromRow(row, indices);
+    });
+    normalizeColspans(table, indices.length);
+
+    const body = table.tBodies && table.tBodies.length ? table.tBodies[0] : null;
+    if (!body || body.dataset.phase1NoConnectionObserver === '1') return;
+
+    const observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        mutation.addedNodes.forEach(function (node) {
+          if (!node || node.nodeType !== 1) return;
+          if (node.tagName === 'TR') {
+            stripColumnsFromRow(node, indices);
+          } else if (node.querySelectorAll) {
+            node.querySelectorAll('tr').forEach(function (row) {
+              stripColumnsFromRow(row, indices);
+            });
+          }
+        });
+      });
+      normalizeColspans(table, indices.length);
+    });
+
+    observer.observe(body, { childList: true, subtree: true });
+    body.dataset.phase1NoConnectionObserver = '1';
+  }
+
+  function forceNoConnectionDspFilter(storageKey) {
+    try {
+      if (storageKey) localStorage.removeItem(storageKey);
+    } catch (error) {
+      console.warn('Failed clearing legacy DSP filter key:', error);
+    }
+
+    function applyDefaults() {
+      try {
+        if (typeof app !== 'undefined' && app && app.filters && Object.prototype.hasOwnProperty.call(app.filters, 'dsp')) {
+          app.filters.dsp = 'All';
+          if (app.elements && app.elements.dspChipLabel) app.elements.dspChipLabel.textContent = 'All';
+          if (typeof app.applyFiltersAndRender === 'function') app.applyFiltersAndRender();
+          return true;
+        }
+      } catch (error) {
+        console.warn('Failed forcing no-connection DSP filter:', error);
+      }
+      return false;
+    }
+
+    if (applyDefaults()) return;
+    [80, 180, 320, 600, 1000].forEach(function (ms) { setTimeout(applyDefaults, ms); });
+  }
+
+  function applyNoConnectionListLayout() {
+    const page = currentPage();
+
+    if (page === 'AdvertiserCampaigns.html') {
+      removeFilterChipById('dspChip');
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) searchInput.placeholder = 'Enter ID or Campaign Name';
+      removeConnectionColumnsFromTable('campaignTable', ['dsp', 'adServer']);
+      forceNoConnectionDspFilter('campaign_dsp_filter');
+      return;
+    }
+
+    if (page === 'AdvertiserAdGroup.html' || page === 'CampaignsAdGroup.html') {
+      removeFilterChipById('dspChip');
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) searchInput.placeholder = 'Enter Name, ID, or Campaign';
+      removeConnectionColumnsFromTable('campaignTable', ['dsp', 'adServer']);
+      forceNoConnectionDspFilter('adgroup_dsp_filter');
+    }
+  }
+
+  function removeConnectionDetailPanels() {
+    const page = currentPage();
+    const panelIdsByPage = {
+      'CampaignDetails.html': ['campaignDspFieldsPanel', 'campaignAdServerFieldsPanel'],
+      'AdGroupDetails.html': ['adGroupDspFieldsPanel', 'adGroupAdServerFieldsPanel']
+    };
+
+    const panelIds = panelIdsByPage[page] || [];
+    panelIds.forEach(function (id) {
+      const panel = document.getElementById(id);
+      if (panel) panel.remove();
+    });
+  }
+
   function applyTwoStepWizard(config) {
     const modal = document.getElementById(config.modalId);
     let step1 = document.querySelector(config.step1Selector || '.wizard-step[data-step="1"]');
@@ -185,7 +336,7 @@
     if (stepCounterWrap) {
       stepCounterWrap.childNodes.forEach(function (node) {
         if (node.nodeType === Node.TEXT_NODE) {
-          node.textContent = node.textContent.replace(/of\\s*\\d+/i, 'of 2');
+          node.textContent = node.textContent.replace(/of\s*\d+/i, 'of 2');
         }
       });
     }
@@ -383,8 +534,13 @@
         { id: 'beaconEndDate', label: 'End Date' }
       ],
       validateStep1: function () {
-        const form = document.getElementById('createCampaignForm');
-        return !!(form && form.reportValidity());
+        return validateRequiredFields([
+          'beaconCampaignName',
+          'beaconTemplate',
+          'beaconDspImpressions',
+          'beaconStartDate',
+          'beaconEndDate'
+        ]);
       }
     };
 
@@ -428,8 +584,13 @@
         { id: 'beaconLandingPage', label: 'Landing Page' }
       ],
       validateStep1: function () {
-        const form = document.getElementById('createAdGroupForm');
-        return !!(form && form.reportValidity());
+        return validateRequiredFields([
+          'beaconAdGroupName',
+          'beaconCampaign',
+          'beaconTemplate',
+          'beaconMultiviewTactic',
+          'beaconMultiviewClassification'
+        ]);
       }
     };
 
@@ -445,9 +606,10 @@
   }
 
   function init() {
-    applyBlockedPageRedirects();
     applyAdminLinkGate();
     applyCoreNavFilter();
+    applyNoConnectionListLayout();
+    removeConnectionDetailPanels();
 
     if (window.beaconAdminConfig && typeof window.beaconAdminConfig.bindFormOptions === 'function') {
       window.beaconAdminConfig.bindFormOptions(document);
