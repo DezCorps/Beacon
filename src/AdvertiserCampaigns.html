@@ -434,22 +434,6 @@
               <span data-link-label>Ad Groups</span>
             </a>
           </li>
-          <li>
-            <a href="./ChangeOrderList.html" data-nav-link
-               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <svg class="w-6 h-6 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-        </svg>
-              <span data-link-label>Change Orders</span>
-            </a>
-          </li>
-          <li>
-            <a href="./WFAdvertiserConnections.html" data-nav-link
-               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
-              <span data-link-label>Connections</span>
-            </a>
-          </li>
         </ul>
       </nav>
 
@@ -580,18 +564,7 @@
                   </div>
                 </div>
 
-                <!-- New Change Order Button -->
                 <div class="flex-1"></div>
-                <button id="newChangeOrderBtn"
-                  class="flex items-center gap-1.5 h-8 px-3 rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors"
-                  onclick="openCOPickerModal()"
-                  title="Create New Change Order">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                  </svg>
-                  New Change Order
-                </button>
-                <div class="w-1"></div>
 
                 <!-- Universal Export Button -->
                 <button id="universalExportBtn" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors mr-2" title="Export all campaigns and ad groups">
@@ -841,6 +814,37 @@
                   <option value="PLD Display">PLD Display</option>
                   <option value="PLD Video">PLD Video</option>
                 </select>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="beaconCampaignDspSelected" class="block text-sm font-medium text-gray-700 mb-2">
+                    DSP Selected <span class="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="beaconCampaignDspSelected"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">-- Select DSP --</option>
+                    <option value="The Trade Desk">The Trade Desk</option>
+                    <option value="DV360">DV360</option>
+                    <option value="Simpli.fi">Simpli.fi</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="beaconCampaignAdServerSelected" class="block text-sm font-medium text-gray-700 mb-2">
+                    Ad Server Selected <span class="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="beaconCampaignAdServerSelected"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">-- Select Ad Server --</option>
+                    <option value="Google Campaign Manager">Google Campaign Manager</option>
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -3032,13 +3036,35 @@ document.getElementById('createAndAddAdGroup')?.addEventListener('click', functi
 
 // Unified campaign creation handler
 function handleCampaignCreation(redirectToAdGroups) {
+  function normalizePlatformKey(label, type) {
+    const value = String(label || '').trim().toLowerCase();
+    if (!value) return '';
+    if (type === 'dsp') {
+      if (value === 'the trade desk' || value === 'trade desk' || value === 'ttd') return 'trade-desk';
+      if (value === 'dv360') return 'dv360';
+      if (value === 'simpli.fi' || value === 'simplifi') return 'simplifi';
+      return value.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+    if (type === 'adServer') {
+      if (value === 'google campaign manager' || value === 'gcm') return 'google-campaign-manager';
+      return value.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+    return value.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  }
+
+  const beaconDspSelectedLabel = document.getElementById('beaconCampaignDspSelected')?.value || '';
+  const beaconAdServerSelectedLabel = document.getElementById('beaconCampaignAdServerSelected')?.value || '';
+
+  const normalizedStep1Dsp = normalizePlatformKey(beaconDspSelectedLabel, 'dsp');
+  const normalizedStep1AdServer = normalizePlatformKey(beaconAdServerSelectedLabel, 'adServer');
+
   // Get selected platforms from dropdowns and their sync status (NEW DROPDOWN OVERHAUL)
   const selectedDSP = [];
   const selectedAdServer = [];
   const connectionStatus = {}; // Track status for each platform
 
   // Read DSP dropdown
-  const dspValue = document.getElementById('dspDropdown')?.value || '';
+  const dspValue = normalizedStep1Dsp || document.getElementById('dspDropdown')?.value || '';
   const dspSynced = document.getElementById('dspSyncCheckbox')?.checked || false;
 
   if (dspValue) {
@@ -3047,7 +3073,7 @@ function handleCampaignCreation(redirectToAdGroups) {
   }
 
   // Read Ad Server dropdown
-  const adServerValue = document.getElementById('adServerDropdown')?.value || '';
+  const adServerValue = normalizedStep1AdServer || document.getElementById('adServerDropdown')?.value || '';
   const adServerSynced = document.getElementById('adServerSyncCheckbox')?.checked || false;
 
   if (adServerValue) {
@@ -3081,11 +3107,15 @@ function handleCampaignCreation(redirectToAdGroups) {
   selectedDSP.forEach(dsp => {
     if (dspLabels[dsp]) {
       dspList.push(dspLabels[dsp]);
+    } else if (beaconDspSelectedLabel) {
+      dspList.push(beaconDspSelectedLabel);
     }
   });
   selectedAdServer.forEach(adServer => {
     if (adServerLabels[adServer]) {
       adServerList.push(adServerLabels[adServer]);
+    } else if (beaconAdServerSelectedLabel) {
+      adServerList.push(beaconAdServerSelectedLabel);
     }
   });
   
@@ -3118,6 +3148,8 @@ function handleCampaignCreation(redirectToAdGroups) {
     beaconCampaignId: document.getElementById('beaconCampaignId')?.value || '',
     beaconCampaignName: document.getElementById('beaconCampaignName')?.value || '',
     beaconTemplate: document.getElementById('beaconTemplate')?.value || '',
+    beaconCampaignDspSelected: beaconDspSelectedLabel,
+    beaconCampaignAdServerSelected: beaconAdServerSelectedLabel,
     beaconDspImpressions: document.getElementById('beaconDspImpressions')?.value || '',
     template: document.getElementById('beaconTemplate')?.value || '',
     dspImpressions: document.getElementById('beaconDspImpressions')?.value || '',
