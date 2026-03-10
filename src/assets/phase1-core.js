@@ -529,6 +529,8 @@
       reviewFields: [
         { id: 'beaconCampaignName', label: 'Campaign Name' },
         { id: 'beaconTemplate', label: 'Template' },
+        { id: 'beaconCampaignDspSelected', label: 'DSP Selected' },
+        { id: 'beaconCampaignAdServerSelected', label: 'Ad Server Selected' },
         { id: 'beaconDspImpressions', label: 'DSP Impressions' },
         { id: 'beaconStartDate', label: 'Start Date' },
         { id: 'beaconEndDate', label: 'End Date' }
@@ -537,6 +539,8 @@
         return validateRequiredFields([
           'beaconCampaignName',
           'beaconTemplate',
+          'beaconCampaignDspSelected',
+          'beaconCampaignAdServerSelected',
           'beaconDspImpressions',
           'beaconStartDate',
           'beaconEndDate'

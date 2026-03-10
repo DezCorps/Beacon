@@ -240,6 +240,14 @@
       populateSelect(select, config.templates, '-- Select Template --');
     });
 
+    scope.querySelectorAll('#beaconCampaignDspSelected').forEach(function (select) {
+      populateSelect(select, config.dspPlatforms, '-- Select DSP --');
+    });
+
+    scope.querySelectorAll('#beaconCampaignAdServerSelected').forEach(function (select) {
+      populateSelect(select, config.adServerPlatforms, '-- Select Ad Server --');
+    });
+
     scope.querySelectorAll('#beaconMultiviewTactic').forEach(function (select) {
       populateSelect(select, config.tactics, '-- Select --');
     });
