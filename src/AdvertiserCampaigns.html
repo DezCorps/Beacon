@@ -757,15 +757,21 @@
           
           <!-- STEP 1: Campaign Details (Beacon Fields) -->
           <div class="wizard-content active" data-content="1">
-            <div class="mb-6">
-              <h3 class="text-xl font-semibold text-gray-900 mb-2">Campaign Details</h3>
-              <p class="text-sm text-gray-600">Complete Beacon fields in Step 1, then review and create in Step 2.</p>
+            <div class="mb-6 flex items-start justify-between gap-6">
+              <div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Campaign Details</h3>
+                <p class="text-sm text-gray-600">Complete Beacon fields in Step 1, then review and create in Step 2.</p>
+              </div>
+              <div class="min-w-0 text-right">
+                <p class="text-sm font-medium text-gray-700">Campaign ID</p>
+                <p id="beaconCampaignIdDisplay" class="mt-1 text-3xl font-medium tracking-tight text-gray-500">CAM-XXXXXX</p>
+              </div>
             </div>
 
             <div class="space-y-5">
               
               <!-- ID Field -->
-              <div>
+              <div class="hidden">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Campaign ID</label>
                 <input 
                   type="text" 
@@ -774,7 +780,37 @@
                   placeholder="System-generated ID"
                   readonly
                 />
-                <p class="mt-1 text-xs text-gray-500">Auto-generated unique identifier</p>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="beaconCampaignDspSelected" class="block text-sm font-medium text-gray-700 mb-2">
+                    DSP Selected <span class="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="beaconCampaignDspSelected"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">-- Select DSP --</option>
+                    <option value="The Trade Desk">The Trade Desk</option>
+                    <option value="DV360">DV360</option>
+                    <option value="Simpli.fi">Simpli.fi</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="beaconCampaignAdServerSelected" class="block text-sm font-medium text-gray-700 mb-2">
+                    Ad Server Selected <span class="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="beaconCampaignAdServerSelected"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">-- Select Ad Server --</option>
+                    <option value="Google Campaign Manager">Google Campaign Manager</option>
+                  </select>
+                </div>
               </div>
 
               <!-- Campaign Name -->
@@ -814,37 +850,6 @@
                   <option value="PLD Display">PLD Display</option>
                   <option value="PLD Video">PLD Video</option>
                 </select>
-              </div>
-
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label for="beaconCampaignDspSelected" class="block text-sm font-medium text-gray-700 mb-2">
-                    DSP Selected <span class="text-red-500">*</span>
-                  </label>
-                  <select
-                    id="beaconCampaignDspSelected"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  >
-                    <option value="">-- Select DSP --</option>
-                    <option value="The Trade Desk">The Trade Desk</option>
-                    <option value="DV360">DV360</option>
-                    <option value="Simpli.fi">Simpli.fi</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="beaconCampaignAdServerSelected" class="block text-sm font-medium text-gray-700 mb-2">
-                    Ad Server Selected <span class="text-red-500">*</span>
-                  </label>
-                  <select
-                    id="beaconCampaignAdServerSelected"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  >
-                    <option value="">-- Select Ad Server --</option>
-                    <option value="Google Campaign Manager">Google Campaign Manager</option>
-                  </select>
-                </div>
               </div>
 
               <div>
@@ -891,7 +896,7 @@
               </div>
 
               <div class="border-t border-gray-200 pt-4">
-                <p class="text-xs text-gray-500">Phase 1 captures Beacon fields only. Platform connection fields are added in a later phase.</p>
+                <p class="text-xs text-gray-500">Phase 1 captures Beacon fields and connection targets. Platform configuration fields are added in a later phase.</p>
               </div>
 
             </div>
@@ -2787,8 +2792,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Generate and display Campaign ID
         const campaignIdField = document.getElementById('beaconCampaignId');
+        const campaignIdDisplay = document.getElementById('beaconCampaignIdDisplay');
         if (campaignIdField) {
-          campaignIdField.value = 'CAM-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+          const generatedCampaignId = 'CAM-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+          campaignIdField.value = generatedCampaignId;
+          if (campaignIdDisplay) campaignIdDisplay.textContent = generatedCampaignId;
+        } else if (campaignIdDisplay) {
+          campaignIdDisplay.textContent = 'CAM-XXXXXX';
         }
         
         // Reset platform dropdowns (NEW DROPDOWN OVERHAUL)
